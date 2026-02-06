@@ -1,4 +1,4 @@
-using Fincurio.Core.Models.DTOs.Transaction;
+using Fincurio.Core.Models.DTOs.Category;
 
 namespace Fincurio.Core.Interfaces.Services;
 

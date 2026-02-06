@@ -1,6 +1,6 @@
 using Fincurio.Core.Interfaces.Repositories;
 using Fincurio.Core.Interfaces.Services;
-using Fincurio.Core.Models.DTOs.Transaction;
+using Fincurio.Core.Models.DTOs.Category;
 
 namespace Fincurio.Core.Services;
 
