@@ -5,7 +5,18 @@
       "Bash(test:*)",
       "Bash(git init:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(dotnet sln:*)",
+      "Bash(dotnet sln add:*)",
+      "Bash(dotnet add reference:*)",
+      "Bash(dotnet add package:*)",
+      "Bash(git remote add:*)",
+      "Bash(git push:*)",
+      "Bash(dotnet ef:*)",
+      "Bash(dotnet tool install:*)",
+      "Bash(dotnet build:*)",
+      "Bash(dotnet remove reference:*)",
+      "Bash(docker exec:*)"
     ]
   }
 }
