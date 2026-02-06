@@ -17,7 +17,10 @@
       "Bash(dotnet build:*)",
       "Bash(dotnet remove reference:*)",
       "Bash(docker exec:*)",
-      "Bash(dotnet list:*)"
+      "Bash(dotnet list:*)",
+      "Bash(docker ps:*)",
+      "Bash(dotnet run:*)",
+      "Bash(npm install:*)"
     ]
   }
 }
