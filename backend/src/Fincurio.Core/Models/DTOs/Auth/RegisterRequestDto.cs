@@ -1,0 +1,22 @@
+using System.ComponentModel.DataAnnotations;
+
+namespace Fincurio.Core.Models.DTOs.Auth;
+
+public class RegisterRequestDto
+{
+    [Required]
+    [EmailAddress]
+    public required string Email { get; set; }
+
+    [Required]
+    [MinLength(6)]
+    public required string Password { get; set; }
+
+    [Required]
+    [MinLength(2)]
+    public required string FirstName { get; set; }
+
+    [Required]
+    [MinLength(2)]
+    public required string LastName { get; set; }
+}
