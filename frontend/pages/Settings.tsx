@@ -1,109 +1,241 @@
-
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../src/hooks/useAuth';
+import { userApi } from '../src/api/user.api';
 
 const Settings: React.FC = () => {
+  const { user, logout } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+
+  // Profile state
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [financialIntention, setFinancialIntention] = useState('');
+
+  // Preferences state
+  const [currency, setCurrency] = useState('USD');
+  const [timezone, setTimezone] = useState('UTC');
+  const [monthlyBudgetGoal, setMonthlyBudgetGoal] = useState('');
+
+  useEffect(() => {
+    if (user) {
+      setFirstName(user.firstName || '');
+      setLastName(user.lastName || '');
+      setFinancialIntention(user.financialIntention || '');
+      setCurrency(user.preferences?.currency || 'USD');
+      setTimezone(user.preferences?.timezone || 'UTC');
+      setMonthlyBudgetGoal(user.preferences?.monthlyBudgetGoal?.toString() || '');
+    }
+  }, [user]);
+
+  const handleUpdateProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    setSuccess('');
+
+    try {
+      await userApi.updateProfile({ firstName, lastName, financialIntention });
+      setSuccess('Profile updated successfully!');
+      setTimeout(() => setSuccess(''), 3000);
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to update profile');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdatePreferences = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    setSuccess('');
+
+    try {
+      await userApi.updatePreferences({
+        currency,
+        timezone,
+        monthlyBudgetGoal: monthlyBudgetGoal ? parseFloat(monthlyBudgetGoal) : undefined,
+      });
+      setSuccess('Preferences updated successfully!');
+      setTimeout(() => setSuccess(''), 3000);
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to update preferences');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (err) {
+      // Ignore errors on logout
+    }
+  };
+
+  const currencies = [
+    { code: 'USD', name: 'US Dollar', symbol: '$' },
+    { code: 'EUR', name: 'Euro', symbol: '€' },
+    { code: 'GBP', name: 'British Pound', symbol: '£' },
+    { code: 'JPY', name: 'Japanese Yen', symbol: '¥' },
+    { code: 'CAD', name: 'Canadian Dollar', symbol: 'C$' },
+  ];
+
   return (
     <div className="max-w-[720px] mx-auto px-6 pt-12 pb-24 animate-in fade-in duration-700">
       <section className="mb-20">
-        <h2 className="text-4xl md:text-5xl font-light tracking-tight mb-4">Account Preferences</h2>
-        <p className="text-lg text-stone-text font-light max-w-md">Manage your personal details, financial connections, and security settings in one place.</p>
+        <h2 className="text-4xl md:text-5xl font-light tracking-tight mb-4">Account Settings</h2>
+        <p className="text-lg text-stone-text font-light max-w-md">
+          Manage your personal details and preferences.
+        </p>
       </section>
 
-      {/* Profile */}
+      {error && (
+        <div className="mb-8 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl p-4 text-red-800 dark:text-red-200 text-sm">
+          {error}
+        </div>
+      )}
+
+      {success && (
+        <div className="mb-8 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-2xl p-4 text-green-800 dark:text-green-200 text-sm">
+          {success}
+        </div>
+      )}
+
+      {/* Profile Section */}
       <section className="mb-24">
         <h3 className="text-2xl font-light text-white mb-8 border-b border-stone-800 pb-2">Profile</h3>
-        <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
-          <div className="shrink-0 relative">
-            <div className="w-32 h-32 rounded-full bg-cover bg-center shadow-2xl border border-stone-800" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDq-cfc7xh1DGliN5hdHVsRaa5oF4UaFsm_HSnHNZfrWeUJ1unhrHZLRFd7AdM2vjYjV2HrSNASb-5bXJw7d_zruuGLZU8Wi8XxEBcxmzBNgE2-RWXRNVxGZzxg84TYbNYcanw6GWA2dgrDRj96mFRCc2bUWZQKh0EnrNqKEtZ8VwffwCrc9IEhQ7pzAj-d1fHEu1YLVYJVuLndUJLfsGvPlRb-GOQYB9oVs4styWAq7yVgqp2T8Gb8hKAAeyToTsbRxqxK7IT_1p40')" }}></div>
-            <button className="absolute bottom-0 right-0 bg-surface-dark p-2 rounded-full text-white hover:bg-primary transition-all border border-stone-700">
-              <span className="material-symbols-outlined text-sm">edit</span>
-            </button>
-          </div>
-          <div className="flex flex-col items-center md:items-start flex-1 pt-2">
-            <div className="text-3xl font-medium mb-1">Alex Sterling</div>
-            <div className="text-stone-text text-lg font-light mb-6">alex.sterling@example.com</div>
-            <button className="text-sm font-medium text-white px-6 py-3 rounded-full bg-stone-800 hover:bg-stone-700 transition-all">
-              Edit Details
-            </button>
-          </div>
+        <div className="mb-6">
+          <div className="text-sm text-stone-text mb-1">Email</div>
+          <div className="text-lg text-white">{user?.email}</div>
         </div>
-      </section>
 
-      {/* Connections */}
-      <section className="mb-24">
-        <div className="flex items-center justify-between mb-10 border-b border-stone-800 pb-2">
-          <h3 className="text-2xl font-light text-white">Connections</h3>
-          <button className="flex items-center gap-2 px-5 py-2 rounded-full bg-primary text-white text-sm font-medium hover:bg-red-600 transition-all">
-            <span className="material-symbols-outlined text-[18px]">add</span>
-            <span>Connect</span>
+        <form onSubmit={handleUpdateProfile} className="space-y-6">
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm text-stone-text mb-2">First Name</label>
+              <input
+                type="text"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                className="w-full px-4 py-3 bg-surface-dark border border-stone-700 rounded-lg text-white placeholder:text-gray-500 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                placeholder="Alex"
+              />
+            </div>
+            <div>
+              <label className="block text-sm text-stone-text mb-2">Last Name</label>
+              <input
+                type="text"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                className="w-full px-4 py-3 bg-surface-dark border border-stone-700 rounded-lg text-white placeholder:text-gray-500 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                placeholder="Sterling"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm text-stone-text mb-2">Financial Intention</label>
+            <input
+              type="text"
+              value={financialIntention}
+              onChange={(e) => setFinancialIntention(e.target.value)}
+              className="w-full px-4 py-3 bg-surface-dark border border-stone-700 rounded-lg text-white placeholder:text-gray-500 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-serif italic"
+              placeholder="security and freedom"
+            />
+            <p className="text-xs text-stone-text mt-2">What you want to feel about your finances</p>
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="px-8 py-3 rounded-full bg-primary text-white font-medium hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all"
+          >
+            {loading ? 'Saving...' : 'Save Profile'}
           </button>
-        </div>
-        <div className="flex flex-col gap-8">
-          <ConnectionItem logo="https://lh3.googleusercontent.com/aida-public/AB6AXuBbgP6SdaOBtA5EQkXrJbCE0CJHCuSBXZPSfoCOx0JS6VFVXeSd5755afNeAY_ccqZ4CHNDXWmQxhGZ8eL3EIc05mgG_-tRXwMv3j_6uJdKafysH5AvlZDqZXUtSVkl8CBFEYyBpQS7o3GdFm-Mhrcp89ttg1x8nfX7Y0qwtC5AAIS6rZs4gw73I9JaIF63BwM9ujieQgHTJzwTK9hdzakUjhRVAs9phI_7ajxarV72UNhQkA7H3xv44mRq-hbzw2k_o76ioLAmmHuZ" name="Chase Sapphire" status="Synced just now" statusColor="bg-green-500" />
-          <ConnectionItem name="American Express Gold" status="Synced 2 hours ago" statusColor="bg-green-500" bgOverride="bg-[#006fcf]" labelOverride="AMEX" />
-          <ConnectionItem icon="account_balance" name="Vanguard IRA" status="Action required" statusColor="bg-yellow-500" needsReconnect />
-        </div>
+        </form>
       </section>
 
-      {/* Security */}
+      {/* Preferences Section */}
       <section className="mb-24">
-        <h3 className="text-2xl font-light text-white mb-10 border-b border-stone-800 pb-2">Security</h3>
-        <div className="grid gap-12 md:grid-cols-2">
-          <div className="flex flex-col gap-3">
-            <div className="flex items-center gap-2 text-white">
-              <span className="material-symbols-outlined text-stone-text">lock</span>
-              <span className="font-medium">Password</span>
-            </div>
-            <p className="text-stone-text text-sm leading-relaxed">Last changed 3 months ago. We recommend updating it every 6 months.</p>
-            <a href="#" className="text-primary hover:text-white text-sm font-medium mt-1 flex items-center gap-1">
-              Update Password <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
-            </a>
+        <h3 className="text-2xl font-light text-white mb-8 border-b border-stone-800 pb-2">Preferences</h3>
+        <form onSubmit={handleUpdatePreferences} className="space-y-6">
+          <div>
+            <label className="block text-sm text-stone-text mb-2">Currency</label>
+            <select
+              value={currency}
+              onChange={(e) => setCurrency(e.target.value)}
+              className="w-full px-4 py-3 bg-surface-dark border border-stone-700 rounded-lg text-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+            >
+              {currencies.map((curr) => (
+                <option key={curr.code} value={curr.code}>
+                  {curr.symbol} {curr.name} ({curr.code})
+                </option>
+              ))}
+            </select>
           </div>
-          <div className="flex flex-col gap-3">
-            <div className="flex items-center gap-2 text-white">
-              <span className="material-symbols-outlined text-stone-text">phonelink_lock</span>
-              <span className="font-medium">Two-Factor Auth</span>
-            </div>
-            <p className="text-stone-text text-sm leading-relaxed">Currently active via Authenticator App. Your account is secure.</p>
-            <a href="#" className="text-primary hover:text-white text-sm font-medium mt-1 flex items-center gap-1">
-              Manage Methods <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
-            </a>
+
+          <div>
+            <label className="block text-sm text-stone-text mb-2">Timezone</label>
+            <input
+              type="text"
+              value={timezone}
+              onChange={(e) => setTimezone(e.target.value)}
+              className="w-full px-4 py-3 bg-surface-dark border border-stone-700 rounded-lg text-white placeholder:text-gray-500 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+              placeholder="America/New_York"
+            />
+            <p className="text-xs text-stone-text mt-2">E.g., America/New_York, Europe/London, Asia/Tokyo</p>
           </div>
-        </div>
+
+          <div>
+            <label className="block text-sm text-stone-text mb-2">Monthly Budget Goal</label>
+            <div className="relative">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white text-lg">
+                {currencies.find((c) => c.code === currency)?.symbol}
+              </span>
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                value={monthlyBudgetGoal}
+                onChange={(e) => setMonthlyBudgetGoal(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 bg-surface-dark border border-stone-700 rounded-lg text-white placeholder:text-gray-500 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                placeholder="4000.00"
+              />
+            </div>
+            <p className="text-xs text-stone-text mt-2">Your target monthly spending limit</p>
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="px-8 py-3 rounded-full bg-primary text-white font-medium hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all"
+          >
+            {loading ? 'Saving...' : 'Save Preferences'}
+          </button>
+        </form>
+      </section>
+
+      {/* Logout Section */}
+      <section className="mb-24">
+        <h3 className="text-2xl font-light text-white mb-8 border-b border-stone-800 pb-2">Account</h3>
+        <button
+          onClick={handleLogout}
+          className="px-8 py-3 rounded-full bg-stone-800 text-white font-medium hover:bg-red-700 transition-all"
+        >
+          Sign Out
+        </button>
       </section>
 
       <footer className="py-12 text-center border-t border-stone-800 mt-auto opacity-50">
-        <div className="flex justify-center gap-6 mb-4">
-          <a className="text-stone-text hover:text-white text-xs uppercase tracking-widest" href="#">Help</a>
-          <a className="text-stone-text hover:text-white text-xs uppercase tracking-widest" href="#">Privacy</a>
-          <a className="text-stone-text hover:text-white text-xs uppercase tracking-widest" href="#">Terms</a>
-        </div>
-        <p className="text-xs text-[#5c4a4d]">© 2024 Fincurio Inc. All rights reserved.</p>
+        <p className="text-xs text-stone-text">
+          Fincurio MVP - Phase 1
+        </p>
       </footer>
     </div>
   );
 };
-
-const ConnectionItem: React.FC<{ logo?: string; icon?: string; name: string; status: string; statusColor: string; bgOverride?: string; labelOverride?: string; needsReconnect?: boolean }> = ({ logo, icon, name, status, statusColor, bgOverride, labelOverride, needsReconnect }) => (
-  <div className="flex items-center justify-between group">
-    <div className="flex items-center gap-5">
-      <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${bgOverride || 'bg-white'}`}>
-        {logo ? <img src={logo} alt={name} className="w-6 h-6 object-contain" /> : icon ? <span className="material-symbols-outlined text-stone-800">{icon}</span> : <span className="text-white font-bold text-xs">{labelOverride}</span>}
-      </div>
-      <div>
-        <p className="text-lg font-normal text-white group-hover:text-primary transition-colors">{name}</p>
-        <div className="flex items-center gap-2">
-          <span className={`w-1.5 h-1.5 rounded-full ${statusColor}`}></span>
-          <p className="text-sm text-stone-text">{status}</p>
-        </div>
-      </div>
-    </div>
-    {needsReconnect ? (
-      <button className="text-primary hover:text-white text-sm font-medium">Re-connect</button>
-    ) : (
-      <button className="text-stone-text hover:text-white text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">Manage</button>
-    )}
-  </div>
-);
 
 export default Settings;
