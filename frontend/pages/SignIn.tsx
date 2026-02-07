@@ -13,6 +13,7 @@ const SignIn: React.FC = () => {
   const [lastName, setLastName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,13 +107,22 @@ const SignIn: React.FC = () => {
           <div className="relative flex items-center group">
             <span className="absolute left-6 text-gray-400 dark:text-gray-500 material-symbols-outlined transition-colors group-focus-within:text-primary">lock</span>
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full h-16 bg-white dark:bg-surface-dark border-none rounded-full py-4 pl-14 pr-6 text-lg text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-primary/20 transition-all shadow-sm"
+              className="w-full h-16 bg-white dark:bg-surface-dark border-none rounded-full py-4 pl-14 pr-14 text-lg text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-primary/20 transition-all shadow-sm"
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-6 text-gray-400 dark:text-gray-500 hover:text-primary transition-colors"
+            >
+              <span className="material-symbols-outlined">
+                {showPassword ? 'visibility_off' : 'visibility'}
+              </span>
+            </button>
           </div>
 
           <button

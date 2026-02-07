@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Fincurio.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+08a2b3677bd356cdcb4496568a52020cb11fb98e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ec100d1477ef601d22b435164a4da9f5a00648c1")]
 [assembly: System.Reflection.AssemblyProductAttribute("Fincurio.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Fincurio.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
