@@ -1,88 +1,319 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import Navbar from '../components/Navbar';
 
 const Landing: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="flex flex-col w-full overflow-x-hidden">
-      <Navbar />
-      <main className="flex-1 flex flex-col pt-20">
-        {/* Hero Section */}
-        <section className="relative flex flex-col items-center justify-center min-h-[90vh] px-4 py-20 bg-background-light dark:bg-background-dark overflow-hidden">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/20 rounded-full blur-[120px] pointer-events-none opacity-40"></div>
-          
-          <div className="relative z-10 flex flex-col items-center text-center max-w-4xl mx-auto space-y-8 animate-fade-in-up">
-            <span className="inline-block py-1 px-3 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-widest mb-4 border border-primary/20">
-              Editorial Finance
-            </span>
-            <h1 className="font-serif text-6xl md:text-8xl lg:text-9xl font-medium leading-[0.9] tracking-tight text-slate-900 dark:text-white">
-              Money,<br/><span className="italic text-stone-400 dark:text-stone-500">reflected.</span>
+    <div className="w-full min-h-screen bg-background-light dark:bg-background-dark overflow-x-hidden">
+      {/* Hero Section */}
+      <section className="relative min-h-screen flex flex-col items-center justify-center px-6 py-20 overflow-hidden">
+        {/* Ambient Background Gradients */}
+        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-gradient-to-br from-primary/10 via-primary/5 to-transparent rounded-full blur-[150px] pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-to-tr from-[#280905]/20 to-transparent rounded-full blur-[120px] pointer-events-none"></div>
+
+        {/* Navigation */}
+        <nav className="absolute top-0 left-0 right-0 z-50 px-6 md:px-12 py-8">
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
+            <div className="flex items-center gap-3 text-primary">
+              <span className="material-symbols-outlined text-3xl">savings</span>
+              <span className="text-xl font-medium tracking-wide text-gray-900 dark:text-gray-100">Fincurio</span>
+            </div>
+            <button
+              onClick={() => navigate('/signin')}
+              className="px-6 py-2.5 rounded-full border border-primary/30 text-primary hover:bg-primary hover:text-white transition-all duration-300 text-sm font-medium tracking-wide"
+            >
+              Sign In
+            </button>
+          </div>
+        </nav>
+
+        {/* Hero Content */}
+        <div className="relative z-10 max-w-5xl mx-auto text-center space-y-12">
+          <div className="space-y-6 animate-fade-in-up">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
+              <span className="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
+              <span className="text-xs font-medium tracking-widest uppercase text-primary">Financial Reflection</span>
+            </div>
+
+            <h1 className="font-serif text-6xl md:text-7xl lg:text-8xl font-normal leading-[1.1] tracking-tight text-gray-900 dark:text-white">
+              Your money,<br />
+              <span className="italic text-primary">reimagined</span>
             </h1>
-            <p className="text-lg md:text-xl font-light leading-relaxed text-stone-600 dark:text-stone-text max-w-2xl mt-6">
-              Fincurio helps you cultivate a practice of intentional financial living. 
-              Move beyond spreadsheets and embrace a narrative of wealth.
+
+            <p className="text-xl md:text-2xl font-light leading-relaxed text-gray-600 dark:text-stone-text max-w-3xl mx-auto">
+              A sanctuary for intentional financial living. Beyond budgets, beyond tracking—discover a practice of clarity and purpose.
             </p>
-            <div className="pt-8">
-              <button 
-                onClick={() => navigate('/signin')}
-                className="flex items-center justify-center rounded-full h-14 px-10 bg-primary text-white text-base font-bold tracking-wide hover:bg-red-700 hover:scale-105 transition-all shadow-lg shadow-primary/30"
-              >
-                Begin Reflection
-              </button>
-              <p className="mt-4 text-xs text-stone-500 uppercase tracking-widest">30 Day Complimentary Access</p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8">
+            <button
+              onClick={() => navigate('/signin')}
+              className="group flex items-center gap-2 px-8 py-4 rounded-full bg-primary text-white text-base font-medium tracking-wide hover:bg-[#b0132e] shadow-lg shadow-primary/30 transition-all duration-300 hover:scale-105"
+            >
+              <span>Begin Your Reflection</span>
+              <span className="material-symbols-outlined text-lg transition-transform duration-300 group-hover:translate-x-1">arrow_forward</span>
+            </button>
+            <button
+              onClick={() => document.getElementById('philosophy')?.scrollIntoView({ behavior: 'smooth' })}
+              className="px-8 py-4 rounded-full border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 text-base font-medium tracking-wide hover:border-primary hover:text-primary transition-all duration-300"
+            >
+              Learn More
+            </button>
+          </div>
+
+          <p className="text-xs text-gray-400 uppercase tracking-widest pt-4">
+            No credit card required · Start reflecting today
+          </p>
+        </div>
+
+        {/* Scroll Indicator */}
+        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 animate-bounce">
+          <div className="w-6 h-10 rounded-full border-2 border-gray-300 dark:border-gray-700 flex items-start justify-center p-2">
+            <div className="w-1 h-2 bg-primary rounded-full animate-pulse"></div>
+          </div>
+        </div>
+      </section>
+
+      {/* Philosophy Section */}
+      <section id="philosophy" className="relative py-32 px-6 bg-white dark:bg-[#1a0d0f] border-t border-gray-200 dark:border-gray-800">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-20">
+            <h2 className="font-serif text-5xl md:text-6xl font-normal text-gray-900 dark:text-white mb-6">
+              A different approach
+            </h2>
+            <div className="w-24 h-1 bg-primary mx-auto rounded-full"></div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8">
+            {/* Card 1 */}
+            <div className="group relative">
+              <div className="absolute -inset-1 bg-gradient-to-br from-primary/20 to-transparent rounded-2xl blur opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="relative h-full p-8 bg-white dark:bg-surface-dark rounded-2xl border border-gray-200 dark:border-gray-800 hover:border-primary/30 transition-all duration-300">
+                <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-6">
+                  <span className="material-symbols-outlined text-3xl">auto_stories</span>
+                </div>
+                <h3 className="font-serif text-2xl text-gray-900 dark:text-white mb-4">Editorial Design</h3>
+                <p className="text-gray-600 dark:text-stone-text leading-relaxed font-light">
+                  Finance deserves better than spreadsheets. Experience your money through the lens of thoughtful design and narrative clarity.
+                </p>
+              </div>
+            </div>
+
+            {/* Card 2 */}
+            <div className="group relative">
+              <div className="absolute -inset-1 bg-gradient-to-br from-primary/20 to-transparent rounded-2xl blur opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="relative h-full p-8 bg-white dark:bg-surface-dark rounded-2xl border border-gray-200 dark:border-gray-800 hover:border-primary/30 transition-all duration-300">
+                <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-6">
+                  <span className="material-symbols-outlined text-3xl">psychiatry</span>
+                </div>
+                <h3 className="font-serif text-2xl text-gray-900 dark:text-white mb-4">Intentional Living</h3>
+                <p className="text-gray-600 dark:text-stone-text leading-relaxed font-light">
+                  Move beyond anxiety-inducing notifications. Cultivate a calm, reflective practice that aligns spending with values.
+                </p>
+              </div>
+            </div>
+
+            {/* Card 3 */}
+            <div className="group relative">
+              <div className="absolute -inset-1 bg-gradient-to-br from-primary/20 to-transparent rounded-2xl blur opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="relative h-full p-8 bg-white dark:bg-surface-dark rounded-2xl border border-gray-200 dark:border-gray-800 hover:border-primary/30 transition-all duration-300">
+                <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-6">
+                  <span className="material-symbols-outlined text-3xl">local_florist</span>
+                </div>
+                <h3 className="font-serif text-2xl text-gray-900 dark:text-white mb-4">Gentle Insights</h3>
+                <p className="text-gray-600 dark:text-stone-text leading-relaxed font-light">
+                  Discover patterns without overwhelm. Our soft-focus approach reveals the shape of your financial life with grace.
+                </p>
+              </div>
             </div>
           </div>
+        </div>
+      </section>
 
-          <div className="mt-20 w-full max-w-5xl mx-auto rounded-xl overflow-hidden shadow-2xl border border-[#38292b]/20 opacity-90">
-            <div className="aspect-[21/9] bg-cover bg-center" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBLY6GVtZWomscqk-cS3RJhMqqdAlMi_3NXpog1l9ez1iDBuuQY1EVjrWyx_wRM2yMO51O4nyUqYSAWdV1GgX7obC5sFymVEQSTSrvaL2RZNLQT1-1JzrSB93n45MAK8KyctWfPtolp5e0Os02RJNQfuRRUzDWMfSx0Yi5bO7cHn-j-jFEClODeIh0HgIXkovipjcHX5i6mHjOwMdtHJnbomzh238j2kaP3lg5D7cgXfMMwt_KtaAmGOUvErPz2krGFvAQ8brggmgkl')" }}></div>
-          </div>
-        </section>
-
-        {/* Philosophy Sections */}
-        <section id="awareness" className="py-32 px-6 md:px-12 lg:px-20 bg-white dark:bg-[#1f1012] border-t border-[#38292b]/10">
-          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div className="flex flex-col gap-6 order-2 lg:order-1">
-              <div className="size-12 rounded-full bg-surface-dark flex items-center justify-center text-primary mb-4 border border-[#38292b]">
-                <span className="material-symbols-outlined">visibility</span>
+      {/* Features Section */}
+      <section className="relative py-32 px-6 bg-background-light dark:bg-background-dark border-t border-gray-200 dark:border-gray-800">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+            {/* Feature 1 */}
+            <div className="space-y-6">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium tracking-widest uppercase">
+                Journal
               </div>
-              <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl text-slate-900 dark:text-white leading-tight">
-                Awareness without<br/>the noise.
+              <h2 className="font-serif text-4xl md:text-5xl text-gray-900 dark:text-white leading-tight">
+                Your financial journal, refined
               </h2>
               <div className="w-16 h-1 bg-primary rounded-full"></div>
-              <p className="text-lg md:text-xl text-stone-600 dark:text-stone-text leading-relaxed font-light max-w-md">
-                Understand where your resources flow without the anxiety of minute-by-minute tracking. We utilize soft focus metrics to give you the shape of your spending, blurring the lines between raw data and intuition.
+              <p className="text-lg text-gray-600 dark:text-stone-text leading-relaxed font-light">
+                Record transactions with the care of a diary entry. Each moment of spending becomes an opportunity for reflection, not judgment.
               </p>
+              <ul className="space-y-4 pt-4">
+                {['Merchant autocomplete', 'Custom categories', 'Thoughtful timestamps', 'Personal notes'].map((feature, i) => (
+                  <li key={i} className="flex items-center gap-3 text-gray-600 dark:text-stone-text">
+                    <span className="material-symbols-outlined text-primary text-xl">check_circle</span>
+                    <span>{feature}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <div className="order-1 lg:order-2 relative group">
-              <div className="absolute -inset-1 bg-gradient-to-r from-primary to-orange-900 rounded-lg blur opacity-25"></div>
-              <div className="relative w-full aspect-[4/5] md:aspect-square bg-surface-dark rounded-lg overflow-hidden border border-[#38292b]">
-                <div className="absolute inset-0 bg-cover bg-center opacity-80 mix-blend-overlay" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBQOysV5LPTCPge9NIv0qEW42PFg6koelh4c8L7zAoxcFpoAgsPG5EqlG3gITsxRP46fopjiq-_rRj3RSedarloGLDWpHi32pfbN1HCcRY-bKryApTxKPqVd4wkL-S90SefXCw3KH1lzcufbxFkPslIvF4EsfRpNbPeXrdog01sqiu_80mm6sjL2jdFu3brP0UMFyCojoNClgZeNkKTC1Qq_IgxGCzYzOw5j6n1C4OIMDdvjqapyNfHYxq_FkM3HGddabz3xrxJqB1x')" }}></div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="bg-black/40 backdrop-blur-md p-8 rounded-full border border-white/10 text-center">
-                    <p className="text-xs font-mono uppercase tracking-widest text-white/70 mb-1">Monthly Flow</p>
-                    <p className="text-4xl font-serif text-white italic">Healthy</p>
+
+            <div className="relative group">
+              <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 to-orange-900/20 rounded-3xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-500"></div>
+              <div className="relative aspect-[4/3] bg-white dark:bg-surface-dark rounded-2xl border border-gray-200 dark:border-gray-800 shadow-2xl overflow-hidden">
+                <div className="p-8 space-y-4">
+                  <div className="flex items-center justify-between pb-4 border-b border-gray-200 dark:border-gray-700">
+                    <span className="font-serif text-2xl text-gray-900 dark:text-white">Recent Entries</span>
+                    <span className="material-symbols-outlined text-primary">edit_note</span>
                   </div>
+                  {[
+                    { merchant: 'Whole Foods', category: 'Nourishment', amount: '-$127.40', icon: 'restaurant' },
+                    { merchant: 'Apple', category: 'Tech', amount: '-$2,399.00', icon: 'laptop_mac' },
+                    { merchant: 'Monthly Salary', category: 'Income', amount: '+$5,800.00', icon: 'payments' },
+                  ].map((transaction, i) => (
+                    <div key={i} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-[#1a0d0f] rounded-xl">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                          <span className="material-symbols-outlined text-primary text-sm">{transaction.icon}</span>
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-900 dark:text-white">{transaction.merchant}</p>
+                          <p className="text-xs text-gray-500">{transaction.category}</p>
+                        </div>
+                      </div>
+                      <span className={`font-medium ${transaction.amount.startsWith('+') ? 'text-green-600' : 'text-gray-900 dark:text-white'}`}>
+                        {transaction.amount}
+                      </span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
           </div>
-        </section>
-      </main>
-      <footer className="border-t border-[#38292b]/30 bg-background-light dark:bg-background-dark py-12 px-6">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-stone-500 text-xl">diamond</span>
-            <span className="text-stone-500 font-bold tracking-tight">Fincurio</span>
+
+          {/* Feature 2 */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center mt-32">
+            <div className="order-2 lg:order-1 relative group">
+              <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 to-orange-900/20 rounded-3xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-500"></div>
+              <div className="relative aspect-[4/3] bg-white dark:bg-surface-dark rounded-2xl border border-gray-200 dark:border-gray-800 shadow-2xl overflow-hidden p-8">
+                <div className="space-y-6">
+                  <div className="text-center space-y-2">
+                    <h3 className="font-serif text-3xl text-gray-900 dark:text-white">October Reflection</h3>
+                    <p className="text-sm text-gray-500">Your month in context</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-4 bg-gradient-to-br from-green-500/10 to-transparent rounded-xl border border-green-500/20">
+                      <p className="text-xs text-gray-500 mb-1">Income</p>
+                      <p className="text-2xl font-serif text-gray-900 dark:text-white">$5,800</p>
+                    </div>
+                    <div className="p-4 bg-gradient-to-br from-primary/10 to-transparent rounded-xl border border-primary/20">
+                      <p className="text-xs text-gray-500 mb-1">Spending</p>
+                      <p className="text-2xl font-serif text-gray-900 dark:text-white">$4,320</p>
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    {[
+                      { name: 'Shelter', percent: 29, color: 'bg-gray-600' },
+                      { name: 'Tech', percent: 55, color: 'bg-primary' },
+                      { name: 'Nourishment', percent: 16, color: 'bg-orange-500' },
+                    ].map((cat, i) => (
+                      <div key={i}>
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-xs text-gray-600 dark:text-gray-400">{cat.name}</span>
+                          <span className="text-xs font-medium text-gray-900 dark:text-white">{cat.percent}%</span>
+                        </div>
+                        <div className="w-full h-2 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
+                          <div className={`h-full ${cat.color} rounded-full`} style={{ width: `${cat.percent}%` }}></div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="order-1 lg:order-2 space-y-6">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium tracking-widest uppercase">
+                Insights
+              </div>
+              <h2 className="font-serif text-4xl md:text-5xl text-gray-900 dark:text-white leading-tight">
+                Monthly reflections, beautifully rendered
+              </h2>
+              <div className="w-16 h-1 bg-primary rounded-full"></div>
+              <p className="text-lg text-gray-600 dark:text-stone-text leading-relaxed font-light">
+                Understand your patterns through elegant visualizations. See the narrative of your spending emerge naturally, without spreadsheets or dashboards.
+              </p>
+            </div>
           </div>
-          <div className="flex gap-8 text-stone-500 text-sm">
-            <a className="hover:text-primary transition-colors" href="#">Manifesto</a>
-            <a className="hover:text-primary transition-colors" href="#">Privacy</a>
-            <a className="hover:text-primary transition-colors" href="#">Terms</a>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="relative py-32 px-6 bg-gradient-to-br from-[#280905] via-[#3d1010] to-[#280905] overflow-hidden">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMiI+PHBhdGggZD0iTTM2IDM0djItaDJ2LTJoLTJ6bTAgNGgtMnYyaDJ2LTJ6bTQtNHYyaDJ2LTJoLTJ6bTAgNGgtMnYyaDJ2LTJ6bTQtNHYyaDJ2LTJoLTJ6bTAgNGgtMnYyaDJ2LTJ6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-50"></div>
+        <div className="relative z-10 max-w-4xl mx-auto text-center space-y-8">
+          <h2 className="font-serif text-5xl md:text-6xl font-normal text-white leading-tight">
+            Ready to begin?
+          </h2>
+          <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+            Join a community of thoughtful individuals cultivating a more intentional relationship with money.
+          </p>
+          <button
+            onClick={() => navigate('/signin')}
+            className="group inline-flex items-center gap-2 px-10 py-5 rounded-full bg-white text-[#280905] text-lg font-medium tracking-wide hover:bg-gray-100 shadow-2xl transition-all duration-300 hover:scale-105"
+          >
+            <span>Start Your Journey</span>
+            <span className="material-symbols-outlined transition-transform duration-300 group-hover:translate-x-1">arrow_forward</span>
+          </button>
+          <p className="text-sm text-gray-400 pt-4">
+            Free to start · No credit card required
+          </p>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="relative py-16 px-6 bg-[#0d0607] border-t border-gray-800">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+            <div className="col-span-1 md:col-span-2">
+              <div className="flex items-center gap-3 text-primary mb-4">
+                <span className="material-symbols-outlined text-3xl">savings</span>
+                <span className="text-xl font-medium tracking-wide text-white">Fincurio</span>
+              </div>
+              <p className="text-gray-400 text-sm leading-relaxed max-w-md">
+                A sanctuary for intentional financial living. Beyond budgets, beyond tracking—discover a practice of clarity and purpose.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="text-white font-medium mb-4">Product</h3>
+              <ul className="space-y-2 text-sm">
+                <li><a href="#" className="text-gray-400 hover:text-primary transition-colors">Features</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-primary transition-colors">Philosophy</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-primary transition-colors">Pricing</a></li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="text-white font-medium mb-4">Company</h3>
+              <ul className="space-y-2 text-sm">
+                <li><a href="#" className="text-gray-400 hover:text-primary transition-colors">Manifesto</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-primary transition-colors">Privacy</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-primary transition-colors">Terms</a></li>
+              </ul>
+            </div>
           </div>
-          <div className="text-stone-600 dark:text-stone-600 text-xs">© 2024 Fincurio Inc. Wealth is a mindset.</div>
+
+          <div className="pt-8 border-t border-gray-800 flex flex-col md:flex-row items-center justify-between gap-4">
+            <p className="text-gray-500 text-xs">© 2024 Fincurio Inc. Wealth is a mindset.</p>
+            <div className="flex items-center gap-6">
+              <a href="#" className="text-gray-500 hover:text-primary transition-colors">
+                <span className="material-symbols-outlined text-xl">language</span>
+              </a>
+              <a href="#" className="text-gray-500 hover:text-primary transition-colors">
+                <span className="material-symbols-outlined text-xl">mail</span>
+              </a>
+            </div>
+          </div>
         </div>
       </footer>
     </div>
