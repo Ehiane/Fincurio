@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../src/hooks/useAuth';
 import { userApi } from '../src/api/user.api';
-import { authApi } from '../src/api/auth.api';
 import { merchantsApi, Merchant } from '../src/api/merchants.api';
 import { categoriesApi, Category, CreateCategoryRequest } from '../src/api/categories.api';
 import { formatCurrency, parseCurrency } from '../src/utils/currencyFormatter';
@@ -11,10 +10,6 @@ const Settings: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-
-  // Email verification state
-  const [sendingVerification, setSendingVerification] = useState(false);
-  const [verificationMessage, setVerificationMessage] = useState('');
 
   // Profile state
   const [firstName, setFirstName] = useState('');
@@ -152,27 +147,6 @@ const Settings: React.FC = () => {
       setCategories(catData);
     } catch (err: any) {
       console.error('Failed to fetch merchants/categories', err);
-    }
-  };
-
-  const handleSendVerificationEmail = async () => {
-    if (!user?.email) return;
-
-    setSendingVerification(true);
-    setVerificationMessage('');
-
-    try {
-      const response = await authApi.resendVerification({ email: user.email });
-      setVerificationMessage(response.message);
-
-      // Clear message after 5 seconds
-      setTimeout(() => {
-        setVerificationMessage('');
-      }, 5000);
-    } catch (err: any) {
-      setVerificationMessage(err.response?.data?.message || 'Failed to send verification email. Please try again.');
-    } finally {
-      setSendingVerification(false);
     }
   };
 
@@ -363,9 +337,9 @@ const Settings: React.FC = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-8 md:py-12 pb-24 animate-in fade-in duration-700">
-      <section className="mb-12 md:mb-20">
+      <section className="mb-12 md:mb-20 text-center md:text-left">
         <h2 className="font-serif text-3xl sm:text-4xl md:text-4xl lg:text-4xl font-light tracking-tight mb-4">Account Settings</h2>
-        <p className="text-base sm:text-base md:text-lg text-stone-text font-light max-w-md">
+        <p className="text-base sm:text-base md:text-lg text-stone-text font-light max-w-md mx-auto md:mx-0">
           Manage your personal details and preferences.
         </p>
       </section>
@@ -383,11 +357,11 @@ const Settings: React.FC = () => {
       )}
 
       {/* Profile Section */}
-      <section className="mb-24">
+      <section className="mb-24 text-center md:text-left">
         <h3 className="font-serif text-2xl font-light text-secondary mb-8 border-b border-stone-300 pb-2">Profile</h3>
         <div className="mb-6">
           <div className="text-sm text-stone-text mb-1">Email</div>
-          <div className="flex items-center gap-4 flex-wrap">
+          <div className="flex items-center gap-4 flex-wrap justify-center md:justify-start">
             <div className="text-lg text-secondary">{user?.email}</div>
             {!user?.isEmailVerified && (
               <span className="px-3 py-1 bg-orange-100 text-orange-700 text-xs rounded-full font-medium">
@@ -400,27 +374,6 @@ const Settings: React.FC = () => {
                 Verified
               </span>
             )}
-          </div>
-        </div>
-
-        {/* Email Verification Button - TEMPORARY FOR TESTING */}
-        <div className="mb-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <div className="flex items-start justify-between gap-4 flex-wrap">
-            <div className="flex-1">
-              <p className="text-sm font-medium text-blue-900 mb-1">Email Verification (Testing)</p>
-              <p className="text-xs text-blue-700">Send a verification email to test the email flow</p>
-              {verificationMessage && (
-                <p className="text-xs text-blue-800 mt-2 font-medium">{verificationMessage}</p>
-              )}
-            </div>
-            <button
-              type="button"
-              onClick={handleSendVerificationEmail}
-              disabled={sendingVerification}
-              className="px-4 py-2 bg-primary hover:bg-[#c9431a] disabled:bg-gray-400 disabled:cursor-not-allowed text-white text-sm font-medium rounded-lg transition-all shadow-sm"
-            >
-              {sendingVerification ? 'Sending...' : 'Send Verification Email'}
-            </button>
           </div>
         </div>
 
@@ -471,7 +424,7 @@ const Settings: React.FC = () => {
       </section>
 
       {/* Preferences Section */}
-      <section className="mb-24">
+      <section className="mb-24 text-center md:text-left">
         <h3 className="font-serif text-2xl font-light text-secondary mb-8 border-b border-stone-300 pb-2">Preferences</h3>
         <form onSubmit={handleUpdatePreferences} className="space-y-6">
           <div>
@@ -540,7 +493,7 @@ const Settings: React.FC = () => {
       </section>
 
       {/* Merchants Section */}
-      <section className="mb-24">
+      <section className="mb-24 text-center md:text-left">
         <h3 className="font-serif text-2xl font-light text-secondary mb-8 border-b border-stone-300 pb-2">Saved Merchants</h3>
         <p className="text-sm text-stone-text mb-6">
           Manage your frequently used merchants. These will appear as suggestions when adding transactions.
@@ -588,7 +541,7 @@ const Settings: React.FC = () => {
       </section>
 
       {/* Custom Categories Section */}
-      <section className="mb-24">
+      <section className="mb-24 text-center md:text-left">
         <h3 className="font-serif text-2xl font-light text-secondary mb-8 border-b border-stone-300 pb-2">Custom Categories</h3>
         <p className="text-sm text-stone-text mb-6">
           Create custom categories for your transactions. Global categories cannot be deleted.
@@ -768,11 +721,11 @@ const Settings: React.FC = () => {
       </section>
 
       {/* Logout Section */}
-      <section className="mb-24">
+      <section className="mb-24 text-center md:text-left">
         <h3 className="font-serif text-2xl font-light text-secondary mb-8 border-b border-stone-300 pb-2">Account</h3>
         <button
           onClick={handleLogout}
-          className="px-8 py-3 rounded-full bg-secondary text-white font-medium hover:bg-red-700 transition-all"
+          className="px-8 py-3 rounded-full bg-secondary text-white font-medium hover:bg-red-700 transition-all mx-auto md:mx-0 block md:inline-block"
         >
           Sign Out
         </button>
