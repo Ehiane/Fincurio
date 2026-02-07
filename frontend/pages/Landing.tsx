@@ -6,7 +6,7 @@ const Landing: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="w-full min-h-screen bg-background-light dark:bg-background-dark overflow-x-hidden">
+    <div className="w-full min-h-screen bg-stone-50 dark:bg-stone-900 overflow-x-hidden">
       {/* Hero Section */}
       <section className="relative min-h-screen flex flex-col items-center justify-center px-6 py-16 overflow-hidden">
         {/* Ambient Background Gradients */}
@@ -130,7 +130,7 @@ const Landing: React.FC = () => {
       </section>
 
       {/* Features Section */}
-      <section className="relative py-20 px-6 bg-background-light dark:bg-background-dark border-t border-gray-200 dark:border-gray-800">
+      <section className="relative py-20 px-6 bg-stone-50 dark:bg-stone-900 border-t border-gray-200 dark:border-gray-800">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             {/* Feature 1 */}

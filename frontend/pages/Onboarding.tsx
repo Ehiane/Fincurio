@@ -204,7 +204,7 @@ const Onboarding: React.FC = () => {
   };
 
   return (
-    <div className="w-full min-h-screen bg-background-light dark:bg-background-dark flex flex-col transition-colors duration-300 relative overflow-hidden">
+    <div className="w-full min-h-screen bg-stone-50 dark:bg-stone-900 flex flex-col transition-colors duration-300 relative overflow-hidden">
       <header className="w-full px-6 py-6 md:px-12 md:py-8 flex justify-between items-center z-10">
         <Logo className="h-10 md:h-12" showText={true} />
 
