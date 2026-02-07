@@ -44,8 +44,8 @@ const Dashboard: React.FC = () => {
   if (error) {
     return (
       <div className="max-w-4xl mx-auto px-6 py-12 md:px-12">
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl p-6 text-center">
-          <p className="text-red-800 dark:text-red-200">{error}</p>
+        <div className="bg-red-50 bg-red-50 border border-red-200 border-red-200 rounded-2xl p-6 text-center">
+          <p className="text-red-800 text-red-800">{error}</p>
           <button
             onClick={fetchDashboard}
             className="mt-4 px-6 py-2 bg-primary text-white rounded-full hover:bg-red-700 transition-colors"

@@ -39,7 +39,7 @@ const Landing: React.FC = () => {
               <span className="italic text-primary">reimagined</span>
             </h1>
 
-            <p className="text-base sm:text-lg md:text-lg lg:text-xl font-light leading-relaxed text-gray-600 dark:text-stone-text max-w-3xl mx-auto px-4">
+            <p className="text-base sm:text-lg md:text-lg lg:text-xl font-light leading-relaxed text-gray-600 text-stone-text max-w-3xl mx-auto px-4">
               A sanctuary for intentional financial living. Beyond budgets, beyond tracking—discover a practice of clarity and purpose.
             </p>
           </div>
@@ -54,7 +54,7 @@ const Landing: React.FC = () => {
             </button>
             <button
               onClick={() => document.getElementById('philosophy')?.scrollIntoView({ behavior: 'smooth' })}
-              className="px-8 py-4 rounded-full border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 text-base font-medium tracking-wide hover:border-primary hover:text-primary transition-all duration-300"
+              className="px-8 py-4 rounded-full border border-gray-300 dark:border-gray-700 text-gray-700 text-gray-300 text-base font-medium tracking-wide hover:border-primary hover:text-primary transition-all duration-300"
             >
               Learn More
             </button>
@@ -87,12 +87,12 @@ const Landing: React.FC = () => {
             {/* Card 1 */}
             <div className="group relative">
               <div className="absolute -inset-1 bg-gradient-to-br from-primary/20 to-transparent rounded-2xl blur opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div className="relative h-full p-8 bg-white dark:bg-surface-dark rounded-2xl border border-gray-200 dark:border-gray-800 hover:border-primary/30 transition-all duration-300">
+              <div className="relative h-full p-8 bg-white bg-surface-dark rounded-2xl border border-gray-200 border-gray-200 hover:border-primary/30 transition-all duration-300">
                 <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-6">
                   <span className="material-symbols-outlined text-3xl">auto_stories</span>
                 </div>
                 <h3 className="font-serif text-2xl text-gray-900 text-secondary mb-4">Editorial Design</h3>
-                <p className="text-gray-600 dark:text-stone-text leading-relaxed font-light">
+                <p className="text-gray-600 text-stone-text leading-relaxed font-light">
                   Finance deserves better than spreadsheets. Experience your money through the lens of thoughtful design and narrative clarity.
                 </p>
               </div>
@@ -101,12 +101,12 @@ const Landing: React.FC = () => {
             {/* Card 2 */}
             <div className="group relative">
               <div className="absolute -inset-1 bg-gradient-to-br from-primary/20 to-transparent rounded-2xl blur opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div className="relative h-full p-8 bg-white dark:bg-surface-dark rounded-2xl border border-gray-200 dark:border-gray-800 hover:border-primary/30 transition-all duration-300">
+              <div className="relative h-full p-8 bg-white bg-surface-dark rounded-2xl border border-gray-200 border-gray-200 hover:border-primary/30 transition-all duration-300">
                 <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-6">
                   <span className="material-symbols-outlined text-3xl">psychiatry</span>
                 </div>
                 <h3 className="font-serif text-2xl text-gray-900 text-secondary mb-4">Intentional Living</h3>
-                <p className="text-gray-600 dark:text-stone-text leading-relaxed font-light">
+                <p className="text-gray-600 text-stone-text leading-relaxed font-light">
                   Move beyond anxiety-inducing notifications. Cultivate a calm, reflective practice that aligns spending with values.
                 </p>
               </div>
@@ -115,12 +115,12 @@ const Landing: React.FC = () => {
             {/* Card 3 */}
             <div className="group relative">
               <div className="absolute -inset-1 bg-gradient-to-br from-primary/20 to-transparent rounded-2xl blur opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div className="relative h-full p-8 bg-white dark:bg-surface-dark rounded-2xl border border-gray-200 dark:border-gray-800 hover:border-primary/30 transition-all duration-300">
+              <div className="relative h-full p-8 bg-white bg-surface-dark rounded-2xl border border-gray-200 border-gray-200 hover:border-primary/30 transition-all duration-300">
                 <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-6">
                   <span className="material-symbols-outlined text-3xl">local_florist</span>
                 </div>
                 <h3 className="font-serif text-2xl text-gray-900 text-secondary mb-4">Gentle Insights</h3>
-                <p className="text-gray-600 dark:text-stone-text leading-relaxed font-light">
+                <p className="text-gray-600 text-stone-text leading-relaxed font-light">
                   Discover patterns without overwhelm. Our soft-focus approach reveals the shape of your financial life with grace.
                 </p>
               </div>
@@ -130,7 +130,7 @@ const Landing: React.FC = () => {
       </section>
 
       {/* Features Section */}
-      <section className="relative py-20 px-6 bg-background-light border-t border-gray-200 dark:border-gray-800">
+      <section className="relative py-20 px-6 bg-background-light border-t border-gray-200 border-gray-200">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             {/* Feature 1 */}
@@ -142,12 +142,12 @@ const Landing: React.FC = () => {
                 Your financial journal, refined
               </h2>
               <div className="w-16 h-1 bg-primary rounded-full"></div>
-              <p className="text-lg text-gray-600 dark:text-stone-text leading-relaxed font-light">
+              <p className="text-lg text-gray-600 text-stone-text leading-relaxed font-light">
                 Record transactions with the care of a diary entry. Each moment of spending becomes an opportunity for reflection, not judgment.
               </p>
               <ul className="space-y-4 pt-4">
                 {['Merchant autocomplete', 'Custom categories', 'Thoughtful timestamps', 'Personal notes'].map((feature, i) => (
-                  <li key={i} className="flex items-center gap-3 text-gray-600 dark:text-stone-text">
+                  <li key={i} className="flex items-center gap-3 text-gray-600 text-stone-text">
                     <span className="material-symbols-outlined text-primary text-xl">check_circle</span>
                     <span>{feature}</span>
                   </li>
@@ -157,7 +157,7 @@ const Landing: React.FC = () => {
 
             <div className="relative group">
               <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 to-orange-900/20 rounded-3xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-500"></div>
-              <div className="relative aspect-[4/3] bg-white dark:bg-surface-dark rounded-2xl border border-gray-200 dark:border-gray-800 shadow-2xl overflow-hidden">
+              <div className="relative aspect-[4/3] bg-white bg-surface-dark rounded-2xl border border-gray-200 border-gray-200 shadow-2xl overflow-hidden">
                 <div className="p-8 space-y-4">
                   <div className="flex items-center justify-between pb-4 border-b border-gray-200 dark:border-gray-700">
                     <span className="font-serif text-2xl text-gray-900 text-secondary">Recent Entries</span>
@@ -192,7 +192,7 @@ const Landing: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center mt-20">
             <div className="order-2 lg:order-1 relative group">
               <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 to-orange-900/20 rounded-3xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-500"></div>
-              <div className="relative aspect-[4/3] bg-white dark:bg-surface-dark rounded-2xl border border-gray-200 dark:border-gray-800 shadow-2xl overflow-hidden p-8">
+              <div className="relative aspect-[4/3] bg-white bg-surface-dark rounded-2xl border border-gray-200 border-gray-200 shadow-2xl overflow-hidden p-8">
                 <div className="space-y-6">
                   <div className="text-center space-y-2">
                     <h3 className="font-serif text-3xl text-gray-900 text-secondary">October Reflection</h3>
@@ -216,7 +216,7 @@ const Landing: React.FC = () => {
                     ].map((cat, i) => (
                       <div key={i}>
                         <div className="flex items-center justify-between mb-1">
-                          <span className="text-xs text-gray-600 dark:text-gray-400">{cat.name}</span>
+                          <span className="text-xs text-gray-600 text-gray-400">{cat.name}</span>
                           <span className="text-xs font-medium text-gray-900 text-secondary">{cat.percent}%</span>
                         </div>
                         <div className="w-full h-2 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
@@ -237,7 +237,7 @@ const Landing: React.FC = () => {
                 Monthly reflections, beautifully rendered
               </h2>
               <div className="w-16 h-1 bg-primary rounded-full"></div>
-              <p className="text-lg text-gray-600 dark:text-stone-text leading-relaxed font-light">
+              <p className="text-lg text-gray-600 text-stone-text leading-relaxed font-light">
                 Understand your patterns through elegant visualizations. See the narrative of your spending emerge naturally, without spreadsheets or dashboards.
               </p>
             </div>

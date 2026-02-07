@@ -78,20 +78,20 @@ const SignIn: React.FC = () => {
           <h1 className="font-serif text-3xl sm:text-4xl md:text-4xl lg:text-5xl font-normal leading-tight tracking-tight text-gray-900 text-secondary">
             {isResetPassword ? 'Reset your password.' : isSignUp ? 'Begin your financial reflection.' : 'Welcome back to your reflection.'}
           </h1>
-          <p className="text-gray-500 dark:text-stone-text text-base sm:text-base md:text-lg font-light">
+          <p className="text-gray-500 text-stone-text text-base sm:text-base md:text-lg font-light">
             {isResetPassword ? 'Enter your email and new password.' : 'Clarity in finance begins here.'}
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="w-full max-w-md flex flex-col gap-8">
           {error && (
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl p-4 text-red-800 dark:text-red-200 text-sm">
+            <div className="bg-red-50 bg-red-50 border border-red-200 border-red-200 rounded-2xl p-4 text-red-800 text-red-800 text-sm">
               {error}
             </div>
           )}
 
           {success && (
-            <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-2xl p-4 text-green-800 dark:text-green-200 text-sm">
+            <div className="bg-green-50 bg-green-50 border border-green-200 border-green-200 rounded-2xl p-4 text-green-800 text-green-800 text-sm">
               {success}
             </div>
           )}
@@ -99,57 +99,57 @@ const SignIn: React.FC = () => {
           {isSignUp && !isResetPassword && (
             <>
               <div className="relative flex items-center group">
-                <span className="absolute left-6 text-gray-400 dark:text-gray-500 material-symbols-outlined transition-colors group-focus-within:text-primary">person</span>
+                <span className="absolute left-6 text-gray-400 text-gray-500 material-symbols-outlined transition-colors group-focus-within:text-primary">person</span>
                 <input
                   type="text"
                   required
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
                   placeholder="First name"
-                  className="w-full h-16 bg-white dark:bg-surface-dark border-none rounded-full py-4 pl-14 pr-6 text-lg text-gray-900 text-secondary placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-primary/20 transition-all shadow-sm"
+                  className="w-full h-16 bg-white bg-surface-dark border-none rounded-full py-4 pl-14 pr-6 text-lg text-gray-900 text-secondary placeholder:text-gray-400  focus:ring-2 focus:ring-primary/20 transition-all shadow-sm"
                 />
               </div>
 
               <div className="relative flex items-center group">
-                <span className="absolute left-6 text-gray-400 dark:text-gray-500 material-symbols-outlined transition-colors group-focus-within:text-primary">person</span>
+                <span className="absolute left-6 text-gray-400 text-gray-500 material-symbols-outlined transition-colors group-focus-within:text-primary">person</span>
                 <input
                   type="text"
                   required
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
                   placeholder="Last name"
-                  className="w-full h-16 bg-white dark:bg-surface-dark border-none rounded-full py-4 pl-14 pr-6 text-lg text-gray-900 text-secondary placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-primary/20 transition-all shadow-sm"
+                  className="w-full h-16 bg-white bg-surface-dark border-none rounded-full py-4 pl-14 pr-6 text-lg text-gray-900 text-secondary placeholder:text-gray-400  focus:ring-2 focus:ring-primary/20 transition-all shadow-sm"
                 />
               </div>
             </>
           )}
 
           <div className="relative flex items-center group">
-            <span className="absolute left-6 text-gray-400 dark:text-gray-500 material-symbols-outlined transition-colors group-focus-within:text-primary">mail</span>
+            <span className="absolute left-6 text-gray-400 text-gray-500 material-symbols-outlined transition-colors group-focus-within:text-primary">mail</span>
             <input
               type="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="name@example.com"
-              className="w-full h-16 bg-white dark:bg-surface-dark border-none rounded-full py-4 pl-14 pr-6 text-lg text-gray-900 text-secondary placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-primary/20 transition-all shadow-sm"
+              className="w-full h-16 bg-white bg-surface-dark border-none rounded-full py-4 pl-14 pr-6 text-lg text-gray-900 text-secondary placeholder:text-gray-400  focus:ring-2 focus:ring-primary/20 transition-all shadow-sm"
             />
           </div>
 
           <div className="relative flex items-center group">
-            <span className="absolute left-6 text-gray-400 dark:text-gray-500 material-symbols-outlined transition-colors group-focus-within:text-primary">lock</span>
+            <span className="absolute left-6 text-gray-400 text-gray-500 material-symbols-outlined transition-colors group-focus-within:text-primary">lock</span>
             <input
               type={showPassword ? "text" : "password"}
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder={isResetPassword ? "New password" : "••••••••"}
-              className="w-full h-16 bg-white dark:bg-surface-dark border-none rounded-full py-4 pl-14 pr-14 text-lg text-gray-900 text-secondary placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-primary/20 transition-all shadow-sm"
+              className="w-full h-16 bg-white bg-surface-dark border-none rounded-full py-4 pl-14 pr-14 text-lg text-gray-900 text-secondary placeholder:text-gray-400  focus:ring-2 focus:ring-primary/20 transition-all shadow-sm"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-6 text-gray-400 dark:text-gray-500 hover:text-primary transition-colors"
+              className="absolute right-6 text-gray-400 text-gray-500 hover:text-primary transition-colors"
             >
               <span className="material-symbols-outlined">
                 {showPassword ? 'visibility_off' : 'visibility'}
@@ -159,14 +159,14 @@ const SignIn: React.FC = () => {
 
           {isResetPassword && (
             <div className="relative flex items-center group">
-              <span className="absolute left-6 text-gray-400 dark:text-gray-500 material-symbols-outlined transition-colors group-focus-within:text-primary">lock</span>
+              <span className="absolute left-6 text-gray-400 text-gray-500 material-symbols-outlined transition-colors group-focus-within:text-primary">lock</span>
               <input
                 type={showPassword ? "text" : "password"}
                 required
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Confirm new password"
-                className="w-full h-16 bg-white dark:bg-surface-dark border-none rounded-full py-4 pl-14 pr-14 text-lg text-gray-900 text-secondary placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-primary/20 transition-all shadow-sm"
+                className="w-full h-16 bg-white bg-surface-dark border-none rounded-full py-4 pl-14 pr-14 text-lg text-gray-900 text-secondary placeholder:text-gray-400  focus:ring-2 focus:ring-primary/20 transition-all shadow-sm"
               />
             </div>
           )}
@@ -194,7 +194,7 @@ const SignIn: React.FC = () => {
             )}
           </button>
 
-          <div className="flex justify-center items-center gap-4 mt-8 text-sm text-gray-500 dark:text-gray-400">
+          <div className="flex justify-center items-center gap-4 mt-8 text-sm text-gray-500 text-gray-400">
             {isResetPassword ? (
               <button
                 type="button"

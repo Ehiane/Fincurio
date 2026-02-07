@@ -60,8 +60,8 @@ const Reflections: React.FC = () => {
   if (error) {
     return (
       <div className="max-w-3xl mx-auto px-4 py-8 md:px-8 md:py-16">
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl p-6 text-center">
-          <p className="text-red-800 dark:text-red-200">{error}</p>
+        <div className="bg-red-50 bg-red-50 border border-red-200 border-red-200 rounded-2xl p-6 text-center">
+          <p className="text-red-800 text-red-800">{error}</p>
           <button
             onClick={fetchMonthlyInsights}
             className="mt-4 px-6 py-2 bg-primary text-white rounded-full hover:bg-red-700 transition-colors"
@@ -82,7 +82,7 @@ const Reflections: React.FC = () => {
           <h2 className="text-4xl md:text-5xl font-light tracking-tight text-gray-900 text-secondary">
             Monthly Reflections
           </h2>
-          <p className="text-gray-500 dark:text-stone-text text-lg max-w-xl leading-relaxed">
+          <p className="text-gray-500 text-stone-text text-lg max-w-xl leading-relaxed">
             Review your spending patterns for {data.period.displayName}. Understand where your resources are flowing.
           </p>
         </div>
@@ -91,25 +91,25 @@ const Reflections: React.FC = () => {
         <div className="flex flex-wrap gap-3 relative">
           <button
             onClick={() => setShowMonthPicker(!showMonthPicker)}
-            className="flex items-center gap-2 rounded-full bg-white dark:bg-surface-dark border border-gray-200 dark:border-white/5 pl-5 pr-3 py-2 text-sm font-medium shadow-sm hover:border-primary transition-colors"
+            className="flex items-center gap-2 rounded-full bg-white bg-surface-dark border border-gray-200 dark:border-white/5 pl-5 pr-3 py-2 text-sm font-medium shadow-sm hover:border-primary transition-colors"
           >
             <span>{data.period.displayName}</span>
             <span className="material-symbols-outlined text-gray-400">keyboard_arrow_down</span>
           </button>
 
           {showMonthPicker && (
-            <div className="absolute top-12 left-0 z-10 bg-white dark:bg-surface-dark border border-gray-200 dark:border-white/10 rounded-2xl shadow-lg p-4 w-72">
+            <div className="absolute top-12 left-0 z-10 bg-white bg-surface-dark border border-gray-200 border-gray-200 rounded-2xl shadow-lg p-4 w-72">
               <div className="flex items-center justify-between mb-4">
                 <button
                   onClick={() => handleYearChange('prev')}
-                  className="p-2 hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg transition-colors"
+                  className="p-2 hover:bg-gray-100 hover:bg-gray-100 rounded-lg transition-colors"
                 >
                   <span className="material-symbols-outlined">chevron_left</span>
                 </button>
                 <span className="font-medium">{selectedYear}</span>
                 <button
                   onClick={() => handleYearChange('next')}
-                  className="p-2 hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg transition-colors"
+                  className="p-2 hover:bg-gray-100 hover:bg-gray-100 rounded-lg transition-colors"
                 >
                   <span className="material-symbols-outlined">chevron_right</span>
                 </button>
@@ -122,7 +122,7 @@ const Reflections: React.FC = () => {
                     className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                       idx + 1 === selectedMonth && selectedYear === currentDate.getFullYear()
                         ? 'bg-primary text-white'
-                        : 'hover:bg-gray-100 dark:hover:bg-white/5'
+                        : 'hover:bg-gray-100 hover:bg-gray-100'
                     }`}
                   >
                     {month.substring(0, 3)}
@@ -136,8 +136,8 @@ const Reflections: React.FC = () => {
 
       {/* Summary Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="flex flex-col gap-2 p-6 rounded-2xl bg-white dark:bg-surface-dark border border-gray-200 dark:border-white/5">
-          <span className="text-xs uppercase tracking-widest text-gray-500 dark:text-stone-text font-semibold">
+        <div className="flex flex-col gap-2 p-6 rounded-2xl bg-white bg-surface-dark border border-gray-200 dark:border-white/5">
+          <span className="text-xs uppercase tracking-widest text-gray-500 text-stone-text font-semibold">
             Income
           </span>
           <span className="font-serif text-3xl text-emerald-500">
@@ -145,8 +145,8 @@ const Reflections: React.FC = () => {
           </span>
         </div>
 
-        <div className="flex flex-col gap-2 p-6 rounded-2xl bg-white dark:bg-surface-dark border border-gray-200 dark:border-white/5">
-          <span className="text-xs uppercase tracking-widest text-gray-500 dark:text-stone-text font-semibold">
+        <div className="flex flex-col gap-2 p-6 rounded-2xl bg-white bg-surface-dark border border-gray-200 dark:border-white/5">
+          <span className="text-xs uppercase tracking-widest text-gray-500 text-stone-text font-semibold">
             Expenses
           </span>
           <span className="font-serif text-3xl text-gray-900 text-secondary">
@@ -154,8 +154,8 @@ const Reflections: React.FC = () => {
           </span>
         </div>
 
-        <div className="flex flex-col gap-2 p-6 rounded-2xl bg-white dark:bg-surface-dark border border-gray-200 dark:border-white/5">
-          <span className="text-xs uppercase tracking-widest text-gray-500 dark:text-stone-text font-semibold">
+        <div className="flex flex-col gap-2 p-6 rounded-2xl bg-white bg-surface-dark border border-gray-200 dark:border-white/5">
+          <span className="text-xs uppercase tracking-widest text-gray-500 text-stone-text font-semibold">
             Net Balance
           </span>
           <span className={`font-serif text-3xl ${
@@ -169,8 +169,8 @@ const Reflections: React.FC = () => {
       {/* Category Breakdown */}
       {data.categoryBreakdown.length > 0 ? (
         <div className="flex flex-col gap-4">
-          <div className="flex items-baseline justify-between border-b border-gray-200 dark:border-white/10 pb-4">
-            <span className="text-sm uppercase tracking-widest text-gray-500 dark:text-stone-text font-semibold">
+          <div className="flex items-baseline justify-between border-b border-gray-200 border-gray-200 pb-4">
+            <span className="text-sm uppercase tracking-widest text-gray-500 text-stone-text font-semibold">
               Category Breakdown
             </span>
           </div>
@@ -193,7 +193,7 @@ const Reflections: React.FC = () => {
       )}
 
       <div className="mt-8 flex justify-center text-center">
-        <p className="font-serif italic text-gray-400 dark:text-stone-text opacity-60 max-w-md">
+        <p className="font-serif italic text-gray-400 text-stone-text opacity-60 max-w-md">
           "Do not save what is left after spending, but spend what is left after saving."
         </p>
       </div>
@@ -208,15 +208,15 @@ const ReflectionCard: React.FC<{
   amount: number;
   percentage: number;
 }> = ({ icon, title, subtitle, amount, percentage }) => (
-  <div className="group relative flex flex-col overflow-hidden rounded-[18px] bg-white dark:bg-surface-dark p-1 shadow-sm transition-all hover:bg-white dark:hover:bg-[#32322f]">
+  <div className="group relative flex flex-col overflow-hidden rounded-[18px] bg-white bg-surface-dark p-1 shadow-sm transition-all hover:bg-white dark:hover:bg-[#32322f]">
     <div className="flex items-center justify-between p-5">
       <div className="flex items-center gap-5">
         <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-[#3d3335] text-gray-600 text-secondary group-hover:bg-primary/10 group-hover:text-primary transition-colors">
           <span className="material-symbols-outlined">{icon}</span>
         </div>
         <div className="flex flex-col">
-          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">{title}</h3>
-          <span className="text-sm text-gray-500 dark:text-stone-text">{subtitle}</span>
+          <h3 className="text-lg font-medium text-gray-900 text-gray-100">{title}</h3>
+          <span className="text-sm text-gray-500 text-stone-text">{subtitle}</span>
         </div>
       </div>
       <div className="flex flex-col items-end gap-1">

@@ -105,8 +105,8 @@ const Journal: React.FC = () => {
   if (error) {
     return (
       <div className="max-w-[1000px] mx-auto px-6 py-10 lg:px-12 lg:py-16">
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl p-6 text-center">
-          <p className="text-red-800 dark:text-red-200">{error}</p>
+        <div className="bg-red-50 bg-red-50 border border-red-200 border-red-200 rounded-2xl p-6 text-center">
+          <p className="text-red-800 text-red-800">{error}</p>
           <button
             onClick={fetchData}
             className="mt-4 px-6 py-2 bg-primary text-white rounded-full hover:bg-red-700 transition-colors"
@@ -188,7 +188,7 @@ const Journal: React.FC = () => {
 
 const DateGroup: React.FC<{ label: string }> = ({ label }) => (
   <div className="mb-4 sticky top-0 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm z-10 py-4">
-    <h3 className="text-sm font-bold uppercase tracking-widest text-gray-400 dark:text-stone-text">{label}</h3>
+    <h3 className="text-sm font-bold uppercase tracking-widest text-gray-400 text-stone-text">{label}</h3>
   </div>
 );
 
@@ -201,13 +201,13 @@ const JournalItem: React.FC<{
   const isHighValue = transaction.amount > 1000;
 
   return (
-    <div className="group relative flex flex-col sm:flex-row sm:items-center justify-between py-8 border-b border-gray-200 dark:border-white/10 hover:bg-white/40 dark:hover:bg-white/5 transition-all duration-300 rounded-lg px-2 -mx-2">
+    <div className="group relative flex flex-col sm:flex-row sm:items-center justify-between py-8 border-b border-gray-200 border-gray-200 hover:bg-white/40 hover:bg-gray-100 transition-all duration-300 rounded-lg px-2 -mx-2">
       <div className="flex items-center gap-6">
         <div
           className={`hidden sm:flex items-center justify-center size-12 rounded-full shrink-0 transition-colors ${
             isPositive
               ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400'
-              : 'bg-gray-100 dark:bg-surface-dark text-stone-text group-hover:text-primary'
+              : 'bg-gray-100 bg-surface-dark text-stone-text group-hover:text-primary'
           }`}
         >
           <span className="material-symbols-outlined">{transaction.category.icon}</span>
@@ -221,7 +221,7 @@ const JournalItem: React.FC<{
               className={`inline-flex items-center rounded-full border px-3 py-0.5 text-xs font-medium ${
                 isPositive
                   ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
-                  : 'border-gray-300 dark:border-white/20 text-gray-500 dark:text-stone-text'
+                  : 'border-gray-300 dark:border-white/20 text-gray-500 text-stone-text'
               }`}
             >
               {transaction.category.displayName}
@@ -237,7 +237,7 @@ const JournalItem: React.FC<{
             )}
           </div>
           {transaction.notes && (
-            <p className="text-sm text-gray-500 dark:text-stone-text mt-1">{transaction.notes}</p>
+            <p className="text-sm text-gray-500 text-stone-text mt-1">{transaction.notes}</p>
           )}
         </div>
       </div>
@@ -327,15 +327,15 @@ const TransactionModal: React.FC<{
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-surface-dark rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <div className="p-6 border-b border-gray-200 dark:border-white/10">
+      <div className="bg-white bg-surface-dark rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div className="p-6 border-b border-gray-200 border-gray-200">
           <div className="flex items-center justify-between">
             <h3 className="text-2xl font-serif text-gray-900 text-secondary">
               {transaction ? 'Edit Transaction' : 'Add Transaction'}
             </h3>
             <button
               onClick={() => onClose(false)}
-              className="p-2 hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg transition-colors"
+              className="p-2 hover:bg-gray-100 hover:bg-gray-100 rounded-lg transition-colors"
             >
               <span className="material-symbols-outlined">close</span>
             </button>
@@ -344,7 +344,7 @@ const TransactionModal: React.FC<{
 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {error && (
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4 text-red-800 dark:text-red-200 text-sm">
+            <div className="bg-red-50 bg-red-50 border border-red-200 border-red-200 rounded-xl p-4 text-red-800 text-red-800 text-sm">
               {error}
             </div>
           )}
@@ -356,7 +356,7 @@ const TransactionModal: React.FC<{
               className={`flex-1 py-3 rounded-lg font-medium transition-colors ${
                 type === 'expense'
                   ? 'bg-primary text-white'
-                  : 'bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-400'
+                  : 'bg-gray-100 bg-white text-gray-600 text-gray-400'
               }`}
             >
               Expense
@@ -367,7 +367,7 @@ const TransactionModal: React.FC<{
               className={`flex-1 py-3 rounded-lg font-medium transition-colors ${
                 type === 'income'
                   ? 'bg-emerald-500 text-white'
-                  : 'bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-400'
+                  : 'bg-gray-100 bg-white text-gray-600 text-gray-400'
               }`}
             >
               Income
@@ -376,7 +376,7 @@ const TransactionModal: React.FC<{
 
           <div className="grid md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 text-gray-300 mb-2">
                 Date
               </label>
               <input
@@ -384,11 +384,11 @@ const TransactionModal: React.FC<{
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
                 required
-                className="w-full px-4 py-3 bg-surface-dark dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 text-secondary focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                className="w-full px-4 py-3 bg-surface-dark bg-white border border-gray-300 border-gray-200 rounded-lg text-gray-900 text-secondary focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 text-gray-300 mb-2">
                 Time
               </label>
               <input
@@ -396,13 +396,13 @@ const TransactionModal: React.FC<{
                 value={time}
                 onChange={(e) => setTime(e.target.value)}
                 required
-                className="w-full px-4 py-3 bg-surface-dark dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 text-secondary focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                className="w-full px-4 py-3 bg-surface-dark bg-white border border-gray-300 border-gray-200 rounded-lg text-gray-900 text-secondary focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 text-gray-300 mb-2">
               Merchant
             </label>
             <input
@@ -412,7 +412,7 @@ const TransactionModal: React.FC<{
               onChange={(e) => setMerchant(e.target.value)}
               required
               placeholder="Apple Store"
-              className="w-full px-4 py-3 bg-surface-dark dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 text-secondary placeholder:text-gray-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+              className="w-full px-4 py-3 bg-surface-dark bg-white border border-gray-300 border-gray-200 rounded-lg text-gray-900 text-secondary placeholder:text-gray-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
             />
             <datalist id="merchants-list">
               {merchants.map((merch) => (
@@ -422,14 +422,14 @@ const TransactionModal: React.FC<{
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 text-gray-300 mb-2">
               Category
             </label>
             <select
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
               required
-              className="w-full px-4 py-3 bg-surface-dark dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 text-secondary focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+              className="w-full px-4 py-3 bg-surface-dark bg-white border border-gray-300 border-gray-200 rounded-lg text-gray-900 text-secondary focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
             >
               <option value="" className="bg-surface-dark">Select a category</option>
               {categories.map((cat) => (
@@ -441,7 +441,7 @@ const TransactionModal: React.FC<{
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 text-gray-300 mb-2">
               Amount
             </label>
             <input
@@ -451,12 +451,12 @@ const TransactionModal: React.FC<{
               onChange={(e) => setAmount(formatCurrency(e.target.value))}
               required
               placeholder="1,000.00"
-              className="w-full px-4 py-3 bg-surface-dark dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 text-secondary placeholder:text-gray-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+              className="w-full px-4 py-3 bg-surface-dark bg-white border border-gray-300 border-gray-200 rounded-lg text-gray-900 text-secondary placeholder:text-gray-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 text-gray-300 mb-2">
               Notes (optional)
             </label>
             <textarea
@@ -464,7 +464,7 @@ const TransactionModal: React.FC<{
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Add any additional details..."
               rows={3}
-              className="w-full px-4 py-3 bg-surface-dark dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 text-secondary placeholder:text-gray-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
+              className="w-full px-4 py-3 bg-surface-dark bg-white border border-gray-300 border-gray-200 rounded-lg text-gray-900 text-secondary placeholder:text-gray-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
             />
           </div>
 
@@ -473,7 +473,7 @@ const TransactionModal: React.FC<{
               type="button"
               onClick={() => onClose(false)}
               disabled={loading}
-              className="flex-1 px-6 py-3 rounded-lg border border-gray-300 dark:border-white/10 text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-white/5 transition-colors disabled:opacity-50"
+              className="flex-1 px-6 py-3 rounded-lg border border-gray-300 border-gray-200 text-gray-700 text-gray-300 font-medium hover:bg-gray-50 hover:bg-gray-100 transition-colors disabled:opacity-50"
             >
               Cancel
             </button>

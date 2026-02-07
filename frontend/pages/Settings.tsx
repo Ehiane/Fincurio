@@ -254,13 +254,13 @@ const Settings: React.FC = () => {
       </section>
 
       {error && (
-        <div className="mb-8 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl p-4 text-red-800 dark:text-red-200 text-sm">
+        <div className="mb-8 bg-red-50 bg-red-50 border border-red-200 border-red-200 rounded-2xl p-4 text-red-800 text-red-800 text-sm">
           {error}
         </div>
       )}
 
       {success && (
-        <div className="mb-8 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-2xl p-4 text-green-800 dark:text-green-200 text-sm">
+        <div className="mb-8 bg-green-50 bg-green-50 border border-green-200 border-green-200 rounded-2xl p-4 text-green-800 text-green-800 text-sm">
           {success}
         </div>
       )}

@@ -82,7 +82,7 @@ const Onboarding: React.FC = () => {
                   className="w-full bg-transparent border-none p-0 text-2xl md:text-3xl lg:text-4xl text-center placeholder:text-gray-400 dark:placeholder:text-white/20 focus:ring-0 text-primary font-serif italic"
                 />
               </div>
-              <p className="mt-4 text-sm md:text-base text-gray-500 dark:text-gray-400 font-light">
+              <p className="mt-4 text-sm md:text-base text-gray-500 text-gray-400 font-light">
                 Focus on a feeling, like 'security', 'freedom', or 'calm'.
               </p>
             </div>
@@ -113,12 +113,12 @@ const Onboarding: React.FC = () => {
                   className={`p-6 rounded-2xl border-2 transition-all duration-300 ${
                     currency === curr.code
                       ? 'border-primary bg-primary/5 dark:bg-primary/10'
-                      : 'border-gray-200 dark:border-white/10 hover:border-primary/50'
+                      : 'border-gray-200 border-gray-200 hover:border-primary/50'
                   }`}
                 >
                   <div className="text-4xl mb-2">{curr.symbol}</div>
                   <div className="font-medium text-lg">{curr.code}</div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400">{curr.name}</div>
+                  <div className="text-sm text-gray-500 text-gray-400">{curr.name}</div>
                 </button>
               ))}
             </div>
@@ -165,13 +165,13 @@ const Onboarding: React.FC = () => {
                   />
                 </div>
               </div>
-              <p className="mt-4 text-sm md:text-base text-gray-500 dark:text-gray-400 font-light">
+              <p className="mt-4 text-sm md:text-base text-gray-500 text-gray-400 font-light">
                 This helps us provide insights on your spending patterns.
               </p>
             </div>
 
             {error && (
-              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl p-4 text-red-800 dark:text-red-200 text-sm max-w-xl">
+              <div className="bg-red-50 bg-red-50 border border-red-200 border-red-200 rounded-2xl p-4 text-red-800 text-red-800 text-sm max-w-xl">
                 {error}
               </div>
             )}
@@ -209,7 +209,7 @@ const Onboarding: React.FC = () => {
       <header className="w-full px-6 py-6 md:px-12 md:py-8 flex justify-between items-center z-10">
         <Logo className="h-10 md:h-12" showText={true} />
 
-        <div className="absolute left-1/2 top-8 -translate-x-1/2 hidden md:flex items-center gap-2 px-4 py-2 bg-white/50 dark:bg-white/5 backdrop-blur-sm rounded-full border border-gray-200 dark:border-white/10">
+        <div className="absolute left-1/2 top-8 -translate-x-1/2 hidden md:flex items-center gap-2 px-4 py-2 bg-white/50 bg-white backdrop-blur-sm rounded-full border border-gray-200 border-gray-200">
           <span className="text-sm font-medium opacity-60">Step {step} of 3</span>
           <div className="flex gap-1.5">
             {[1, 2, 3].map((s) => (

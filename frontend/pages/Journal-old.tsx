@@ -14,8 +14,8 @@ const Journal: React.FC = () => {
           </p>
         </div>
         <div className="w-full md:w-auto md:min-w-[320px]">
-          <div className="group relative flex items-center h-14 w-full rounded-full bg-white dark:bg-surface-dark shadow-sm ring-1 ring-gray-200 dark:ring-white/5 focus-within:ring-primary/50 transition-all duration-300">
-            <div className="pl-5 pr-3 text-gray-400 dark:text-stone-text">
+          <div className="group relative flex items-center h-14 w-full rounded-full bg-white bg-surface-dark shadow-sm ring-1 ring-gray-200 dark:ring-white/5 focus-within:ring-primary/50 transition-all duration-300">
+            <div className="pl-5 pr-3 text-gray-400 text-stone-text">
               <span className="material-symbols-outlined">search</span>
             </div>
             <input 
@@ -49,20 +49,20 @@ const Journal: React.FC = () => {
 
 const DateGroup: React.FC<{ label: string }> = ({ label }) => (
   <div className="mb-4 sticky top-0 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm z-10 py-4">
-    <h3 className="text-sm font-bold uppercase tracking-widest text-gray-400 dark:text-stone-text">{label}</h3>
+    <h3 className="text-sm font-bold uppercase tracking-widest text-gray-400 text-stone-text">{label}</h3>
   </div>
 );
 
 const JournalItem: React.FC<{ icon: string; merchant: string; category: string; amount: number; time?: string; isPositive?: boolean; isHighValue?: boolean }> = ({ icon, merchant, category, amount, time, isPositive, isHighValue }) => (
-  <div className="group relative flex flex-col sm:flex-row sm:items-center justify-between py-8 border-b border-gray-200 dark:border-white/10 hover:bg-white/40 dark:hover:bg-white/5 transition-all duration-300 rounded-lg px-2 -mx-2">
+  <div className="group relative flex flex-col sm:flex-row sm:items-center justify-between py-8 border-b border-gray-200 border-gray-200 hover:bg-white/40 hover:bg-gray-100 transition-all duration-300 rounded-lg px-2 -mx-2">
     <div className="flex items-center gap-6">
-      <div className={`hidden sm:flex items-center justify-center size-12 rounded-full shrink-0 transition-colors ${isPositive ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400' : 'bg-gray-100 dark:bg-surface-dark text-stone-text group-hover:text-primary'}`}>
+      <div className={`hidden sm:flex items-center justify-center size-12 rounded-full shrink-0 transition-colors ${isPositive ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400' : 'bg-gray-100 bg-surface-dark text-stone-text group-hover:text-primary'}`}>
         <span className="material-symbols-outlined">{icon}</span>
       </div>
       <div className="flex flex-col gap-2">
         <span className="text-xl font-medium text-gray-900 text-secondary tracking-tight">{merchant}</span>
         <div className="flex items-center gap-3">
-          <span className={`inline-flex items-center rounded-full border px-3 py-0.5 text-xs font-medium ${isPositive ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-gray-300 dark:border-white/20 text-gray-500 dark:text-stone-text'}`}>
+          <span className={`inline-flex items-center rounded-full border px-3 py-0.5 text-xs font-medium ${isPositive ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-gray-300 dark:border-white/20 text-gray-500 text-stone-text'}`}>
             {category}
           </span>
           {time && <span className="text-xs text-gray-400">{time}</span>}

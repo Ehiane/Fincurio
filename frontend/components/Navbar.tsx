@@ -11,9 +11,9 @@ const Navbar: React.FC = () => {
       </Link>
       
       <nav className="hidden md:flex items-center gap-8">
-        <a href="#awareness" className="text-sm font-medium text-stone-600 dark:text-stone-text hover:text-primary dark:hover:text-white transition-colors">Awareness</a>
-        <a href="#clarity" className="text-sm font-medium text-stone-600 dark:text-stone-text hover:text-primary dark:hover:text-white transition-colors">Clarity</a>
-        <a href="#insight" className="text-sm font-medium text-stone-600 dark:text-stone-text hover:text-primary dark:hover:text-white transition-colors">Insight</a>
+        <a href="#awareness" className="text-sm font-medium text-stone-600 text-stone-text hover:text-primary dark:hover:text-white transition-colors">Awareness</a>
+        <a href="#clarity" className="text-sm font-medium text-stone-600 text-stone-text hover:text-primary dark:hover:text-white transition-colors">Clarity</a>
+        <a href="#insight" className="text-sm font-medium text-stone-600 text-stone-text hover:text-primary dark:hover:text-white transition-colors">Insight</a>
       </nav>
 
       <Link 

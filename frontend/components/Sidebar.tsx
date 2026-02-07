@@ -50,8 +50,8 @@ const Sidebar: React.FC = () => {
               className={({ isActive }) =>
                 `flex items-center gap-4 px-4 py-3 rounded-full transition-all group ${
                   isActive
-                    ? 'bg-primary/10 text-primary dark:bg-surface-dark text-secondary'
-                    : 'text-stone-600 dark:text-stone-text hover:bg-stone-200 dark:hover:bg-white/5'
+                    ? 'bg-primary/10 text-primary bg-surface-dark text-secondary'
+                    : 'text-stone-600 text-stone-text hover:bg-stone-200 hover:bg-gray-100'
                 }`
               }
             >
@@ -63,7 +63,7 @@ const Sidebar: React.FC = () => {
       </div>
 
       <div className="flex flex-col gap-4">
-        <div className="p-4 rounded-xl bg-white dark:bg-surface-dark border border-stone-200 dark:border-white/5 shadow-sm">
+        <div className="p-4 rounded-xl bg-white bg-surface-dark border border-stone-200 dark:border-white/5 shadow-sm">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-orange-500 flex items-center justify-center text-white font-bold text-sm">
               {getInitials()}
@@ -76,7 +76,7 @@ const Sidebar: React.FC = () => {
         </div>
         <button
           onClick={handleLogout}
-          className="flex items-center gap-4 px-4 py-3 rounded-full text-stone-600 dark:text-stone-text hover:bg-stone-200 dark:hover:bg-white/5 transition-all group"
+          className="flex items-center gap-4 px-4 py-3 rounded-full text-stone-600 text-stone-text hover:bg-stone-200 hover:bg-gray-100 transition-all group"
         >
           <span className="material-symbols-outlined group-hover:text-primary">logout</span>
           <span className="text-base font-medium">Sign Out</span>
