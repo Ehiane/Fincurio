@@ -3,9 +3,11 @@ import React from 'react';
 interface LogoProps {
   className?: string;
   showText?: boolean;
+  textClassName?: string;
+  variant?: 'dark' | 'light';
 }
 
-const Logo: React.FC<LogoProps> = ({ className = "h-8", showText = true }) => {
+const Logo: React.FC<LogoProps> = ({ className = "h-8", showText = true, textClassName, variant = 'dark' }) => {
   return (
     <div className="flex items-center gap-3">
       {/* Logo SVG */}
@@ -17,7 +19,7 @@ const Logo: React.FC<LogoProps> = ({ className = "h-8", showText = true }) => {
       >
         {/* Outer burgundy shape */}
         <path
-          fill="#280905"
+          fill={variant === 'light' ? '#e8e3db' : '#280905'}
           opacity="1.000000"
           stroke="none"
           d="M549.336426,179.346802
@@ -74,7 +76,7 @@ const Logo: React.FC<LogoProps> = ({ className = "h-8", showText = true }) => {
 
       {/* Optional text */}
       {showText && (
-        <span className="text-xl font-serif font-medium tracking-wide text-secondary">
+        <span className={`text-xl font-serif font-medium tracking-wide ${textClassName || 'text-secondary'}`}>
           Fincurio
         </span>
       )}
