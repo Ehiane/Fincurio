@@ -25,7 +25,14 @@ public class ExceptionHandlingMiddleware
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An unhandled exception occurred");
+            var requestMethod = context.Request.Method;
+            var requestPath = context.Request.Path;
+            var userId = context.User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "anonymous";
+
+            _logger.LogError(ex,
+                "Unhandled exception | Method={Method}, Path={Path}, UserId={UserId}, ExceptionType={ExceptionType}, Message={Message}",
+                requestMethod, requestPath, userId, ex.GetType().Name, ex.Message);
+
             await HandleExceptionAsync(context, ex);
         }
     }
@@ -33,6 +40,7 @@ public class ExceptionHandlingMiddleware
     private async Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
         context.Response.ContentType = "application/json";
+        var isDevelopment = _env.IsDevelopment();
 
         var response = exception switch
         {
@@ -54,12 +62,10 @@ public class ExceptionHandlingMiddleware
             _ => new ErrorResponse
             {
                 StatusCode = (int)HttpStatusCode.InternalServerError,
-                Message = _env.IsDevelopment()
+                Message = isDevelopment
                     ? $"{exception.GetType().Name}: {exception.Message}"
                     : "An internal server error occurred",
-                Detail = _env.IsDevelopment()
-                    ? exception.StackTrace
-                    : null
+                Detail = isDevelopment ? exception.StackTrace : null
             }
         };
 

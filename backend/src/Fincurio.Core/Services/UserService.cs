@@ -3,25 +3,34 @@ using Fincurio.Core.Interfaces.Repositories;
 using Fincurio.Core.Interfaces.Services;
 using Fincurio.Core.Models.DTOs.User;
 using Fincurio.Core.Models.Entities;
+using Microsoft.Extensions.Logging;
 
 namespace Fincurio.Core.Services;
 
 public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
+    private readonly ILogger<UserService> _logger;
 
-    public UserService(IUserRepository userRepository)
+    public UserService(IUserRepository userRepository, ILogger<UserService> logger)
     {
         _userRepository = userRepository;
+        _logger = logger;
     }
 
     public async Task<UserProfileDto> GetProfileAsync(Guid userId)
     {
+        _logger.LogInformation("Fetching profile for user {UserId}", userId);
+
         var user = await _userRepository.GetByIdAsync(userId);
         if (user == null)
         {
+            _logger.LogWarning("Profile fetch failed - user {UserId} not found", userId);
             throw new NotFoundException("User not found");
         }
+
+        _logger.LogDebug("Profile fetched for user {UserId} ({Email}), EmailVerified={IsVerified}",
+            userId, user.Email, user.IsEmailVerified);
 
         return new UserProfileDto
         {
@@ -44,9 +53,13 @@ public class UserService : IUserService
 
     public async Task<UserProfileDto> UpdateProfileAsync(Guid userId, UpdateProfileDto request)
     {
+        _logger.LogInformation("Updating profile for user {UserId} | FirstName={FirstName}, LastName={LastName}, FinancialIntention={FinancialIntention}",
+            userId, request.FirstName, request.LastName, request.FinancialIntention);
+
         var user = await _userRepository.GetByIdAsync(userId);
         if (user == null)
         {
+            _logger.LogWarning("Profile update failed - user {UserId} not found", userId);
             throw new NotFoundException("User not found");
         }
 
@@ -60,15 +73,20 @@ public class UserService : IUserService
             user.FinancialIntention = request.FinancialIntention;
 
         await _userRepository.UpdateAsync(user);
+        _logger.LogInformation("Profile updated successfully for user {UserId}", userId);
 
         return await GetProfileAsync(userId);
     }
 
     public async Task UpdatePreferencesAsync(Guid userId, UpdatePreferencesDto request)
     {
+        _logger.LogInformation("Updating preferences for user {UserId} | Currency={Currency}, Timezone={Timezone}, Budget={Budget}",
+            userId, request.Currency, request.Timezone, request.MonthlyBudgetGoal);
+
         var user = await _userRepository.GetByIdAsync(userId);
         if (user == null)
         {
+            _logger.LogWarning("Preferences update failed - user {UserId} not found", userId);
             throw new NotFoundException("User not found");
         }
 
@@ -91,5 +109,7 @@ public class UserService : IUserService
             preferences.MonthlyBudgetGoal = request.MonthlyBudgetGoal;
 
         await _userRepository.CreateOrUpdatePreferencesAsync(preferences);
+        _logger.LogInformation("Preferences updated successfully for user {UserId} | Currency={Currency}, Timezone={Timezone}",
+            userId, preferences.Currency, preferences.Timezone);
     }
 }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { insightsApi, DashboardResponse } from '../src/api/insights.api';
+import { insightsApi, DashboardResponse, MoneyFlowResponse } from '../src/api/insights.api';
 import { userApi } from '../src/api/user.api';
 
 const currencySymbols: Record<string, string> = {
@@ -15,6 +15,12 @@ const Dashboard: React.FC = () => {
   const [data, setData] = useState<DashboardResponse | null>(null);
   const [currencySymbol, setCurrencySymbol] = useState('$');
 
+  // Money flow state
+  const [moneyFlow, setMoneyFlow] = useState<MoneyFlowResponse | null>(null);
+  const [flowLoading, setFlowLoading] = useState(false);
+  const [flowStartDate, setFlowStartDate] = useState('');
+  const [flowEndDate, setFlowEndDate] = useState('');
+
   useEffect(() => {
     fetchDashboard();
   }, []);
@@ -22,17 +28,55 @@ const Dashboard: React.FC = () => {
   const fetchDashboard = async () => {
     try {
       setLoading(true);
-      const [dashboardData, profile] = await Promise.all([
+      const [dashboardData, profile, flowData] = await Promise.all([
         insightsApi.getDashboard(),
         userApi.getProfile(),
+        insightsApi.getMoneyFlow(),
       ]);
       setData(dashboardData);
+      setMoneyFlow(flowData);
+
+      // Initialize filter dates from the response
+      if (flowData.earliestDate) {
+        setFlowStartDate(flowData.filterStart.split('T')[0]);
+        setFlowEndDate(flowData.filterEnd.split('T')[0]);
+      }
+
       const code = profile.preferences?.currency || 'USD';
       setCurrencySymbol(currencySymbols[code] || code);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to load dashboard data');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchMoneyFlow = async (start?: string, end?: string) => {
+    try {
+      setFlowLoading(true);
+      const flowData = await insightsApi.getMoneyFlow(start, end);
+      setMoneyFlow(flowData);
+    } catch (err: any) {
+      console.error('Failed to fetch money flow:', err);
+    } finally {
+      setFlowLoading(false);
+    }
+  };
+
+  const handleFlowFilterApply = () => {
+    fetchMoneyFlow(
+      flowStartDate || undefined,
+      flowEndDate || undefined
+    );
+  };
+
+  const handleFlowFilterReset = () => {
+    if (moneyFlow?.earliestDate) {
+      const start = moneyFlow.earliestDate.split('T')[0];
+      const end = moneyFlow.latestDate?.split('T')[0] || '';
+      setFlowStartDate(start);
+      setFlowEndDate(end);
+      fetchMoneyFlow();
     }
   };
 
@@ -111,7 +155,7 @@ const Dashboard: React.FC = () => {
 
       {/* Money Flow Visual */}
       <section className="py-12 w-full">
-        <div className="flex items-center justify-between mb-8 px-2">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 px-2 gap-4">
           <h3 className="font-serif text-2xl italic text-secondary">Money Flow</h3>
           <div className="flex gap-4 text-xs font-medium tracking-wide uppercase text-stone-text">
             <div className="flex items-center gap-2">
@@ -123,10 +167,57 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        {data.monthlyFlow.length > 0 ? (
-          <div className="h-64 md:h-80 w-full rounded-2xl p-4 bg-gradient-to-br from-white/60 via-background-light to-surface-dark/40 border border-stone-300/60">
+        {/* Date Range Filter */}
+        {moneyFlow?.earliestDate && (
+          <div className="flex flex-wrap items-center gap-3 mb-6 px-2">
+            <div className="flex items-center gap-2">
+              <label className="text-xs font-medium text-stone-500 uppercase tracking-wider">From</label>
+              <input
+                type="date"
+                value={flowStartDate}
+                min={moneyFlow.earliestDate.split('T')[0]}
+                max={flowEndDate || moneyFlow.latestDate?.split('T')[0]}
+                onChange={(e) => setFlowStartDate(e.target.value)}
+                className="px-3 py-1.5 text-sm border border-stone-300/80 rounded-lg bg-white/60 text-secondary focus:outline-none focus:ring-1 focus:ring-primary/40 focus:border-primary/60"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <label className="text-xs font-medium text-stone-500 uppercase tracking-wider">To</label>
+              <input
+                type="date"
+                value={flowEndDate}
+                min={flowStartDate || moneyFlow.earliestDate.split('T')[0]}
+                max={moneyFlow.latestDate?.split('T')[0]}
+                onChange={(e) => setFlowEndDate(e.target.value)}
+                className="px-3 py-1.5 text-sm border border-stone-300/80 rounded-lg bg-white/60 text-secondary focus:outline-none focus:ring-1 focus:ring-primary/40 focus:border-primary/60"
+              />
+            </div>
+            <button
+              onClick={handleFlowFilterApply}
+              disabled={flowLoading}
+              className="px-4 py-1.5 text-xs font-semibold uppercase tracking-wider bg-secondary text-white rounded-lg hover:bg-secondary/90 transition-colors disabled:opacity-50"
+            >
+              {flowLoading ? 'Loading...' : 'Apply'}
+            </button>
+            <button
+              onClick={handleFlowFilterReset}
+              disabled={flowLoading}
+              className="px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-stone-600 hover:text-secondary border border-stone-300/80 rounded-lg hover:border-stone-400 transition-colors disabled:opacity-50"
+            >
+              All Time
+            </button>
+            {moneyFlow.grouping && (
+              <span className="text-xs text-stone-400 ml-auto hidden sm:inline">
+                Grouped {moneyFlow.grouping}
+              </span>
+            )}
+          </div>
+        )}
+
+        {(moneyFlow?.dataPoints?.length ?? 0) > 0 ? (
+          <div className={`h-64 md:h-80 w-full rounded-2xl p-4 bg-gradient-to-br from-white/60 via-background-light to-surface-dark/40 border border-stone-300/60 ${flowLoading ? 'opacity-50' : ''}`}>
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={data.monthlyFlow}>
+              <AreaChart data={moneyFlow!.dataPoints}>
                 <defs>
                   <linearGradient id="incomeColor" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#10b981" stopOpacity={0.2} />
@@ -138,7 +229,13 @@ const Dashboard: React.FC = () => {
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#d6d3d1" opacity={0.5} />
-                <XAxis dataKey="date" hide />
+                <XAxis
+                  dataKey="date"
+                  tick={{ fontSize: 11, fill: '#78716c' }}
+                  tickLine={false}
+                  axisLine={{ stroke: '#d6d3d1' }}
+                  interval={'preserveStartEnd'}
+                />
                 <YAxis hide />
                 <Tooltip
                   contentStyle={{ backgroundColor: '#faf8f5', border: '1px solid #d6d3d1', borderRadius: '8px', color: '#280905' }}

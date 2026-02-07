@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Fincurio.Core.Interfaces.Services;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Fincurio.Core.Services;
@@ -11,14 +12,18 @@ namespace Fincurio.Core.Services;
 public class TokenService : ITokenService
 {
     private readonly IConfiguration _configuration;
+    private readonly ILogger<TokenService> _logger;
 
-    public TokenService(IConfiguration configuration)
+    public TokenService(IConfiguration configuration, ILogger<TokenService> logger)
     {
         _configuration = configuration;
+        _logger = logger;
     }
 
     public string GenerateAccessToken(Guid userId, string email)
     {
+        _logger.LogDebug("Generating access token for user {UserId} ({Email})", userId, email);
+
         var securityKey = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(_configuration["Jwt:SecretKey"]!));
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -40,6 +45,7 @@ public class TokenService : ITokenService
             signingCredentials: credentials
         );
 
+        _logger.LogDebug("Access token generated for user {UserId}, expires in {Minutes} minutes", userId, expirationMinutes);
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
@@ -48,6 +54,7 @@ public class TokenService : ITokenService
         var randomBytes = new byte[64];
         using var rng = RandomNumberGenerator.Create();
         rng.GetBytes(randomBytes);
+        _logger.LogDebug("Refresh token generated");
         return Convert.ToBase64String(randomBytes);
     }
 
@@ -71,10 +78,13 @@ public class TokenService : ITokenService
                 ClockSkew = TimeSpan.Zero
             };
 
-            return tokenHandler.ValidateToken(token, validationParameters, out _);
+            var principal = tokenHandler.ValidateToken(token, validationParameters, out _);
+            _logger.LogDebug("Token validated successfully");
+            return principal;
         }
-        catch
+        catch (Exception ex)
         {
+            _logger.LogWarning("Token validation failed: {Error}", ex.Message);
             return null;
         }
     }

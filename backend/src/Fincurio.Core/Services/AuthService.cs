@@ -4,6 +4,7 @@ using Fincurio.Core.Interfaces.Services;
 using Fincurio.Core.Models.DTOs.Auth;
 using Fincurio.Core.Models.Entities;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System.Security.Cryptography;
 
 namespace Fincurio.Core.Services;
@@ -15,31 +16,38 @@ public class AuthService : IAuthService
     private readonly ITokenService _tokenService;
     private readonly IEmailService _emailService;
     private readonly IConfiguration _configuration;
+    private readonly ILogger<AuthService> _logger;
 
     public AuthService(
         IUserRepository userRepository,
         IRefreshTokenRepository tokenRepository,
         ITokenService tokenService,
         IEmailService emailService,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        ILogger<AuthService> logger)
     {
         _userRepository = userRepository;
         _tokenRepository = tokenRepository;
         _tokenService = tokenService;
         _emailService = emailService;
         _configuration = configuration;
+        _logger = logger;
     }
 
     public async Task<AuthResponseDto> RegisterAsync(RegisterRequestDto request)
     {
+        _logger.LogInformation("Starting registration for email: {Email}", request.Email);
+
         // Check if email already exists
         if (await _userRepository.EmailExistsAsync(request.Email))
         {
+            _logger.LogWarning("Registration failed - email already exists: {Email}", request.Email);
             throw new ValidationException("Email is already registered");
         }
 
         // Generate email verification token
         var verificationToken = GenerateSecureToken();
+        _logger.LogDebug("Generated verification token for {Email}", request.Email);
 
         // Create user with default preferences (saved together to avoid
         // multi-statement batch issues with Supabase connection pooler)
@@ -64,6 +72,7 @@ public class AuthService : IAuthService
         };
 
         await _userRepository.CreateAsync(user);
+        _logger.LogInformation("User created successfully: {UserId} ({Email})", user.Id, user.Email);
 
         // Send verification email (don't block registration)
         _ = Task.Run(async () =>
@@ -71,10 +80,11 @@ public class AuthService : IAuthService
             try
             {
                 await _emailService.SendVerificationEmailAsync(user.Email, user.FirstName ?? "", verificationToken);
+                _logger.LogInformation("Verification email sent to {Email}", user.Email);
             }
-            catch
+            catch (Exception ex)
             {
-                // Log error but don't fail registration
+                _logger.LogError(ex, "Failed to send verification email to {Email}", user.Email);
             }
         });
 
@@ -91,6 +101,9 @@ public class AuthService : IAuthService
             ExpiresAt = DateTime.UtcNow.AddDays(expirationDays),
             CreatedAt = DateTime.UtcNow
         });
+        _logger.LogDebug("Refresh token created for user {UserId}, expires in {Days} days", user.Id, expirationDays);
+
+        _logger.LogInformation("Registration completed successfully for user {UserId} ({Email})", user.Id, user.Email);
 
         return new AuthResponseDto
         {
@@ -106,14 +119,18 @@ public class AuthService : IAuthService
 
     public async Task<AuthResponseDto> LoginAsync(LoginRequestDto request)
     {
+        _logger.LogInformation("Login attempt for email: {Email}", request.Email);
+
         var user = await _userRepository.GetByEmailAsync(request.Email);
         if (user == null || !PasswordHasher.VerifyPassword(request.Password, user.PasswordHash))
         {
+            _logger.LogWarning("Login failed - invalid credentials for email: {Email}", request.Email);
             throw new UnauthorizedException("Invalid email or password");
         }
 
         if (!user.IsActive)
         {
+            _logger.LogWarning("Login failed - inactive account for user {UserId} ({Email})", user.Id, user.Email);
             throw new UnauthorizedException("Account is inactive");
         }
 
@@ -135,6 +152,8 @@ public class AuthService : IAuthService
             CreatedAt = DateTime.UtcNow
         });
 
+        _logger.LogInformation("Login successful for user {UserId} ({Email})", user.Id, user.Email);
+
         return new AuthResponseDto
         {
             UserId = user.Id,
@@ -149,13 +168,17 @@ public class AuthService : IAuthService
 
     public async Task<AuthResponseDto> RefreshTokenAsync(string refreshToken)
     {
+        _logger.LogInformation("Token refresh requested");
+
         var token = await _tokenRepository.GetByTokenAsync(refreshToken);
         if (token == null || !token.IsActive)
         {
+            _logger.LogWarning("Token refresh failed - invalid or expired token");
             throw new UnauthorizedException("Invalid or expired refresh token");
         }
 
         var user = token.User;
+        _logger.LogDebug("Token refresh for user {UserId} ({Email})", user.Id, user.Email);
 
         // Revoke old token
         await _tokenRepository.RevokeAsync(token);
@@ -174,6 +197,8 @@ public class AuthService : IAuthService
             CreatedAt = DateTime.UtcNow
         });
 
+        _logger.LogInformation("Token refresh successful for user {UserId}", user.Id);
+
         return new AuthResponseDto
         {
             UserId = user.Id,
@@ -188,15 +213,20 @@ public class AuthService : IAuthService
 
     public async Task LogoutAsync(Guid userId)
     {
+        _logger.LogInformation("Logging out user {UserId} - revoking all refresh tokens", userId);
         await _tokenRepository.RevokeAllUserTokensAsync(userId);
+        _logger.LogInformation("All refresh tokens revoked for user {UserId}", userId);
     }
 
     public async Task<VerifyEmailResponseDto> VerifyEmailAsync(string token)
     {
+        _logger.LogInformation("Email verification attempt with token: {TokenPrefix}...", token[..Math.Min(8, token.Length)]);
+
         var user = await _userRepository.GetByEmailVerificationTokenAsync(token);
 
         if (user == null || user.EmailVerificationToken != token)
         {
+            _logger.LogWarning("Email verification failed - invalid token");
             return new VerifyEmailResponseDto
             {
                 Success = false,
@@ -206,6 +236,7 @@ public class AuthService : IAuthService
 
         if (user.EmailVerificationTokenExpiry < DateTime.UtcNow)
         {
+            _logger.LogWarning("Email verification failed - expired token for user {UserId} ({Email})", user.Id, user.Email);
             return new VerifyEmailResponseDto
             {
                 Success = false,
@@ -215,6 +246,7 @@ public class AuthService : IAuthService
 
         if (user.IsEmailVerified)
         {
+            _logger.LogInformation("Email already verified for user {UserId} ({Email})", user.Id, user.Email);
             return new VerifyEmailResponseDto
             {
                 Success = true,
@@ -229,6 +261,7 @@ public class AuthService : IAuthService
         user.UpdatedAt = DateTime.UtcNow;
 
         await _userRepository.UpdateAsync(user);
+        _logger.LogInformation("Email verified successfully for user {UserId} ({Email})", user.Id, user.Email);
 
         return new VerifyEmailResponseDto
         {
@@ -239,15 +272,19 @@ public class AuthService : IAuthService
 
     public async Task<ResendVerificationResponseDto> ResendVerificationEmailAsync(string email)
     {
+        _logger.LogInformation("Resend verification email requested for: {Email}", email);
+
         var user = await _userRepository.GetByEmailAsync(email);
 
         if (user == null)
         {
+            _logger.LogWarning("Resend verification failed - no account found for email: {Email}", email);
             throw new NotFoundException("No account found with this email address");
         }
 
         if (user.IsEmailVerified)
         {
+            _logger.LogInformation("Resend skipped - email already verified for {Email}", email);
             return new ResendVerificationResponseDto
             {
                 Message = "Email is already verified"
@@ -264,6 +301,7 @@ public class AuthService : IAuthService
 
         // Send verification email
         await _emailService.SendVerificationEmailAsync(user.Email, user.FirstName ?? "", verificationToken);
+        _logger.LogInformation("Verification email resent to {Email} for user {UserId}", email, user.Id);
 
         return new ResendVerificationResponseDto
         {
@@ -273,11 +311,14 @@ public class AuthService : IAuthService
 
     public async Task<ForgotPasswordResponseDto> ForgotPasswordAsync(string email)
     {
+        _logger.LogInformation("Forgot password requested for: {Email}", email);
+
         var user = await _userRepository.GetByEmailAsync(email);
 
         // Always return success to prevent email enumeration
         if (user == null)
         {
+            _logger.LogDebug("Forgot password - no account found for {Email} (returning generic response)", email);
             return new ForgotPasswordResponseDto
             {
                 Message = "If an account exists with this email, you will receive a password reset link shortly."
@@ -294,6 +335,7 @@ public class AuthService : IAuthService
 
         // Send password reset email
         await _emailService.SendPasswordResetEmailAsync(user.Email, user.FirstName ?? "", resetToken);
+        _logger.LogInformation("Password reset email sent to {Email} for user {UserId}", email, user.Id);
 
         return new ForgotPasswordResponseDto
         {
@@ -303,22 +345,27 @@ public class AuthService : IAuthService
 
     public async Task<ResetPasswordResponseDto> ResetPasswordAsync(ResetPasswordRequestDto request)
     {
+        _logger.LogInformation("Password reset attempt");
+
         // Find user by reset token
         var user = await _userRepository.GetByPasswordResetTokenAsync(request.Token);
 
         if (user == null || user.PasswordResetToken != request.Token)
         {
+            _logger.LogWarning("Password reset failed - invalid token");
             throw new ValidationException("Invalid or expired reset token");
         }
 
         if (user.PasswordResetTokenExpiry < DateTime.UtcNow)
         {
+            _logger.LogWarning("Password reset failed - expired token for user {UserId}", user.Id);
             throw new ValidationException("Reset token has expired. Please request a new one.");
         }
 
         // Validate new password
         if (string.IsNullOrWhiteSpace(request.NewPassword) || request.NewPassword.Length < 6)
         {
+            _logger.LogWarning("Password reset failed - password too short for user {UserId}", user.Id);
             throw new ValidationException("Password must be at least 6 characters long");
         }
 
@@ -333,6 +380,8 @@ public class AuthService : IAuthService
 
         // Revoke all existing tokens for security
         await _tokenRepository.RevokeAllUserTokensAsync(user.Id);
+
+        _logger.LogInformation("Password reset successful for user {UserId} ({Email}) - all tokens revoked", user.Id, user.Email);
 
         return new ResetPasswordResponseDto
         {

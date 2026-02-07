@@ -7,6 +7,15 @@ export interface MonthlyFlow {
   spending: number;
 }
 
+export interface MoneyFlowResponse {
+  earliestDate: string | null;
+  latestDate: string | null;
+  filterStart: string;
+  filterEnd: string;
+  grouping: 'daily' | 'weekly' | 'monthly';
+  dataPoints: MonthlyFlow[];
+}
+
 export interface DashboardResponse {
   currentBalance: number;
   balanceChange: number;
@@ -45,6 +54,13 @@ export interface MonthlyInsightResponse {
 export const insightsApi = {
   getDashboard: async (): Promise<DashboardResponse> => {
     const response = await apiClient.get('/api/insights/dashboard');
+    return response.data;
+  },
+
+  getMoneyFlow: async (startDate?: string, endDate?: string): Promise<MoneyFlowResponse> => {
+    const response = await apiClient.get('/api/insights/money-flow', {
+      params: { startDate, endDate },
+    });
     return response.data;
   },
 

@@ -1,5 +1,6 @@
 using Fincurio.Core.Interfaces.Services;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System.Net.Http.Json;
 
 namespace Fincurio.Core.Services;
@@ -8,24 +9,30 @@ public class EmailService : IEmailService
 {
     private readonly HttpClient _httpClient;
     private readonly IConfiguration _configuration;
+    private readonly ILogger<EmailService> _logger;
     private readonly string _apiKey;
     private readonly string _fromEmail;
     private readonly string _frontendUrl;
 
-    public EmailService(HttpClient httpClient, IConfiguration configuration)
+    public EmailService(HttpClient httpClient, IConfiguration configuration, ILogger<EmailService> logger)
     {
         _httpClient = httpClient;
         _configuration = configuration;
+        _logger = logger;
         _apiKey = _configuration["Resend:ApiKey"] ?? throw new InvalidOperationException("Resend API key not configured");
         _fromEmail = _configuration["Resend:FromEmail"] ?? "noreply@fincurio.com";
         _frontendUrl = _configuration["Frontend:Url"] ?? "http://localhost:3000";
 
         _httpClient.BaseAddress = new Uri("https://api.resend.com");
         _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_apiKey}");
+
+        _logger.LogDebug("EmailService initialized | From={FromEmail}, FrontendUrl={FrontendUrl}", _fromEmail, _frontendUrl);
     }
 
     public async Task SendVerificationEmailAsync(string email, string firstName, string verificationToken)
     {
+        _logger.LogInformation("Sending verification email to {Email}", email);
+
         var verificationUrl = $"{_frontendUrl}/verify-email?token={verificationToken}";
 
         var emailRequest = new
@@ -41,12 +48,18 @@ public class EmailService : IEmailService
         if (!response.IsSuccessStatusCode)
         {
             var error = await response.Content.ReadAsStringAsync();
+            _logger.LogError("Failed to send verification email to {Email} | Status={StatusCode}, Error={Error}",
+                email, response.StatusCode, error);
             throw new InvalidOperationException($"Failed to send verification email: {error}");
         }
+
+        _logger.LogInformation("Verification email sent successfully to {Email}", email);
     }
 
     public async Task SendPasswordResetEmailAsync(string email, string firstName, string resetToken)
     {
+        _logger.LogInformation("Sending password reset email to {Email}", email);
+
         var resetUrl = $"{_frontendUrl}/reset-password?token={resetToken}";
 
         var emailRequest = new
@@ -62,8 +75,12 @@ public class EmailService : IEmailService
         if (!response.IsSuccessStatusCode)
         {
             var error = await response.Content.ReadAsStringAsync();
+            _logger.LogError("Failed to send password reset email to {Email} | Status={StatusCode}, Error={Error}",
+                email, response.StatusCode, error);
             throw new InvalidOperationException($"Failed to send password reset email: {error}");
         }
+
+        _logger.LogInformation("Password reset email sent successfully to {Email}", email);
     }
 
     private string GenerateVerificationEmailHtml(string firstName, string verificationUrl)

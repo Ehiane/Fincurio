@@ -11,10 +11,12 @@ namespace Fincurio.Api.Controllers;
 public class TransactionsController : ControllerBase
 {
     private readonly ITransactionService _transactionService;
+    private readonly ILogger<TransactionsController> _logger;
 
-    public TransactionsController(ITransactionService transactionService)
+    public TransactionsController(ITransactionService transactionService, ILogger<TransactionsController> logger)
     {
         _transactionService = transactionService;
+        _logger = logger;
     }
 
     private Guid GetUserId()
@@ -32,8 +34,12 @@ public class TransactionsController : ControllerBase
         [FromQuery] int pageSize = 50)
     {
         var userId = GetUserId();
+        _logger.LogInformation("Fetching transactions for user {UserId} | Page={Page}, PageSize={PageSize}, StartDate={StartDate}, EndDate={EndDate}, CategoryId={CategoryId}, Type={Type}",
+            userId, page, pageSize, startDate, endDate, categoryId, type);
         var response = await _transactionService.GetTransactionsAsync(
             userId, startDate, endDate, categoryId, type, page, pageSize);
+        _logger.LogInformation("Returned {Count} transactions (page {Page}/{TotalPages}) for user {UserId}",
+            response.Transactions.Count, response.Pagination.CurrentPage, response.Pagination.TotalPages, userId);
         return Ok(response);
     }
 
@@ -41,7 +47,10 @@ public class TransactionsController : ControllerBase
     public async Task<ActionResult<TransactionDto>> GetTransaction(Guid id)
     {
         var userId = GetUserId();
+        _logger.LogInformation("Fetching transaction {TransactionId} for user {UserId}", id, userId);
         var transaction = await _transactionService.GetByIdAsync(id, userId);
+        _logger.LogInformation("Returned transaction {TransactionId} | Merchant={Merchant}, Amount={Amount}, Type={Type}",
+            id, transaction.Merchant, transaction.Amount, transaction.Type);
         return Ok(transaction);
     }
 
@@ -49,7 +58,10 @@ public class TransactionsController : ControllerBase
     public async Task<ActionResult<TransactionDto>> CreateTransaction([FromBody] CreateTransactionDto request)
     {
         var userId = GetUserId();
+        _logger.LogInformation("Creating transaction for user {UserId} | Merchant={Merchant}, Amount={Amount}, Type={Type}, CategoryId={CategoryId}, Date={Date}",
+            userId, request.Merchant, request.Amount, request.Type, request.CategoryId, request.Date);
         var transaction = await _transactionService.CreateAsync(userId, request);
+        _logger.LogInformation("Transaction created successfully: {TransactionId} for user {UserId}", transaction.Id, userId);
         return CreatedAtAction(nameof(GetTransaction), new { id = transaction.Id }, transaction);
     }
 
@@ -57,7 +69,10 @@ public class TransactionsController : ControllerBase
     public async Task<ActionResult<TransactionDto>> UpdateTransaction(Guid id, [FromBody] CreateTransactionDto request)
     {
         var userId = GetUserId();
+        _logger.LogInformation("Updating transaction {TransactionId} for user {UserId} | Merchant={Merchant}, Amount={Amount}, Type={Type}, CategoryId={CategoryId}, Date={Date}",
+            id, userId, request.Merchant, request.Amount, request.Type, request.CategoryId, request.Date);
         var transaction = await _transactionService.UpdateAsync(id, userId, request);
+        _logger.LogInformation("Transaction {TransactionId} updated successfully for user {UserId}", id, userId);
         return Ok(transaction);
     }
 
@@ -65,7 +80,9 @@ public class TransactionsController : ControllerBase
     public async Task<ActionResult> DeleteTransaction(Guid id)
     {
         var userId = GetUserId();
+        _logger.LogInformation("Deleting transaction {TransactionId} for user {UserId}", id, userId);
         await _transactionService.DeleteAsync(id, userId);
+        _logger.LogInformation("Transaction {TransactionId} deleted successfully for user {UserId}", id, userId);
         return NoContent();
     }
 }
