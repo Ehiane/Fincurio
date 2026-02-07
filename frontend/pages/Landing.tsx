@@ -1,11 +1,61 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Logo from '../src/components/Logo';
+
+/* ─── Scroll-reveal wrapper ─── */
+const Reveal: React.FC<{
+  children: React.ReactNode;
+  delay?: number;
+  className?: string;
+  fade?: boolean;
+}> = ({ children, delay = 0, className = '', fade = false }) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    if (!ref.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -60px 0px' }
+    );
+    observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      className={`transition-all duration-700 ease-out ${
+        visible
+          ? 'opacity-100 translate-y-0'
+          : `opacity-0 ${fade ? '' : 'translate-y-5'}`
+      } ${className}`}
+      style={{ transitionDelay: `${delay}ms` }}
+    >
+      {children}
+    </div>
+  );
+};
 
 const Landing: React.FC = () => {
   const navigate = useNavigate();
   const heroRef = useRef<HTMLDivElement>(null);
+  const [heroLoaded, setHeroLoaded] = useState(false);
+  const [barsVisible, setBarsVisible] = useState(false);
+  const barsRef = useRef<HTMLDivElement>(null);
 
+  // Hero entrance on mount
+  useEffect(() => {
+    const timer = setTimeout(() => setHeroLoaded(true), 100);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Parallax hero on scroll
   useEffect(() => {
     const handleScroll = () => {
       if (!heroRef.current) return;
@@ -19,14 +69,30 @@ const Landing: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Category bars width animation
+  useEffect(() => {
+    if (!barsRef.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setBarsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.3 }
+    );
+    observer.observe(barsRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div className="w-full bg-background-light overflow-x-hidden">
 
       {/* ─── Navigation ─── */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-background-light/80 backdrop-blur-md px-6 md:px-12 lg:px-20">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-background-light/80 backdrop-blur-md px-4 md:px-8 lg:px-14">
         <div className="max-w-[1400px] mx-auto">
           <div className="flex items-center justify-between py-5 border-b border-secondary/[0.06]">
-            <Logo className="h-8" showText={true} />
+            <Logo className="h-12" showText={true} />
             <div className="flex items-center gap-8">
               <button
                 onClick={() => document.getElementById('philosophy')?.scrollIntoView({ behavior: 'smooth' })}
@@ -39,12 +105,6 @@ const Landing: React.FC = () => {
                 className="hidden md:block text-sm text-stone-text/70 hover:text-secondary transition-colors tracking-wide"
               >
                 Features
-              </button>
-              <button
-                onClick={() => navigate('/signin')}
-                className="text-sm font-medium text-secondary hover:text-primary transition-colors tracking-wide"
-              >
-                Sign In
               </button>
               <button
                 onClick={() => navigate('/signin')}
@@ -66,11 +126,11 @@ const Landing: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-end">
             {/* Main heading — takes 7 cols */}
             <div className="lg:col-span-7 space-y-8">
-              <h1 className="font-serif text-[clamp(2.5rem,6vw,5.5rem)] font-normal leading-[1.05] tracking-[-0.02em] text-secondary">
+              <h1 className={`font-serif text-[clamp(2.5rem,6vw,5.5rem)] font-normal leading-[1.05] tracking-[-0.02em] text-secondary transition-all duration-700 ease-out ${heroLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}>
                 Finance<br />
                 with <em className="text-primary" style={{ fontStyle: 'italic' }}>intention</em>
               </h1>
-              <div className="flex items-center gap-6 pt-4">
+              <div className={`flex items-center gap-6 pt-4 transition-all duration-700 ease-out ${heroLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`} style={{ transitionDelay: '200ms' }}>
                 <button
                   onClick={() => navigate('/signin')}
                   className="group flex items-center gap-3 px-8 py-4 bg-primary text-white rounded-full text-base font-medium tracking-wide hover:bg-[#c9431a] transition-colors"
@@ -83,7 +143,7 @@ const Landing: React.FC = () => {
             </div>
 
             {/* Supporting text — takes 5 cols */}
-            <div className="lg:col-span-5 lg:pb-4">
+            <div className={`lg:col-span-5 lg:pb-4 transition-all duration-700 ease-out ${heroLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`} style={{ transitionDelay: '400ms' }}>
               <p className="text-lg md:text-xl font-light leading-relaxed text-stone-text max-w-md">
                 Not another budgeting app. Fincurio is a space for calm, clarity, and purpose in your financial life.
               </p>
@@ -91,15 +151,24 @@ const Landing: React.FC = () => {
           </div>
 
           {/* Minimal divider line */}
-          <div className="mt-16 pt-6 border-t border-secondary/[0.08]">
-            <div className="flex flex-wrap items-center gap-x-12 gap-y-3 text-xs text-stone-text/40 tracking-widest uppercase font-medium">
-              <span>Reflection</span>
-              <span>·</span>
-              <span>Journaling</span>
-              <span>·</span>
-              <span>Insight</span>
-              <span>·</span>
-              <span>Intention</span>
+          <div className={`mt-16 pt-6 relative transition-all duration-700 ease-out ${heroLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`} style={{ transitionDelay: '600ms' }}>
+            {/* Sweeping line — left to right */}
+            <div className="absolute top-0 left-0 right-0 h-px bg-secondary/[0.08]"></div>
+            <div
+              className={`absolute top-0 left-0 right-0 h-px bg-primary/25 origin-left transition-transform ${heroLoaded ? 'scale-x-100' : 'scale-x-0'}`}
+              style={{ transitionDuration: '3200ms', transitionDelay: '700ms', transitionTimingFunction: 'cubic-bezier(0.35, 0.0, 0.15, 1)' }}
+            ></div>
+
+            <div className="flex flex-wrap items-center gap-x-12 gap-y-3 text-xs tracking-widest uppercase font-medium">
+              {['Reflection', '·', 'Journaling', '·', 'Insight', '·', 'Intention'].map((word, i) => (
+                <span
+                  key={i}
+                  className={`transition-colors duration-700 ease-out ${heroLoaded ? 'text-stone-text/70' : 'text-stone-text/20'}`}
+                  style={{ transitionDelay: `${800 + i * 340}ms` }}
+                >
+                  {word}
+                </span>
+              ))}
             </div>
           </div>
         </div>
@@ -110,18 +179,18 @@ const Landing: React.FC = () => {
         <div className="max-w-[1400px] mx-auto">
           {/* Section intro — asymmetric */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-24">
-            <div className="lg:col-span-5">
+            <Reveal className="lg:col-span-5">
               <span className="text-xs text-stone-text/40 tracking-[0.2em] uppercase font-medium">Our philosophy</span>
               <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-secondary leading-[1.1] mt-4">
                 Money is personal.<br />
                 Its tools should be too.
               </h2>
-            </div>
-            <div className="lg:col-span-5 lg:col-start-8 flex items-end">
+            </Reveal>
+            <Reveal delay={150} className="lg:col-span-5 lg:col-start-8 flex items-end">
               <p className="text-base md:text-lg text-stone-text font-light leading-relaxed">
                 Most finance apps optimize for anxiety — red alerts, aggressive nudges, gamified goals. We chose a different path: one built around reflection, clarity, and calm.
               </p>
-            </div>
+            </Reveal>
           </div>
 
           {/* Three pillars */}
@@ -143,11 +212,13 @@ const Landing: React.FC = () => {
                 text: 'Set a financial intention — not a rigid budget. Fincurio helps you notice when your actions drift from your values, gently and without judgment.',
               },
             ].map((pillar, i) => (
-              <div key={i} className="bg-background-light p-10 md:p-12 space-y-5">
-                <span className="text-xs text-primary font-medium tracking-[0.15em]">{pillar.number}</span>
-                <h3 className="font-serif text-xl md:text-2xl text-secondary leading-snug">{pillar.title}</h3>
-                <p className="text-sm md:text-base text-stone-text font-light leading-relaxed">{pillar.text}</p>
-              </div>
+              <Reveal key={i} delay={i * 150}>
+                <div className="bg-background-light p-10 md:p-12 space-y-5">
+                  <span className="text-xs text-primary font-medium tracking-[0.15em]">{pillar.number}</span>
+                  <h3 className="font-serif text-xl md:text-2xl text-secondary leading-snug">{pillar.title}</h3>
+                  <p className="text-sm md:text-base text-stone-text font-light leading-relaxed">{pillar.text}</p>
+                </div>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -160,7 +231,7 @@ const Landing: React.FC = () => {
           {/* Feature 1: Journal */}
           <div className="py-24 md:py-32 border-t border-secondary/[0.06]">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center">
-              <div className="lg:col-span-5 space-y-6">
+              <Reveal className="lg:col-span-5 space-y-6">
                 <span className="text-xs text-primary font-medium tracking-[0.15em] uppercase">Journal</span>
                 <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl text-secondary leading-[1.15]">
                   Record with the care of a diary entry
@@ -180,10 +251,10 @@ const Landing: React.FC = () => {
                     </div>
                   ))}
                 </div>
-              </div>
+              </Reveal>
 
               {/* Mock UI */}
-              <div className="lg:col-span-7">
+              <Reveal delay={200} className="lg:col-span-7">
                 <div className="bg-surface-dark rounded-2xl border border-secondary/[0.06] overflow-hidden">
                   <div className="px-8 py-5 border-b border-secondary/[0.06] flex items-center justify-between">
                     <span className="font-serif text-lg text-secondary">Recent entries</span>
@@ -218,7 +289,7 @@ const Landing: React.FC = () => {
                     ))}
                   </div>
                 </div>
-              </div>
+              </Reveal>
             </div>
           </div>
 
@@ -226,9 +297,9 @@ const Landing: React.FC = () => {
           <div className="py-24 md:py-32 border-t border-secondary/[0.06]">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center">
               {/* Mock UI — left on desktop */}
-              <div className="lg:col-span-7 order-2 lg:order-1">
+              <Reveal className="lg:col-span-7 order-2 lg:order-1">
                 <div className="bg-surface-dark rounded-2xl border border-secondary/[0.06] overflow-hidden">
-                  <div className="p-8 md:p-10 space-y-8">
+                  <div ref={barsRef} className="p-8 md:p-10 space-y-8">
                     <div>
                       <span className="text-xs text-stone-text/40 tracking-wide">October 2025</span>
                       <h3 className="font-serif text-2xl text-secondary mt-1">Monthly reflection</h3>
@@ -262,16 +333,19 @@ const Landing: React.FC = () => {
                             <span className="text-sm text-secondary font-medium">{cat.amount}</span>
                           </div>
                           <div className="w-full h-1.5 bg-secondary/[0.06] rounded-full overflow-hidden">
-                            <div className={`h-full ${cat.color} rounded-full transition-all duration-700`} style={{ width: cat.width }}></div>
+                            <div
+                              className={`h-full ${cat.color} rounded-full transition-all duration-700 ease-out`}
+                              style={{ width: barsVisible ? cat.width : '0%', transitionDelay: `${i * 100}ms` }}
+                            ></div>
                           </div>
                         </div>
                       ))}
                     </div>
                   </div>
                 </div>
-              </div>
+              </Reveal>
 
-              <div className="lg:col-span-5 order-1 lg:order-2 space-y-6">
+              <Reveal delay={200} className="lg:col-span-5 order-1 lg:order-2 space-y-6">
                 <span className="text-xs text-primary font-medium tracking-[0.15em] uppercase">Reflections</span>
                 <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl text-secondary leading-[1.15]">
                   See the shape of your financial life
@@ -279,26 +353,30 @@ const Landing: React.FC = () => {
                 <p className="text-base md:text-lg text-stone-text font-light leading-relaxed">
                   Monthly summaries that read like a story, not a spreadsheet. Understand where your money flows and whether it aligns with what matters to you.
                 </p>
-              </div>
+              </Reveal>
             </div>
           </div>
 
           {/* Feature 3: Intention — text only, editorial */}
           <div className="py-24 md:py-32 border-t border-secondary/[0.06]">
             <div className="max-w-3xl mx-auto text-center space-y-8">
-              <span className="text-xs text-primary font-medium tracking-[0.15em] uppercase">Intention Setting</span>
-              <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl text-secondary leading-[1.15]">
-                Not a budget. An intention.
-              </h2>
-              <p className="text-base md:text-lg text-stone-text font-light leading-relaxed">
-                Budgets feel like restrictions. Intentions feel like alignment. During onboarding, you'll set a financial intention — a north star that guides your Fincurio experience. It's not about perfection; it's about awareness.
-              </p>
-              <div className="pt-4">
-                <div className="inline-block bg-surface-dark rounded-2xl border border-secondary/[0.06] px-10 py-6">
-                  <p className="text-xs text-stone-text/40 mb-2 tracking-wide">Your intention</p>
-                  <p className="font-serif text-xl md:text-2xl text-secondary italic">"Spend on what grows me, save for what frees me."</p>
+              <Reveal>
+                <span className="text-xs text-primary font-medium tracking-[0.15em] uppercase">Intention Setting</span>
+                <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl text-secondary leading-[1.15] mt-4">
+                  Not a budget. An intention.
+                </h2>
+                <p className="text-base md:text-lg text-stone-text font-light leading-relaxed mt-4">
+                  Budgets feel like restrictions. Intentions feel like alignment. During onboarding, you'll set a financial intention — a north star that guides your Fincurio experience. It's not about perfection; it's about awareness.
+                </p>
+              </Reveal>
+              <Reveal delay={200}>
+                <div className="pt-4">
+                  <div className="inline-block bg-surface-dark rounded-2xl border border-secondary/[0.06] px-10 py-6">
+                    <p className="text-xs text-stone-text/40 mb-2 tracking-wide">Your intention</p>
+                    <p className="font-serif text-xl md:text-2xl text-secondary italic">"Spend on what grows me, save for what frees me."</p>
+                  </div>
                 </div>
-              </div>
+              </Reveal>
             </div>
           </div>
         </div>
@@ -311,13 +389,13 @@ const Landing: React.FC = () => {
 
         <div className="max-w-[1400px] mx-auto relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            <div className="lg:col-span-7">
+            <Reveal className="lg:col-span-7">
               <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl xl:text-6xl text-white/90 leading-[1.1]">
                 Your money deserves<br />
                 more than a spreadsheet.
               </h2>
-            </div>
-            <div className="lg:col-span-5 lg:flex lg:justify-end">
+            </Reveal>
+            <Reveal delay={200} className="lg:col-span-5 lg:flex lg:justify-end">
               <div className="space-y-6">
                 <button
                   onClick={() => navigate('/signin')}
@@ -330,14 +408,14 @@ const Landing: React.FC = () => {
                   Free forever for core features. No credit card.
                 </p>
               </div>
-            </div>
+            </Reveal>
           </div>
         </div>
       </section>
 
       {/* ─── Footer ─── */}
       <footer className="relative py-16 px-6 md:px-12 lg:px-20 bg-secondary border-t border-white/[0.05]">
-        <div className="max-w-[1400px] mx-auto">
+        <Reveal fade className="max-w-[1400px] mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mb-16">
             <div className="md:col-span-5">
               <Logo className="h-8" showText={true} textClassName="text-white/80" variant="light" />
@@ -363,10 +441,10 @@ const Landing: React.FC = () => {
             </div>
           </div>
 
-          <div className="pt-8 border-t border-white/[0.06] flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="pt-8 border-t border-white/[0.06] flex items-center justify-center">
             <p className="text-white/20 text-xs tracking-wide">© 2026 Fincurio. Wealth is a mindset.</p>
           </div>
-        </div>
+        </Reveal>
       </footer>
     </div>
   );

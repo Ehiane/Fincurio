@@ -9,11 +9,11 @@ interface LogoProps {
 
 const Logo: React.FC<LogoProps> = ({ className = "h-8", showText = true, textClassName, variant = 'dark' }) => {
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-0.5">
       {/* Logo SVG */}
       <svg
         className={className}
-        viewBox="0 0 1024 544"
+        viewBox="360 120 310 330"
         xmlns="http://www.w3.org/2000/svg"
         xmlnsXlink="http://www.w3.org/1999/xlink"
       >
