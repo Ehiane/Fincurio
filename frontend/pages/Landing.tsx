@@ -47,6 +47,7 @@ const Landing: React.FC = () => {
   const heroRef = useRef<HTMLDivElement>(null);
   const [heroLoaded, setHeroLoaded] = useState(false);
   const [barsVisible, setBarsVisible] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const barsRef = useRef<HTMLDivElement>(null);
 
   // Hero entrance on mount
@@ -108,11 +109,44 @@ const Landing: React.FC = () => {
               </button>
               <button
                 onClick={() => navigate('/signin')}
-                className="px-5 py-2 rounded-full bg-secondary text-background-light text-sm font-medium tracking-wide hover:bg-secondary/90 transition-colors"
+                className="hidden md:inline-flex px-5 py-2 rounded-full bg-secondary text-background-light text-sm font-medium tracking-wide hover:bg-secondary/90 transition-colors"
               >
                 Get Started
               </button>
+              {/* Mobile hamburger */}
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="md:hidden flex flex-col justify-center items-center w-8 h-8 gap-[5px]"
+                aria-label="Toggle menu"
+              >
+                <span className={`block w-5 h-[1.5px] bg-secondary transition-all duration-300 ${mobileMenuOpen ? 'rotate-45 translate-y-[6.5px]' : ''}`} />
+                <span className={`block w-5 h-[1.5px] bg-secondary transition-all duration-300 ${mobileMenuOpen ? 'opacity-0' : ''}`} />
+                <span className={`block w-5 h-[1.5px] bg-secondary transition-all duration-300 ${mobileMenuOpen ? '-rotate-45 -translate-y-[6.5px]' : ''}`} />
+              </button>
             </div>
+          </div>
+        </div>
+        {/* Mobile dropdown */}
+        <div className={`md:hidden overflow-hidden transition-all duration-300 ease-out ${mobileMenuOpen ? 'max-h-60 opacity-100' : 'max-h-0 opacity-0'}`}>
+          <div className="max-w-[1400px] mx-auto py-4 flex flex-col items-center gap-4 border-b border-secondary/[0.06]">
+            <button
+              onClick={() => { document.getElementById('philosophy')?.scrollIntoView({ behavior: 'smooth' }); setMobileMenuOpen(false); }}
+              className="text-sm text-stone-text/70 hover:text-secondary transition-colors tracking-wide"
+            >
+              Philosophy
+            </button>
+            <button
+              onClick={() => { document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' }); setMobileMenuOpen(false); }}
+              className="text-sm text-stone-text/70 hover:text-secondary transition-colors tracking-wide"
+            >
+              Features
+            </button>
+            <button
+              onClick={() => { navigate('/signin'); setMobileMenuOpen(false); }}
+              className="px-5 py-2 rounded-full bg-secondary text-background-light text-sm font-medium tracking-wide hover:bg-secondary/90 transition-colors"
+            >
+              Get Started
+            </button>
           </div>
         </div>
       </nav>
@@ -266,15 +300,62 @@ const Landing: React.FC = () => {
                   </div>
                   <div className="divide-y divide-secondary/[0.04]">
                     {[
-                      { merchant: 'Whole Foods Market', category: 'Nourishment', amount: '-$127.40', date: 'Today' },
-                      { merchant: 'Apple', category: 'Tech', amount: '-$2,399.00', date: 'Yesterday' },
-                      { merchant: 'Monthly Salary', category: 'Income', amount: '+$5,800.00', date: 'Oct 1' },
-                      { merchant: 'Blue Bottle Coffee', category: 'Dining', amount: '-$6.50', date: 'Sep 30' },
+                      {
+                        merchant: 'Target',
+                        category: 'Groceries',
+                        amount: '-$127.40',
+                        date: 'Today',
+                        color: 'bg-[#CC0000]',
+                        icon: (
+                          <svg viewBox="0 0 24 24" className="w-4 h-4" fill="white">
+                            <circle cx="12" cy="12" r="10" fill="white"/>
+                            <circle cx="12" cy="12" r="7.5" fill="#CC0000"/>
+                            <circle cx="12" cy="12" r="5" fill="white"/>
+                            <circle cx="12" cy="12" r="2.5" fill="#CC0000"/>
+                          </svg>
+                        ),
+                      },
+                      {
+                        merchant: 'Apple',
+                        category: 'Tech',
+                        amount: '-$2,399.00',
+                        date: 'Yesterday',
+                        color: 'bg-[#333333]',
+                        icon: (
+                          <svg viewBox="0 0 384 512" className="w-3.5 h-3.5" fill="white">
+                            <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/>
+                          </svg>
+                        ),
+                      },
+                      {
+                        merchant: 'Netflix',
+                        category: 'Entertainment',
+                        amount: '-$15.99',
+                        date: 'Oct 1',
+                        color: 'bg-[#e50914]',
+                        icon: (
+                          <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="white">
+                            <path d="M5.398 0v.006c3.028 8.556 5.37 15.175 8.348 23.596 2.344.058 4.85.398 4.854.398-2.8-7.924-5.923-16.747-8.487-24h-4.715zm8.489 0v9.63L18.6 22.951c-.043-7.86-.004-15.913.002-22.95zM5.398 1.05V24c1.873-.225 2.81-.312 4.715-.398v-9.22z"/>
+                          </svg>
+                        ),
+                      },
+                      {
+                        merchant: 'Spotify',
+                        category: 'Entertainment',
+                        amount: '-$11.99',
+                        date: 'Sep 30',
+                        color: 'bg-[#1DB954]',
+                        icon: (
+                          <svg viewBox="0 0 24 24" className="w-4 h-4" fill="white">
+                            <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+                          </svg>
+                        ),
+                      },
                     ].map((tx, i) => (
                       <div key={i} className="px-8 py-5 flex items-center justify-between">
                         <div className="flex items-center gap-4">
-                          <div className="w-9 h-9 rounded-full bg-secondary/[0.05] flex items-center justify-center">
-                            <span className="text-xs font-medium text-secondary/40">{tx.merchant[0]}</span>
+                          <div className={`w-9 h-9 rounded-full ${tx.color} flex items-center justify-center shadow-sm`}>
+                            {tx.icon}
                           </div>
                           <div>
                             <p className="text-sm font-medium text-secondary">{tx.merchant}</p>
@@ -416,8 +497,8 @@ const Landing: React.FC = () => {
       {/* ─── Footer ─── */}
       <footer className="relative py-16 px-6 md:px-12 lg:px-20 bg-secondary border-t border-white/[0.05]">
         <Reveal fade className="max-w-[1400px] mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mb-16">
-            <div className="md:col-span-5">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mb-16 text-center md:text-left">
+            <div className="md:col-span-5 flex flex-col items-center md:items-start">
               <Logo className="h-8" showText={true} textClassName="text-white/80" variant="light" />
               <p className="text-white/30 text-sm leading-relaxed mt-4 max-w-sm">
                 A space for intentional financial living. Built with the belief that how you relate to money shapes how you relate to life.

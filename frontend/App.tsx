@@ -32,7 +32,7 @@ const App: React.FC = () => {
                 <PrivateRoute>
                   <div className="flex flex-1 flex-col md:flex-row h-screen overflow-hidden">
                     <Sidebar />
-                    <div className="flex-1 overflow-y-auto">
+                    <div className="flex-1 overflow-y-auto pt-14 lg:pt-0">
                       <EmailVerificationBanner />
                       <Routes>
                         <Route path="dashboard" element={<Dashboard />} />

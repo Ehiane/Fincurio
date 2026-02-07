@@ -326,12 +326,12 @@ const TransactionModal: React.FC<{
   };
 
   return (
-    <div className="fixed inset-0 bg-secondary/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
-      <div className="bg-background-light rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-stone-300/40 animate-in slide-in-from-bottom-3 duration-300">
+    <div className="fixed inset-0 bg-secondary/40 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 sm:p-4 animate-in fade-in duration-200">
+      <div className="bg-background-light rounded-t-2xl sm:rounded-2xl shadow-2xl w-full sm:max-w-2xl max-h-[92vh] sm:max-h-[90vh] overflow-y-auto border border-stone-300/40 animate-in slide-in-from-bottom-3 duration-300">
         {/* Header */}
-        <div className="px-8 pt-8 pb-6 border-b border-stone-300/50">
+        <div className="px-5 sm:px-8 pt-5 sm:pt-8 pb-4 sm:pb-6 border-b border-stone-300/50">
           <div className="flex items-center justify-between">
-            <h3 className="text-2xl font-serif font-medium text-secondary tracking-tight">
+            <h3 className="text-xl sm:text-2xl font-serif font-medium text-secondary tracking-tight">
               {transaction ? 'Edit Transaction' : 'Add Transaction'}
             </h3>
             <button
@@ -343,7 +343,7 @@ const TransactionModal: React.FC<{
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="px-8 py-8 space-y-7">
+        <form onSubmit={handleSubmit} className="px-5 sm:px-8 py-5 sm:py-8 space-y-4 sm:space-y-7">
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-red-800 text-sm">
               {error}
@@ -355,7 +355,7 @@ const TransactionModal: React.FC<{
             <button
               type="button"
               onClick={() => setType('expense')}
-              className={`flex-1 py-3.5 rounded-full font-medium text-sm tracking-wide transition-all duration-200 ${
+              className={`flex-1 py-2.5 sm:py-3.5 rounded-full font-medium text-sm tracking-wide transition-all duration-200 ${
                 type === 'expense'
                   ? 'bg-primary text-white shadow-md'
                   : 'bg-surface-dark/50 text-stone-text hover:bg-surface-dark'
@@ -366,7 +366,7 @@ const TransactionModal: React.FC<{
             <button
               type="button"
               onClick={() => setType('income')}
-              className={`flex-1 py-3.5 rounded-full font-medium text-sm tracking-wide transition-all duration-200 ${
+              className={`flex-1 py-2.5 sm:py-3.5 rounded-full font-medium text-sm tracking-wide transition-all duration-200 ${
                 type === 'income'
                   ? 'bg-emerald-500 text-white shadow-md'
                   : 'bg-surface-dark/50 text-stone-text hover:bg-surface-dark'
@@ -379,7 +379,7 @@ const TransactionModal: React.FC<{
           {/* Date & Time */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs uppercase tracking-widest text-stone-text font-semibold mb-2">
+              <label className="block text-xs uppercase tracking-widest text-stone-text font-semibold mb-1.5 sm:mb-2">
                 Date
               </label>
               <input
@@ -387,11 +387,11 @@ const TransactionModal: React.FC<{
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
                 required
-                className="w-full px-4 py-3 bg-white/80 border border-stone-300/60 rounded-xl text-secondary focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
+                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white/80 border border-stone-300/60 rounded-xl text-secondary text-sm sm:text-base focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
               />
             </div>
             <div>
-              <label className="block text-xs uppercase tracking-widest text-stone-text font-semibold mb-2">
+              <label className="block text-xs uppercase tracking-widest text-stone-text font-semibold mb-1.5 sm:mb-2">
                 Time
               </label>
               <input
@@ -399,14 +399,14 @@ const TransactionModal: React.FC<{
                 value={time}
                 onChange={(e) => setTime(e.target.value)}
                 required
-                className="w-full px-4 py-3 bg-white/80 border border-stone-300/60 rounded-xl text-secondary focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
+                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white/80 border border-stone-300/60 rounded-xl text-secondary text-sm sm:text-base focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
               />
             </div>
           </div>
 
           {/* Merchant */}
           <div>
-            <label className="block text-xs uppercase tracking-widest text-stone-text font-semibold mb-2">
+            <label className="block text-xs uppercase tracking-widest text-stone-text font-semibold mb-1.5 sm:mb-2">
               Merchant
             </label>
             <input
@@ -416,7 +416,7 @@ const TransactionModal: React.FC<{
               onChange={(e) => setMerchant(e.target.value)}
               required
               placeholder="Apple Store"
-              className="w-full px-4 py-3 bg-white/80 border border-stone-300/60 rounded-xl text-secondary placeholder:text-stone-400 focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
+              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white/80 border border-stone-300/60 rounded-xl text-secondary text-sm sm:text-base placeholder:text-stone-400 focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
             />
             <datalist id="merchants-list">
               {merchants.map((merch) => (
@@ -427,14 +427,14 @@ const TransactionModal: React.FC<{
 
           {/* Category */}
           <div>
-            <label className="block text-xs uppercase tracking-widest text-stone-text font-semibold mb-2">
+            <label className="block text-xs uppercase tracking-widest text-stone-text font-semibold mb-1.5 sm:mb-2">
               Category
             </label>
             <select
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
               required
-              className="w-full px-4 py-3 bg-white/80 border border-stone-300/60 rounded-xl text-secondary focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
+              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white/80 border border-stone-300/60 rounded-xl text-secondary text-sm sm:text-base focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
             >
               <option value="">Select a category</option>
               {categories.map((cat) => (
@@ -447,7 +447,7 @@ const TransactionModal: React.FC<{
 
           {/* Amount */}
           <div>
-            <label className="block text-xs uppercase tracking-widest text-stone-text font-semibold mb-2">
+            <label className="block text-xs uppercase tracking-widest text-stone-text font-semibold mb-1.5 sm:mb-2">
               Amount
             </label>
             <input
@@ -457,38 +457,38 @@ const TransactionModal: React.FC<{
               onChange={(e) => setAmount(formatCurrency(e.target.value))}
               required
               placeholder="1,000.00"
-              className="w-full px-4 py-3 bg-white/80 border border-stone-300/60 rounded-xl text-secondary placeholder:text-stone-400 focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all font-serif text-lg"
+              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white/80 border border-stone-300/60 rounded-xl text-secondary placeholder:text-stone-400 focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all font-serif text-base sm:text-lg"
             />
           </div>
 
           {/* Notes */}
           <div>
-            <label className="block text-xs uppercase tracking-widest text-stone-text font-semibold mb-2">
+            <label className="block text-xs uppercase tracking-widest text-stone-text font-semibold mb-1.5 sm:mb-2">
               Notes <span className="normal-case tracking-normal font-normal text-stone-400">(optional)</span>
             </label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Add any additional details..."
-              rows={3}
-              className="w-full px-4 py-3 bg-white/80 border border-stone-300/60 rounded-xl text-secondary placeholder:text-stone-400 focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all resize-none"
+              rows={2}
+              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white/80 border border-stone-300/60 rounded-xl text-secondary text-sm sm:text-base placeholder:text-stone-400 focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all resize-none"
             />
           </div>
 
           {/* Actions */}
-          <div className="flex gap-4 pt-2 border-t border-stone-300/40">
+          <div className="flex gap-3 sm:gap-4 pt-2 border-t border-stone-300/40">
             <button
               type="button"
               onClick={() => onClose(false)}
               disabled={loading}
-              className="flex-1 px-6 py-3.5 rounded-full border border-stone-300/60 text-stone-text font-medium text-sm tracking-wide hover:bg-white/60 hover:text-secondary transition-all disabled:opacity-50"
+              className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3.5 rounded-full border border-stone-300/60 text-stone-text font-medium text-sm tracking-wide hover:bg-white/60 hover:text-secondary transition-all disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 px-6 py-3.5 rounded-full bg-secondary text-background-light font-medium text-sm tracking-wide hover:bg-secondary/90 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all shadow-md"
+              className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3.5 rounded-full bg-secondary text-background-light font-medium text-sm tracking-wide hover:bg-secondary/90 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all shadow-md"
             >
               {loading ? 'Saving...' : transaction ? 'Update' : 'Add Transaction'}
             </button>

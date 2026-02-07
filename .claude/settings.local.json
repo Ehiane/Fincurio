@@ -32,7 +32,9 @@
       "Bash(find:*)",
       "Bash(dotnet clean:*)",
       "Bash(tasklist:*)",
-      "Bash(xargs:*)"
+      "Bash(xargs:*)",
+      "Bash(powershell -Command:*)",
+      "Bash(nslookup:*)"
     ]
   }
 }
