@@ -34,12 +34,12 @@ const Landing: React.FC = () => {
               <span className="text-xs font-medium tracking-widest uppercase text-primary">Financial Reflection</span>
             </div>
 
-            <h1 className="font-serif text-6xl md:text-7xl lg:text-8xl font-normal leading-[1.1] tracking-tight text-gray-900 dark:text-white">
+            <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-normal leading-[1.1] tracking-tight text-gray-900 dark:text-white px-4">
               Your money,<br />
               <span className="italic text-primary">reimagined</span>
             </h1>
 
-            <p className="text-xl md:text-2xl font-light leading-relaxed text-gray-600 dark:text-stone-text max-w-3xl mx-auto">
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-light leading-relaxed text-gray-600 dark:text-stone-text max-w-3xl mx-auto px-4">
               A sanctuary for intentional financial living. Beyond budgets, beyond tracking—discover a practice of clarity and purpose.
             </p>
           </div>
@@ -74,10 +74,10 @@ const Landing: React.FC = () => {
       </section>
 
       {/* Philosophy Section */}
-      <section id="philosophy" className="relative py-32 px-6 bg-white dark:bg-[#1a0d0f] border-t border-gray-200 dark:border-gray-800">
+      <section id="philosophy" className="relative py-32 px-6 bg-white dark:bg-[#1c1917] border-t border-gray-200 dark:border-gray-800">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
-            <h2 className="font-serif text-5xl md:text-6xl font-normal text-gray-900 dark:text-white mb-6">
+            <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-normal text-gray-900 dark:text-white mb-6 px-4">
               A different approach
             </h2>
             <div className="w-24 h-1 bg-primary mx-auto rounded-full"></div>
@@ -138,7 +138,7 @@ const Landing: React.FC = () => {
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium tracking-widest uppercase">
                 Journal
               </div>
-              <h2 className="font-serif text-4xl md:text-5xl text-gray-900 dark:text-white leading-tight">
+              <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-gray-900 dark:text-white leading-tight">
                 Your financial journal, refined
               </h2>
               <div className="w-16 h-1 bg-primary rounded-full"></div>
@@ -168,7 +168,7 @@ const Landing: React.FC = () => {
                     { merchant: 'Apple', category: 'Tech', amount: '-$2,399.00', icon: 'laptop_mac' },
                     { merchant: 'Monthly Salary', category: 'Income', amount: '+$5,800.00', icon: 'payments' },
                   ].map((transaction, i) => (
-                    <div key={i} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-[#1a0d0f] rounded-xl">
+                    <div key={i} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-stone-800 rounded-xl">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                           <span className="material-symbols-outlined text-primary text-sm">{transaction.icon}</span>
@@ -233,7 +233,7 @@ const Landing: React.FC = () => {
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium tracking-widest uppercase">
                 Insights
               </div>
-              <h2 className="font-serif text-4xl md:text-5xl text-gray-900 dark:text-white leading-tight">
+              <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-gray-900 dark:text-white leading-tight">
                 Monthly reflections, beautifully rendered
               </h2>
               <div className="w-16 h-1 bg-primary rounded-full"></div>
@@ -246,13 +246,13 @@ const Landing: React.FC = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="relative py-32 px-6 bg-gradient-to-br from-[#280905] via-[#3d1010] to-[#280905] overflow-hidden">
+      <section className="relative py-32 px-6 bg-gradient-to-br from-primary/95 via-primary to-primary/95 overflow-hidden">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMiI+PHBhdGggZD0iTTM2IDM0djItaDJ2LTJoLTJ6bTAgNGgtMnYyaDJ2LTJ6bTQtNHYyaDJ2LTJoLTJ6bTAgNGgtMnYyaDJ2LTJ6bTQtNHYyaDJ2LTJoLTJ6bTAgNGgtMnYyaDJ2LTJ6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-50"></div>
         <div className="relative z-10 max-w-4xl mx-auto text-center space-y-8">
-          <h2 className="font-serif text-5xl md:text-6xl font-normal text-white leading-tight">
+          <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-normal text-white leading-tight px-4">
             Ready to begin?
           </h2>
-          <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg md:text-xl text-gray-300 max-w-2xl mx-auto px-4">
             Join a community of thoughtful individuals cultivating a more intentional relationship with money.
           </p>
           <button
@@ -269,7 +269,7 @@ const Landing: React.FC = () => {
       </section>
 
       {/* Footer */}
-      <footer className="relative py-16 px-6 bg-[#0d0607] border-t border-gray-800">
+      <footer className="relative py-16 px-6 bg-stone-900 dark:bg-stone-950 border-t border-gray-800">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
             <div className="col-span-1 md:col-span-2">

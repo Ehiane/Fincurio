@@ -63,14 +63,14 @@ const Dashboard: React.FC = () => {
   const balanceChangePositive = data.balanceChange >= 0;
 
   return (
-    <div className="max-w-4xl mx-auto px-6 py-12 md:px-12 flex flex-col animate-in fade-in duration-700">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-8 md:py-12 flex flex-col animate-in fade-in duration-700">
       {/* Hero Balance */}
-      <section className="py-12 flex flex-col items-center justify-center text-center">
-        <h2 className="text-sm font-medium tracking-[0.2em] uppercase text-stone-text mb-6">{currentMonth} Balance</h2>
+      <section className="py-8 md:py-12 flex flex-col items-center justify-center text-center">
+        <h2 className="text-xs sm:text-sm font-medium tracking-[0.2em] uppercase text-stone-text mb-4 md:mb-6">{currentMonth} Balance</h2>
         <div className="relative group cursor-default">
-          <h1 className="font-serif text-6xl md:text-8xl lg:text-9xl text-slate-900 dark:text-slate-50 leading-none tracking-tight">
+          <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl text-slate-900 dark:text-slate-50 leading-none tracking-tight">
             ${Math.floor(data.currentBalance).toLocaleString()}
-            <span className="text-3xl md:text-5xl opacity-40 font-normal">
+            <span className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl opacity-40 font-normal">
               .{(data.currentBalance % 1).toFixed(2).substring(2)}
             </span>
           </h1>

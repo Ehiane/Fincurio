@@ -244,10 +244,10 @@ const Settings: React.FC = () => {
   ];
 
   return (
-    <div className="max-w-[720px] mx-auto px-6 pt-12 pb-24 animate-in fade-in duration-700">
-      <section className="mb-20">
-        <h2 className="text-4xl md:text-5xl font-light tracking-tight mb-4">Account Settings</h2>
-        <p className="text-lg text-stone-text font-light max-w-md">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-8 md:py-12 pb-24 animate-in fade-in duration-700">
+      <section className="mb-12 md:mb-20">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-light tracking-tight mb-4">Account Settings</h2>
+        <p className="text-base sm:text-lg text-stone-text font-light max-w-md">
           Manage your personal details and preferences.
         </p>
       </section>
