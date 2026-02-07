@@ -6,7 +6,7 @@ const Landing: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="w-full min-h-screen bg-stone-50 dark:bg-stone-900 overflow-x-hidden">
+    <div className="w-full min-h-screen bg-background-light overflow-x-hidden">
       {/* Hero Section */}
       <section className="relative min-h-screen flex flex-col items-center justify-center px-6 py-16 overflow-hidden">
         {/* Ambient Background Gradients */}
@@ -74,7 +74,7 @@ const Landing: React.FC = () => {
       </section>
 
       {/* Philosophy Section */}
-      <section id="philosophy" className="relative py-20 px-6 bg-white dark:bg-[#1c1917] border-t border-gray-200 dark:border-gray-800">
+      <section id="philosophy" className="relative py-20 px-6 bg-surface-dark border-t border-gray-200">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
             <h2 className="font-serif text-3xl sm:text-4xl md:text-4xl lg:text-5xl font-normal text-gray-900 dark:text-white mb-6 px-4">
@@ -130,7 +130,7 @@ const Landing: React.FC = () => {
       </section>
 
       {/* Features Section */}
-      <section className="relative py-20 px-6 bg-stone-50 dark:bg-stone-900 border-t border-gray-200 dark:border-gray-800">
+      <section className="relative py-20 px-6 bg-background-light border-t border-gray-200 dark:border-gray-800">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             {/* Feature 1 */}

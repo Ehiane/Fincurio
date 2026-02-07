@@ -66,7 +66,7 @@ const SignIn: React.FC = () => {
   };
 
   return (
-    <div className="w-full min-h-screen bg-stone-50 dark:bg-stone-900 flex items-center justify-center p-6 relative overflow-hidden">
+    <div className="w-full min-h-screen bg-background-light flex items-center justify-center p-6 relative overflow-hidden">
       <div className="absolute -top-[20%] -right-[10%] w-[600px] h-[600px] rounded-full bg-gradient-to-br from-primary/20 to-transparent blur-[120px] pointer-events-none opacity-30 dark:opacity-10"></div>
 
       <div className="w-full max-w-2xl flex flex-col items-center z-10">
