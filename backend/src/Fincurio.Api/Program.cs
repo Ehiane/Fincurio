@@ -46,12 +46,15 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// CORS Configuration (for frontend on localhost:3000)
+// CORS Configuration
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("FincurioFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:3000")
+        var frontendUrl = builder.Configuration["Frontend:Url"] ?? "http://localhost:3000";
+        var allowedOrigins = new[] { "http://localhost:3000", frontendUrl };
+
+        policy.WithOrigins(allowedOrigins)
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
