@@ -3,6 +3,7 @@ import { useAuth } from '../src/hooks/useAuth';
 import { userApi } from '../src/api/user.api';
 import { merchantsApi, Merchant } from '../src/api/merchants.api';
 import { categoriesApi, Category, CreateCategoryRequest } from '../src/api/categories.api';
+import { formatCurrency, parseCurrency } from '../src/utils/currencyFormatter';
 
 const Settings: React.FC = () => {
   const { user, logout } = useAuth();
@@ -85,7 +86,7 @@ const Settings: React.FC = () => {
       await userApi.updatePreferences({
         currency,
         timezone,
-        monthlyBudgetGoal: monthlyBudgetGoal ? parseFloat(monthlyBudgetGoal) : undefined,
+        monthlyBudgetGoal: monthlyBudgetGoal ? parseCurrency(monthlyBudgetGoal) : undefined,
       });
       setSuccess('Preferences updated successfully!');
       setTimeout(() => setSuccess(''), 3000);
@@ -366,13 +367,12 @@ const Settings: React.FC = () => {
                 {currencies.find((c) => c.code === currency)?.symbol}
               </span>
               <input
-                type="number"
-                step="0.01"
-                min="0"
+                type="text"
+                inputMode="decimal"
                 value={monthlyBudgetGoal}
-                onChange={(e) => setMonthlyBudgetGoal(e.target.value)}
+                onChange={(e) => setMonthlyBudgetGoal(formatCurrency(e.target.value))}
                 className="w-full pl-10 pr-4 py-3 bg-surface-dark border border-stone-700 rounded-lg text-white placeholder:text-gray-500 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                placeholder="4000.00"
+                placeholder="4,000.00"
               />
             </div>
             <p className="text-xs text-stone-text mt-2">Your target monthly spending limit</p>

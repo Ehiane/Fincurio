@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { userApi } from '../src/api/user.api';
 import Logo from '../src/components/Logo';
+import { formatCurrency, parseCurrency } from '../src/utils/currencyFormatter';
 
 const Onboarding: React.FC = () => {
   const navigate = useNavigate();
@@ -33,7 +34,8 @@ const Onboarding: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!monthlyBudgetGoal || parseFloat(monthlyBudgetGoal) <= 0) {
+    const budgetValue = parseCurrency(monthlyBudgetGoal);
+    if (!monthlyBudgetGoal || budgetValue <= 0) {
       setError('Please enter a valid budget goal');
       return;
     }
@@ -48,7 +50,7 @@ const Onboarding: React.FC = () => {
       // Update preferences with currency and budget
       await userApi.updatePreferences({
         currency,
-        monthlyBudgetGoal: parseFloat(monthlyBudgetGoal),
+        monthlyBudgetGoal: budgetValue,
       });
 
       navigate('/app/dashboard');
@@ -154,12 +156,11 @@ const Onboarding: React.FC = () => {
                   </span>
                   <input
                     autoFocus
-                    type="number"
-                    step="0.01"
-                    min="0"
+                    type="text"
+                    inputMode="decimal"
                     value={monthlyBudgetGoal}
-                    onChange={(e) => setMonthlyBudgetGoal(e.target.value)}
-                    placeholder="4000"
+                    onChange={(e) => setMonthlyBudgetGoal(formatCurrency(e.target.value))}
+                    placeholder="4,000.00"
                     className="w-full bg-transparent border-none p-0 text-2xl md:text-3xl lg:text-4xl text-center placeholder:text-gray-400 dark:placeholder:text-white/20 focus:ring-0 text-primary font-serif"
                   />
                 </div>

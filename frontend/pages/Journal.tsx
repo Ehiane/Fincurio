@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { transactionsApi, Transaction } from '../src/api/transactions.api';
 import { categoriesApi, Category } from '../src/api/categories.api';
 import { merchantsApi, Merchant } from '../src/api/merchants.api';
+import { formatCurrency, parseCurrency } from '../src/utils/currencyFormatter';
 
 const Journal: React.FC = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -290,7 +291,8 @@ const TransactionModal: React.FC<{
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!merchant || !categoryId || !amount || parseFloat(amount) <= 0) {
+    const amountValue = parseCurrency(amount);
+    if (!merchant || !categoryId || !amount || amountValue <= 0) {
       setError('Please fill in all required fields with valid values');
       return;
     }
@@ -304,7 +306,7 @@ const TransactionModal: React.FC<{
         time,
         merchant,
         categoryId,
-        amount: parseFloat(amount),
+        amount: amountValue,
         type,
         notes: notes || undefined,
       };
@@ -443,13 +445,12 @@ const TransactionModal: React.FC<{
               Amount
             </label>
             <input
-              type="number"
-              step="0.01"
-              min="0"
+              type="text"
+              inputMode="decimal"
               value={amount}
-              onChange={(e) => setAmount(e.target.value)}
+              onChange={(e) => setAmount(formatCurrency(e.target.value))}
               required
-              placeholder="0.00"
+              placeholder="1,000.00"
               className="w-full px-4 py-3 bg-surface-dark dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white placeholder:text-gray-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
             />
           </div>
