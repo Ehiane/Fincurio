@@ -338,7 +338,7 @@ const Settings: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-8 md:py-12 pb-24 animate-in fade-in duration-700">
       <section className="mb-12 md:mb-20">
-        <h2 className="text-3xl sm:text-4xl md:text-4xl lg:text-4xl font-light tracking-tight mb-4">Account Settings</h2>
+        <h2 className="font-serif text-3xl sm:text-4xl md:text-4xl lg:text-4xl font-light tracking-tight mb-4">Account Settings</h2>
         <p className="text-base sm:text-base md:text-lg text-stone-text font-light max-w-md">
           Manage your personal details and preferences.
         </p>
@@ -358,7 +358,7 @@ const Settings: React.FC = () => {
 
       {/* Profile Section */}
       <section className="mb-24">
-        <h3 className="text-2xl font-light text-secondary mb-8 border-b border-stone-300 pb-2">Profile</h3>
+        <h3 className="font-serif text-2xl font-light text-secondary mb-8 border-b border-stone-300 pb-2">Profile</h3>
         <div className="mb-6">
           <div className="text-sm text-stone-text mb-1">Email</div>
           <div className="text-lg text-secondary">{user?.email}</div>
@@ -412,7 +412,7 @@ const Settings: React.FC = () => {
 
       {/* Preferences Section */}
       <section className="mb-24">
-        <h3 className="text-2xl font-light text-secondary mb-8 border-b border-stone-300 pb-2">Preferences</h3>
+        <h3 className="font-serif text-2xl font-light text-secondary mb-8 border-b border-stone-300 pb-2">Preferences</h3>
         <form onSubmit={handleUpdatePreferences} className="space-y-6">
           <div>
             <label className="block text-sm text-stone-text mb-2">Currency</label>
@@ -481,7 +481,7 @@ const Settings: React.FC = () => {
 
       {/* Merchants Section */}
       <section className="mb-24">
-        <h3 className="text-2xl font-light text-secondary mb-8 border-b border-stone-300 pb-2">Saved Merchants</h3>
+        <h3 className="font-serif text-2xl font-light text-secondary mb-8 border-b border-stone-300 pb-2">Saved Merchants</h3>
         <p className="text-sm text-stone-text mb-6">
           Manage your frequently used merchants. These will appear as suggestions when adding transactions.
         </p>
@@ -529,7 +529,7 @@ const Settings: React.FC = () => {
 
       {/* Custom Categories Section */}
       <section className="mb-24">
-        <h3 className="text-2xl font-light text-secondary mb-8 border-b border-stone-300 pb-2">Custom Categories</h3>
+        <h3 className="font-serif text-2xl font-light text-secondary mb-8 border-b border-stone-300 pb-2">Custom Categories</h3>
         <p className="text-sm text-stone-text mb-6">
           Create custom categories for your transactions. Global categories cannot be deleted.
         </p>
@@ -709,7 +709,7 @@ const Settings: React.FC = () => {
 
       {/* Logout Section */}
       <section className="mb-24">
-        <h3 className="text-2xl font-light text-secondary mb-8 border-b border-stone-300 pb-2">Account</h3>
+        <h3 className="font-serif text-2xl font-light text-secondary mb-8 border-b border-stone-300 pb-2">Account</h3>
         <button
           onClick={handleLogout}
           className="px-8 py-3 rounded-full bg-secondary text-white font-medium hover:bg-red-700 transition-all"

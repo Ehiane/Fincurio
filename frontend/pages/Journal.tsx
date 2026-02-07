@@ -326,37 +326,39 @@ const TransactionModal: React.FC<{
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <div className="p-6 border-b border-stone-200">
+    <div className="fixed inset-0 bg-secondary/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
+      <div className="bg-background-light rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-stone-300/40 animate-in slide-in-from-bottom-3 duration-300">
+        {/* Header */}
+        <div className="px-8 pt-8 pb-6 border-b border-stone-300/50">
           <div className="flex items-center justify-between">
-            <h3 className="text-2xl font-serif text-secondary">
+            <h3 className="text-2xl font-serif font-medium text-secondary tracking-tight">
               {transaction ? 'Edit Transaction' : 'Add Transaction'}
             </h3>
             <button
               onClick={() => onClose(false)}
-              className="p-2 hover:bg-stone-100 rounded-lg transition-colors"
+              className="p-2 hover:bg-stone-200/60 rounded-full transition-colors text-stone-text hover:text-secondary"
             >
-              <span className="material-symbols-outlined">close</span>
+              <span className="material-symbols-outlined text-xl">close</span>
             </button>
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="px-8 py-8 space-y-7">
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-red-800 text-sm">
               {error}
             </div>
           )}
 
-          <div className="flex gap-4">
+          {/* Type Toggle */}
+          <div className="flex gap-3">
             <button
               type="button"
               onClick={() => setType('expense')}
-              className={`flex-1 py-3 rounded-lg font-medium transition-colors ${
+              className={`flex-1 py-3.5 rounded-full font-medium text-sm tracking-wide transition-all duration-200 ${
                 type === 'expense'
-                  ? 'bg-primary text-white'
-                  : 'bg-stone-100 text-stone-text'
+                  ? 'bg-primary text-white shadow-md'
+                  : 'bg-surface-dark/50 text-stone-text hover:bg-surface-dark'
               }`}
             >
               Expense
@@ -364,19 +366,20 @@ const TransactionModal: React.FC<{
             <button
               type="button"
               onClick={() => setType('income')}
-              className={`flex-1 py-3 rounded-lg font-medium transition-colors ${
+              className={`flex-1 py-3.5 rounded-full font-medium text-sm tracking-wide transition-all duration-200 ${
                 type === 'income'
-                  ? 'bg-emerald-500 text-white'
-                  : 'bg-stone-100 text-stone-text'
+                  ? 'bg-emerald-500 text-white shadow-md'
+                  : 'bg-surface-dark/50 text-stone-text hover:bg-surface-dark'
               }`}
             >
               Income
             </button>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-4">
+          {/* Date & Time */}
+          <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-stone-text mb-2">
+              <label className="block text-xs uppercase tracking-widest text-stone-text font-semibold mb-2">
                 Date
               </label>
               <input
@@ -384,11 +387,11 @@ const TransactionModal: React.FC<{
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
                 required
-                className="w-full px-4 py-3 bg-white border border-stone-300 rounded-lg text-secondary focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                className="w-full px-4 py-3 bg-white/80 border border-stone-300/60 rounded-xl text-secondary focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-stone-text mb-2">
+              <label className="block text-xs uppercase tracking-widest text-stone-text font-semibold mb-2">
                 Time
               </label>
               <input
@@ -396,13 +399,14 @@ const TransactionModal: React.FC<{
                 value={time}
                 onChange={(e) => setTime(e.target.value)}
                 required
-                className="w-full px-4 py-3 bg-white border border-stone-300 rounded-lg text-secondary focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                className="w-full px-4 py-3 bg-white/80 border border-stone-300/60 rounded-xl text-secondary focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
               />
             </div>
           </div>
 
+          {/* Merchant */}
           <div>
-            <label className="block text-sm font-medium text-stone-text mb-2">
+            <label className="block text-xs uppercase tracking-widest text-stone-text font-semibold mb-2">
               Merchant
             </label>
             <input
@@ -412,7 +416,7 @@ const TransactionModal: React.FC<{
               onChange={(e) => setMerchant(e.target.value)}
               required
               placeholder="Apple Store"
-              className="w-full px-4 py-3 bg-white border border-stone-300 rounded-lg text-secondary placeholder:text-stone-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+              className="w-full px-4 py-3 bg-white/80 border border-stone-300/60 rounded-xl text-secondary placeholder:text-stone-400 focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
             />
             <datalist id="merchants-list">
               {merchants.map((merch) => (
@@ -421,15 +425,16 @@ const TransactionModal: React.FC<{
             </datalist>
           </div>
 
+          {/* Category */}
           <div>
-            <label className="block text-sm font-medium text-stone-text mb-2">
+            <label className="block text-xs uppercase tracking-widest text-stone-text font-semibold mb-2">
               Category
             </label>
             <select
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
               required
-              className="w-full px-4 py-3 bg-white border border-stone-300 rounded-lg text-secondary focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+              className="w-full px-4 py-3 bg-white/80 border border-stone-300/60 rounded-xl text-secondary focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
             >
               <option value="">Select a category</option>
               {categories.map((cat) => (
@@ -440,8 +445,9 @@ const TransactionModal: React.FC<{
             </select>
           </div>
 
+          {/* Amount */}
           <div>
-            <label className="block text-sm font-medium text-stone-text mb-2">
+            <label className="block text-xs uppercase tracking-widest text-stone-text font-semibold mb-2">
               Amount
             </label>
             <input
@@ -451,36 +457,38 @@ const TransactionModal: React.FC<{
               onChange={(e) => setAmount(formatCurrency(e.target.value))}
               required
               placeholder="1,000.00"
-              className="w-full px-4 py-3 bg-white border border-stone-300 rounded-lg text-secondary placeholder:text-stone-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+              className="w-full px-4 py-3 bg-white/80 border border-stone-300/60 rounded-xl text-secondary placeholder:text-stone-400 focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all font-serif text-lg"
             />
           </div>
 
+          {/* Notes */}
           <div>
-            <label className="block text-sm font-medium text-stone-text mb-2">
-              Notes (optional)
+            <label className="block text-xs uppercase tracking-widest text-stone-text font-semibold mb-2">
+              Notes <span className="normal-case tracking-normal font-normal text-stone-400">(optional)</span>
             </label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Add any additional details..."
               rows={3}
-              className="w-full px-4 py-3 bg-white border border-stone-300 rounded-lg text-secondary placeholder:text-stone-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
+              className="w-full px-4 py-3 bg-white/80 border border-stone-300/60 rounded-xl text-secondary placeholder:text-stone-400 focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all resize-none"
             />
           </div>
 
-          <div className="flex gap-4 pt-4">
+          {/* Actions */}
+          <div className="flex gap-4 pt-2 border-t border-stone-300/40">
             <button
               type="button"
               onClick={() => onClose(false)}
               disabled={loading}
-              className="flex-1 px-6 py-3 rounded-lg border border-stone-300 text-secondary font-medium hover:bg-stone-50 transition-colors disabled:opacity-50"
+              className="flex-1 px-6 py-3.5 rounded-full border border-stone-300/60 text-stone-text font-medium text-sm tracking-wide hover:bg-white/60 hover:text-secondary transition-all disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 px-6 py-3 rounded-lg bg-primary text-white font-medium hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+              className="flex-1 px-6 py-3.5 rounded-full bg-secondary text-background-light font-medium text-sm tracking-wide hover:bg-secondary/90 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all shadow-md"
             >
               {loading ? 'Saving...' : transaction ? 'Update' : 'Add Transaction'}
             </button>

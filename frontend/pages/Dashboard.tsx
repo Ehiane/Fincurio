@@ -160,6 +160,7 @@ const Dashboard: React.FC = () => {
 
       {/* Recent Activity Mini Ledger */}
       <section className="py-12">
+        <div className="rounded-2xl border border-stone-300/60 p-6 md:p-8">
         <div className="flex items-end justify-between mb-10 px-2">
           <h3 className="font-serif text-2xl italic text-secondary">Recent Activity</h3>
           <button
@@ -194,6 +195,7 @@ const Dashboard: React.FC = () => {
             </button>
           </div>
         )}
+        </div>
       </section>
 
       <div className="mt-12 mb-20 text-center border-t border-stone-300 pt-12">
