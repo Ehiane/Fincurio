@@ -45,4 +45,11 @@ public class AuthController : ControllerBase
         await _authService.LogoutAsync(userId);
         return Ok(new { message = "Successfully logged out" });
     }
+
+    [HttpPost("reset-password")]
+    public async Task<ActionResult<ResetPasswordResponseDto>> ResetPassword([FromBody] ResetPasswordRequestDto request)
+    {
+        var response = await _authService.ResetPasswordAsync(request);
+        return Ok(response);
+    }
 }

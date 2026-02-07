@@ -22,6 +22,15 @@ export interface AuthResponse {
   expiresIn: number;
 }
 
+export interface ResetPasswordRequest {
+  email: string;
+  newPassword: string;
+}
+
+export interface ResetPasswordResponse {
+  message: string;
+}
+
 export const authApi = {
   register: async (data: RegisterRequest): Promise<AuthResponse> => {
     const response = await apiClient.post('/api/auth/register', data);
@@ -39,6 +48,11 @@ export const authApi = {
 
   getCurrentUser: async () => {
     const response = await apiClient.get('/api/user/profile');
+    return response.data;
+  },
+
+  resetPassword: async (data: ResetPasswordRequest): Promise<ResetPasswordResponse> => {
+    const response = await apiClient.post('/api/auth/reset-password', data);
     return response.data;
   },
 };

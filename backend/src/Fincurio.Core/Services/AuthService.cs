@@ -170,4 +170,35 @@ public class AuthService : IAuthService
     {
         await _tokenRepository.RevokeAllUserTokensAsync(userId);
     }
+
+    public async Task<ResetPasswordResponseDto> ResetPasswordAsync(ResetPasswordRequestDto request)
+    {
+        // Find user by email
+        var user = await _userRepository.GetByEmailAsync(request.Email);
+        if (user == null)
+        {
+            throw new NotFoundException("No account found with this email address");
+        }
+
+        // Validate new password
+        if (string.IsNullOrWhiteSpace(request.NewPassword) || request.NewPassword.Length < 6)
+        {
+            throw new ValidationException("Password must be at least 6 characters long");
+        }
+
+        // Hash new password
+        user.PasswordHash = PasswordHasher.HashPassword(request.NewPassword);
+        user.UpdatedAt = DateTime.UtcNow;
+
+        // Update user
+        await _userRepository.UpdateAsync(user);
+
+        // Revoke all existing tokens for security
+        await _tokenRepository.RevokeAllUserTokensAsync(user.Id);
+
+        return new ResetPasswordResponseDto
+        {
+            Message = "Password reset successfully. Please log in with your new password."
+        };
+    }
 }

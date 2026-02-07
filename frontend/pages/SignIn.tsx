@@ -1,36 +1,64 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../src/hooks/useAuth';
+import { authApi } from '../src/api/auth.api';
 
 const SignIn: React.FC = () => {
   const navigate = useNavigate();
   const { login, register } = useAuth();
 
   const [isSignUp, setIsSignUp] = useState(false);
+  const [isResetPassword, setIsResetPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setSuccess('');
 
     try {
-      if (isSignUp) {
+      if (isResetPassword) {
+        // Validate passwords match
+        if (password !== confirmPassword) {
+          setError('Passwords do not match');
+          setLoading(false);
+          return;
+        }
+        if (password.length < 6) {
+          setError('Password must be at least 6 characters');
+          setLoading(false);
+          return;
+        }
+
+        // Reset password
+        const response = await authApi.resetPassword({ email, newPassword: password });
+        setSuccess(response.message);
+        setPassword('');
+        setConfirmPassword('');
+
+        // Switch back to login mode after 2 seconds
+        setTimeout(() => {
+          setIsResetPassword(false);
+          setSuccess('');
+        }, 2000);
+      } else if (isSignUp) {
         await register({ email, password, firstName, lastName });
         navigate('/onboarding');
       } else {
         await login({ email, password });
-        // Check if user has completed onboarding by checking if they have preferences
         navigate('/app/dashboard');
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Authentication failed. Please try again.');
+      setError(err.response?.data?.message || 'Operation failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -50,10 +78,10 @@ const SignIn: React.FC = () => {
 
         <div className="text-center mb-16 space-y-4 max-w-lg">
           <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-normal leading-tight tracking-tight text-gray-900 dark:text-white">
-            {isSignUp ? 'Begin your financial reflection.' : 'Welcome back to your reflection.'}
+            {isResetPassword ? 'Reset your password.' : isSignUp ? 'Begin your financial reflection.' : 'Welcome back to your reflection.'}
           </h1>
           <p className="text-gray-500 dark:text-stone-text text-lg font-light">
-            Clarity in finance begins here.
+            {isResetPassword ? 'Enter your email and new password.' : 'Clarity in finance begins here.'}
           </p>
         </div>
 
@@ -64,7 +92,13 @@ const SignIn: React.FC = () => {
             </div>
           )}
 
-          {isSignUp && (
+          {success && (
+            <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-2xl p-4 text-green-800 dark:text-green-200 text-sm">
+              {success}
+            </div>
+          )}
+
+          {isSignUp && !isResetPassword && (
             <>
               <div className="relative flex items-center group">
                 <span className="absolute left-6 text-gray-400 dark:text-gray-500 material-symbols-outlined transition-colors group-focus-within:text-primary">person</span>
@@ -111,7 +145,7 @@ const SignIn: React.FC = () => {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
+              placeholder={isResetPassword ? "New password" : "••••••••"}
               className="w-full h-16 bg-white dark:bg-surface-dark border-none rounded-full py-4 pl-14 pr-14 text-lg text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-primary/20 transition-all shadow-sm"
             />
             <button
@@ -125,28 +159,68 @@ const SignIn: React.FC = () => {
             </button>
           </div>
 
+          {isResetPassword && (
+            <div className="relative flex items-center group">
+              <span className="absolute left-6 text-gray-400 dark:text-gray-500 material-symbols-outlined transition-colors group-focus-within:text-primary">lock</span>
+              <input
+                type={showPassword ? "text" : "password"}
+                required
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Confirm new password"
+                className="w-full h-16 bg-white dark:bg-surface-dark border-none rounded-full py-4 pl-14 pr-14 text-lg text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-primary/20 transition-all shadow-sm"
+              />
+            </div>
+          )}
+
+          {!isSignUp && !isResetPassword && (
+            <div className="flex justify-end -mt-4">
+              <button
+                type="button"
+                onClick={() => setIsResetPassword(true)}
+                className="text-sm text-primary hover:underline transition-all"
+              >
+                Forgot password?
+              </button>
+            </div>
+          )}
+
           <button
             type="submit"
             disabled={loading}
             className="w-full h-16 rounded-full bg-primary hover:bg-[#b0132e] disabled:bg-gray-400 disabled:cursor-not-allowed text-white text-lg font-medium tracking-wide shadow-lg hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-2 group"
           >
-            <span>{loading ? 'Loading...' : (isSignUp ? 'Create Account' : 'Enter Fincurio')}</span>
+            <span>{loading ? 'Loading...' : (isResetPassword ? 'Reset Password' : isSignUp ? 'Create Account' : 'Enter Fincurio')}</span>
             {!loading && (
               <span className="material-symbols-outlined text-sm transition-transform duration-300 group-hover:translate-x-1">arrow_forward</span>
             )}
           </button>
 
           <div className="flex justify-center items-center gap-4 mt-8 text-sm text-gray-500 dark:text-gray-400">
-            <button
-              type="button"
-              onClick={() => {
-                setIsSignUp(!isSignUp);
-                setError('');
-              }}
-              className="hover:text-primary transition-colors"
-            >
-              {isSignUp ? 'Already have an account? Sign in' : "Don't have an account? Sign up"}
-            </button>
+            {isResetPassword ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setIsResetPassword(false);
+                  setError('');
+                  setSuccess('');
+                }}
+                className="hover:text-primary transition-colors"
+              >
+                Back to sign in
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  setIsSignUp(!isSignUp);
+                  setError('');
+                }}
+                className="hover:text-primary transition-colors"
+              >
+                {isSignUp ? 'Already have an account? Sign in' : "Don't have an account? Sign up"}
+              </button>
+            )}
           </div>
         </form>
       </div>
