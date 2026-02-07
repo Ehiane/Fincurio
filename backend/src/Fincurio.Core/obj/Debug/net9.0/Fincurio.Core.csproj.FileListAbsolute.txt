@@ -1,0 +1,13 @@
+C:\Users\Ehiso\OneDrive\Desktop\empire\fincurio\backend\src\Fincurio.Core\bin\Debug\net9.0\Fincurio.Core.deps.json
+C:\Users\Ehiso\OneDrive\Desktop\empire\fincurio\backend\src\Fincurio.Core\bin\Debug\net9.0\Fincurio.Core.dll
+C:\Users\Ehiso\OneDrive\Desktop\empire\fincurio\backend\src\Fincurio.Core\bin\Debug\net9.0\Fincurio.Core.pdb
+C:\Users\Ehiso\OneDrive\Desktop\empire\fincurio\backend\src\Fincurio.Core\obj\Debug\net9.0\Fincurio.Core.csproj.AssemblyReference.cache
+C:\Users\Ehiso\OneDrive\Desktop\empire\fincurio\backend\src\Fincurio.Core\obj\Debug\net9.0\Fincurio.Core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Ehiso\OneDrive\Desktop\empire\fincurio\backend\src\Fincurio.Core\obj\Debug\net9.0\Fincurio.Core.AssemblyInfoInputs.cache
+C:\Users\Ehiso\OneDrive\Desktop\empire\fincurio\backend\src\Fincurio.Core\obj\Debug\net9.0\Fincurio.Core.AssemblyInfo.cs
+C:\Users\Ehiso\OneDrive\Desktop\empire\fincurio\backend\src\Fincurio.Core\obj\Debug\net9.0\Fincurio.Core.csproj.CoreCompileInputs.cache
+C:\Users\Ehiso\OneDrive\Desktop\empire\fincurio\backend\src\Fincurio.Core\obj\Debug\net9.0\Fincurio.Core.sourcelink.json
+C:\Users\Ehiso\OneDrive\Desktop\empire\fincurio\backend\src\Fincurio.Core\obj\Debug\net9.0\Fincurio.Core.dll
+C:\Users\Ehiso\OneDrive\Desktop\empire\fincurio\backend\src\Fincurio.Core\obj\Debug\net9.0\refint\Fincurio.Core.dll
+C:\Users\Ehiso\OneDrive\Desktop\empire\fincurio\backend\src\Fincurio.Core\obj\Debug\net9.0\Fincurio.Core.pdb
+C:\Users\Ehiso\OneDrive\Desktop\empire\fincurio\backend\src\Fincurio.Core\obj\Debug\net9.0\ref\Fincurio.Core.dll

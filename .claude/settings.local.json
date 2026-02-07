@@ -34,7 +34,17 @@
       "Bash(tasklist:*)",
       "Bash(xargs:*)",
       "Bash(powershell -Command:*)",
-      "Bash(nslookup:*)"
+      "Bash(nslookup:*)",
+      "Bash(git reset:*)",
+      "Bash(openssl rand:*)",
+      "Bash(echo \"# Update this with your Supabase connection string\n# Then run: dotnet ef database update --startup-project ../Fincurio.Api\")",
+      "Bash(ping:*)",
+      "WebSearch",
+      "Bash(powershell -File -:*)",
+      "Bash(dotnet new:*)",
+      "Bash(gh issue view:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(dotnet package search:*)"
     ]
   }
 }

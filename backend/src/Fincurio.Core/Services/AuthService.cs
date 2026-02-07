@@ -41,7 +41,8 @@ public class AuthService : IAuthService
         // Generate email verification token
         var verificationToken = GenerateSecureToken();
 
-        // Create user
+        // Create user with default preferences (saved together to avoid
+        // multi-statement batch issues with Supabase connection pooler)
         var user = new User
         {
             Email = request.Email,
@@ -52,7 +53,14 @@ public class AuthService : IAuthService
             EmailVerificationTokenExpiry = DateTime.UtcNow.AddHours(24),
             IsEmailVerified = false,
             CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
+            UpdatedAt = DateTime.UtcNow,
+            Preferences = new UserPreference
+            {
+                Currency = "USD",
+                Timezone = "UTC",
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            }
         };
 
         await _userRepository.CreateAsync(user);
@@ -69,17 +77,6 @@ public class AuthService : IAuthService
                 // Log error but don't fail registration
             }
         });
-
-        // Create default preferences
-        var preferences = new UserPreference
-        {
-            UserId = user.Id,
-            Currency = "USD",
-            Timezone = "UTC",
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
-        };
-        user.Preferences = preferences;
 
         // Generate tokens
         var accessToken = _tokenService.GenerateAccessToken(user.Id, user.Email);

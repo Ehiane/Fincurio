@@ -21,9 +21,10 @@ builder.Services.AddEndpointsApiExplorer();
 // Swagger Configuration
 builder.Services.AddSwaggerGen();
 
-// Database Configuration
+// Database Configuration (MaxBatchSize=1 required for Supabase Supavisor pooler compatibility)
 builder.Services.AddDbContext<FincurioDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"),
+        npgsqlOptions => npgsqlOptions.MaxBatchSize(1)));
 
 // JWT Authentication Configuration
 var jwtSettings = builder.Configuration.GetSection("Jwt");
