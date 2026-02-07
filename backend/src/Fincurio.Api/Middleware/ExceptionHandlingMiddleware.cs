@@ -8,11 +8,13 @@ public class ExceptionHandlingMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly ILogger<ExceptionHandlingMiddleware> _logger;
+    private readonly IHostEnvironment _env;
 
-    public ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
+    public ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger, IHostEnvironment env)
     {
         _next = next;
         _logger = logger;
+        _env = env;
     }
 
     public async Task InvokeAsync(HttpContext context)
@@ -28,35 +30,48 @@ public class ExceptionHandlingMiddleware
         }
     }
 
-    private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
+    private async Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
         context.Response.ContentType = "application/json";
 
         var response = exception switch
         {
-            NotFoundException notFoundEx => new
+            NotFoundException notFoundEx => new ErrorResponse
             {
-                statusCode = (int)HttpStatusCode.NotFound,
-                message = notFoundEx.Message
+                StatusCode = (int)HttpStatusCode.NotFound,
+                Message = notFoundEx.Message
             },
-            UnauthorizedException unauthorizedEx => new
+            UnauthorizedException unauthorizedEx => new ErrorResponse
             {
-                statusCode = (int)HttpStatusCode.Unauthorized,
-                message = unauthorizedEx.Message
+                StatusCode = (int)HttpStatusCode.Unauthorized,
+                Message = unauthorizedEx.Message
             },
-            ValidationException validationEx => new
+            ValidationException validationEx => new ErrorResponse
             {
-                statusCode = (int)HttpStatusCode.BadRequest,
-                message = validationEx.Message
+                StatusCode = (int)HttpStatusCode.BadRequest,
+                Message = validationEx.Message
             },
-            _ => new
+            _ => new ErrorResponse
             {
-                statusCode = (int)HttpStatusCode.InternalServerError,
-                message = "An internal server error occurred"
+                StatusCode = (int)HttpStatusCode.InternalServerError,
+                // TODO: Revert to hide details in production after debugging
+                Message = $"{exception.GetType().Name}: {exception.Message}",
+                Detail = exception.StackTrace
             }
         };
 
-        context.Response.StatusCode = response.statusCode;
-        await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+        context.Response.StatusCode = response.StatusCode;
+        await context.Response.WriteAsync(JsonSerializer.Serialize(response, new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
+        }));
     }
+}
+
+public class ErrorResponse
+{
+    public int StatusCode { get; set; }
+    public string Message { get; set; } = string.Empty;
+    public string? Detail { get; set; }
 }
