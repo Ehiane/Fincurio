@@ -114,4 +114,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+// Lightweight health endpoint for warm-up pings (no auth, no DB)
+app.MapGet("/health", () => Results.Ok(new { status = "healthy" }));
+
 app.Run();

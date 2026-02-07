@@ -38,9 +38,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('accessToken', response.accessToken);
     localStorage.setItem('refreshToken', response.refreshToken);
 
-    // Get full user profile
-    const userData = await userApi.getProfile();
-    setUser(userData);
+    // Use auth response data immediately, fetch full profile in background
+    setUser({
+      id: response.userId,
+      email: response.email,
+      firstName: response.firstName || '',
+      lastName: response.lastName || '',
+      isEmailVerified: true,
+      createdAt: new Date().toISOString(),
+    });
+    userApi.getProfile().then(setUser).catch(() => {});
   };
 
   const register = async (data: RegisterRequest) => {
@@ -48,9 +55,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('accessToken', response.accessToken);
     localStorage.setItem('refreshToken', response.refreshToken);
 
-    // Get full user profile
-    const userData = await userApi.getProfile();
-    setUser(userData);
+    // Use auth response data immediately, fetch full profile in background
+    setUser({
+      id: response.userId,
+      email: response.email,
+      firstName: response.firstName || '',
+      lastName: response.lastName || '',
+      isEmailVerified: false,
+      createdAt: new Date().toISOString(),
+    });
+    userApi.getProfile().then(setUser).catch(() => {});
   };
 
   const logout = async () => {

@@ -1,7 +1,8 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../src/hooks/useAuth';
 import { authApi } from '../src/api/auth.api';
+import { apiClient } from '../src/api/client';
 import Logo from '../src/components/Logo';
 
 const SignIn: React.FC = () => {
@@ -19,6 +20,11 @@ const SignIn: React.FC = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+
+  // Warm up the backend on page load (Azure cold start mitigation)
+  useEffect(() => {
+    apiClient.get('/health').catch(() => {});
+  }, []);
 
   const passwordRequirements = useMemo(() => [
     { label: 'At least 8 characters', met: password.length >= 8 },

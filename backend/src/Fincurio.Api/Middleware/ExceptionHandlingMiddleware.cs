@@ -54,9 +54,12 @@ public class ExceptionHandlingMiddleware
             _ => new ErrorResponse
             {
                 StatusCode = (int)HttpStatusCode.InternalServerError,
-                // TODO: Revert to hide details in production after debugging
-                Message = $"{exception.GetType().Name}: {exception.Message}",
-                Detail = exception.StackTrace
+                Message = _env.IsDevelopment()
+                    ? $"{exception.GetType().Name}: {exception.Message}"
+                    : "An internal server error occurred",
+                Detail = _env.IsDevelopment()
+                    ? exception.StackTrace
+                    : null
             }
         };
 
