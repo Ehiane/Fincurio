@@ -12,6 +12,7 @@ backend/**/*.user
 backend/**/*.suo
 backend/**/appsettings.Development.json
 backend/**/appsettings.Production.json
+backend/**/.env
 
 # Database
 *.db
