@@ -124,7 +124,7 @@ const Journal: React.FC = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-8 md:py-12 lg:py-16 animate-in fade-in slide-in-from-bottom-2 duration-700">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 md:gap-8 mb-12 md:mb-16">
         <div className="flex flex-col gap-3 max-w-lg">
-          <h2 className="font-serif text-3xl sm:text-4xl md:text-4xl lg:text-5xl font-medium leading-tight tracking-tight text-gray-900 dark:text-white">
+          <h2 className="font-serif text-3xl sm:text-4xl md:text-4xl lg:text-5xl font-medium leading-tight tracking-tight text-gray-900 text-secondary">
             Journal of <br />
             <span className="italic text-stone-text">Transactions</span>
           </h2>
@@ -137,7 +137,7 @@ const Journal: React.FC = () => {
       {transactions.length === 0 ? (
         <div className="text-center py-20">
           <div className="text-6xl mb-4 opacity-20">📝</div>
-          <h3 className="text-2xl font-serif mb-2 text-gray-900 dark:text-white">No transactions yet</h3>
+          <h3 className="text-2xl font-serif mb-2 text-gray-900 text-secondary">No transactions yet</h3>
           <p className="text-stone-text mb-8">Start tracking your financial journey by adding your first transaction.</p>
           <button
             onClick={handleAddTransaction}
@@ -213,7 +213,7 @@ const JournalItem: React.FC<{
           <span className="material-symbols-outlined">{transaction.category.icon}</span>
         </div>
         <div className="flex flex-col gap-2">
-          <span className="text-xl font-medium text-gray-900 dark:text-white tracking-tight">
+          <span className="text-xl font-medium text-gray-900 text-secondary tracking-tight">
             {transaction.merchant}
           </span>
           <div className="flex items-center gap-3">
@@ -244,7 +244,7 @@ const JournalItem: React.FC<{
       <div className="mt-4 sm:mt-0 flex items-center gap-4">
         <span
           className={`text-2xl md:text-3xl font-serif font-medium ${
-            isHighValue ? 'text-primary' : isPositive ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-900 dark:text-white'
+            isHighValue ? 'text-primary' : isPositive ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-900 text-secondary'
           }`}
         >
           {isPositive ? '+' : '-'}${Math.abs(transaction.amount).toLocaleString()}
@@ -330,7 +330,7 @@ const TransactionModal: React.FC<{
       <div className="bg-white dark:bg-surface-dark rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="p-6 border-b border-gray-200 dark:border-white/10">
           <div className="flex items-center justify-between">
-            <h3 className="text-2xl font-serif text-gray-900 dark:text-white">
+            <h3 className="text-2xl font-serif text-gray-900 text-secondary">
               {transaction ? 'Edit Transaction' : 'Add Transaction'}
             </h3>
             <button
@@ -384,7 +384,7 @@ const TransactionModal: React.FC<{
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
                 required
-                className="w-full px-4 py-3 bg-surface-dark dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                className="w-full px-4 py-3 bg-surface-dark dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 text-secondary focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
               />
             </div>
             <div>
@@ -396,7 +396,7 @@ const TransactionModal: React.FC<{
                 value={time}
                 onChange={(e) => setTime(e.target.value)}
                 required
-                className="w-full px-4 py-3 bg-surface-dark dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                className="w-full px-4 py-3 bg-surface-dark dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 text-secondary focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
               />
             </div>
           </div>
@@ -412,7 +412,7 @@ const TransactionModal: React.FC<{
               onChange={(e) => setMerchant(e.target.value)}
               required
               placeholder="Apple Store"
-              className="w-full px-4 py-3 bg-surface-dark dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white placeholder:text-gray-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+              className="w-full px-4 py-3 bg-surface-dark dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 text-secondary placeholder:text-gray-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
             />
             <datalist id="merchants-list">
               {merchants.map((merch) => (
@@ -429,7 +429,7 @@ const TransactionModal: React.FC<{
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
               required
-              className="w-full px-4 py-3 bg-surface-dark dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+              className="w-full px-4 py-3 bg-surface-dark dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 text-secondary focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
             >
               <option value="" className="bg-surface-dark">Select a category</option>
               {categories.map((cat) => (
@@ -451,7 +451,7 @@ const TransactionModal: React.FC<{
               onChange={(e) => setAmount(formatCurrency(e.target.value))}
               required
               placeholder="1,000.00"
-              className="w-full px-4 py-3 bg-surface-dark dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white placeholder:text-gray-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+              className="w-full px-4 py-3 bg-surface-dark dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 text-secondary placeholder:text-gray-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
             />
           </div>
 
@@ -464,7 +464,7 @@ const TransactionModal: React.FC<{
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Add any additional details..."
               rows={3}
-              className="w-full px-4 py-3 bg-surface-dark dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white placeholder:text-gray-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
+              className="w-full px-4 py-3 bg-surface-dark dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 text-secondary placeholder:text-gray-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
             />
           </div>
 

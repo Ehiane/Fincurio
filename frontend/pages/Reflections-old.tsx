@@ -6,7 +6,7 @@ const Reflections: React.FC = () => {
     <div className="max-w-3xl mx-auto px-4 py-8 md:px-8 md:py-16 flex flex-col gap-8 md:gap-12 animate-in fade-in duration-700">
       <header className="flex flex-col gap-6">
         <div className="flex flex-col gap-2">
-          <h2 className="text-4xl md:text-5xl font-light tracking-tight text-gray-900 dark:text-white">Category Reflections</h2>
+          <h2 className="text-4xl md:text-5xl font-light tracking-tight text-gray-900 text-secondary">Category Reflections</h2>
           <p className="text-gray-500 dark:text-stone-text text-lg max-w-xl leading-relaxed">
             Review your lifestyle investments for the period. Focus on where your energy flows, not just where the money goes.
           </p>
@@ -25,7 +25,7 @@ const Reflections: React.FC = () => {
 
       <div className="flex items-baseline justify-between border-b border-gray-200 dark:border-white/10 pb-4">
         <span className="text-sm uppercase tracking-widest text-gray-500 dark:text-stone-text font-semibold">Total Reflections</span>
-        <span className="font-serif text-3xl md:text-4xl text-gray-900 dark:text-white">$4,320.00</span>
+        <span className="font-serif text-3xl md:text-4xl text-gray-900 text-secondary">$4,320.00</span>
       </div>
 
       <div className="flex flex-col gap-4">
@@ -85,7 +85,7 @@ const ReflectionCard: React.FC<{ icon: string; title: string; subtitle: string; 
   <div className="group relative flex flex-col overflow-hidden rounded-[18px] bg-white dark:bg-surface-dark p-1 shadow-sm transition-all hover:bg-white dark:hover:bg-[#32322f]">
     <div className="flex items-center justify-between p-5">
       <div className="flex items-center gap-5">
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-[#3d3335] text-gray-600 dark:text-white group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-[#3d3335] text-gray-600 text-secondary group-hover:bg-primary/10 group-hover:text-primary transition-colors">
           <span className="material-symbols-outlined">{icon}</span>
         </div>
         <div className="flex flex-col">
@@ -94,7 +94,7 @@ const ReflectionCard: React.FC<{ icon: string; title: string; subtitle: string; 
         </div>
       </div>
       <div className="flex flex-col items-end gap-1">
-        <span className="font-serif text-2xl text-gray-900 dark:text-white">${amount.toLocaleString()}.00</span>
+        <span className="font-serif text-2xl text-gray-900 text-secondary">${amount.toLocaleString()}.00</span>
         {status && (
           <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${isWarning ? 'text-primary bg-primary/10' : 'text-emerald-500 bg-emerald-500/10'}`}>
             {status}

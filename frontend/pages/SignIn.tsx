@@ -75,7 +75,7 @@ const SignIn: React.FC = () => {
         </div>
 
         <div className="text-center mb-12 md:mb-16 space-y-4 max-w-lg px-4">
-          <h1 className="font-serif text-3xl sm:text-4xl md:text-4xl lg:text-5xl font-normal leading-tight tracking-tight text-gray-900 dark:text-white">
+          <h1 className="font-serif text-3xl sm:text-4xl md:text-4xl lg:text-5xl font-normal leading-tight tracking-tight text-gray-900 text-secondary">
             {isResetPassword ? 'Reset your password.' : isSignUp ? 'Begin your financial reflection.' : 'Welcome back to your reflection.'}
           </h1>
           <p className="text-gray-500 dark:text-stone-text text-base sm:text-base md:text-lg font-light">
@@ -106,7 +106,7 @@ const SignIn: React.FC = () => {
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
                   placeholder="First name"
-                  className="w-full h-16 bg-white dark:bg-surface-dark border-none rounded-full py-4 pl-14 pr-6 text-lg text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-primary/20 transition-all shadow-sm"
+                  className="w-full h-16 bg-white dark:bg-surface-dark border-none rounded-full py-4 pl-14 pr-6 text-lg text-gray-900 text-secondary placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-primary/20 transition-all shadow-sm"
                 />
               </div>
 
@@ -118,7 +118,7 @@ const SignIn: React.FC = () => {
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
                   placeholder="Last name"
-                  className="w-full h-16 bg-white dark:bg-surface-dark border-none rounded-full py-4 pl-14 pr-6 text-lg text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-primary/20 transition-all shadow-sm"
+                  className="w-full h-16 bg-white dark:bg-surface-dark border-none rounded-full py-4 pl-14 pr-6 text-lg text-gray-900 text-secondary placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-primary/20 transition-all shadow-sm"
                 />
               </div>
             </>
@@ -132,7 +132,7 @@ const SignIn: React.FC = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="name@example.com"
-              className="w-full h-16 bg-white dark:bg-surface-dark border-none rounded-full py-4 pl-14 pr-6 text-lg text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-primary/20 transition-all shadow-sm"
+              className="w-full h-16 bg-white dark:bg-surface-dark border-none rounded-full py-4 pl-14 pr-6 text-lg text-gray-900 text-secondary placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-primary/20 transition-all shadow-sm"
             />
           </div>
 
@@ -144,7 +144,7 @@ const SignIn: React.FC = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder={isResetPassword ? "New password" : "••••••••"}
-              className="w-full h-16 bg-white dark:bg-surface-dark border-none rounded-full py-4 pl-14 pr-14 text-lg text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-primary/20 transition-all shadow-sm"
+              className="w-full h-16 bg-white dark:bg-surface-dark border-none rounded-full py-4 pl-14 pr-14 text-lg text-gray-900 text-secondary placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-primary/20 transition-all shadow-sm"
             />
             <button
               type="button"
@@ -166,7 +166,7 @@ const SignIn: React.FC = () => {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Confirm new password"
-                className="w-full h-16 bg-white dark:bg-surface-dark border-none rounded-full py-4 pl-14 pr-14 text-lg text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-primary/20 transition-all shadow-sm"
+                className="w-full h-16 bg-white dark:bg-surface-dark border-none rounded-full py-4 pl-14 pr-14 text-lg text-gray-900 text-secondary placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-primary/20 transition-all shadow-sm"
               />
             </div>
           )}

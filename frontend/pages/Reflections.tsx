@@ -79,7 +79,7 @@ const Reflections: React.FC = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-8 md:py-12 lg:py-16 flex flex-col gap-8 md:gap-12 animate-in fade-in duration-700">
       <header className="flex flex-col gap-6">
         <div className="flex flex-col gap-2">
-          <h2 className="text-4xl md:text-5xl font-light tracking-tight text-gray-900 dark:text-white">
+          <h2 className="text-4xl md:text-5xl font-light tracking-tight text-gray-900 text-secondary">
             Monthly Reflections
           </h2>
           <p className="text-gray-500 dark:text-stone-text text-lg max-w-xl leading-relaxed">
@@ -149,7 +149,7 @@ const Reflections: React.FC = () => {
           <span className="text-xs uppercase tracking-widest text-gray-500 dark:text-stone-text font-semibold">
             Expenses
           </span>
-          <span className="font-serif text-3xl text-gray-900 dark:text-white">
+          <span className="font-serif text-3xl text-gray-900 text-secondary">
             ${data.summary.totalExpenses.toLocaleString()}
           </span>
         </div>
@@ -211,7 +211,7 @@ const ReflectionCard: React.FC<{
   <div className="group relative flex flex-col overflow-hidden rounded-[18px] bg-white dark:bg-surface-dark p-1 shadow-sm transition-all hover:bg-white dark:hover:bg-[#32322f]">
     <div className="flex items-center justify-between p-5">
       <div className="flex items-center gap-5">
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-[#3d3335] text-gray-600 dark:text-white group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-[#3d3335] text-gray-600 text-secondary group-hover:bg-primary/10 group-hover:text-primary transition-colors">
           <span className="material-symbols-outlined">{icon}</span>
         </div>
         <div className="flex flex-col">
@@ -220,7 +220,7 @@ const ReflectionCard: React.FC<{
         </div>
       </div>
       <div className="flex flex-col items-end gap-1">
-        <span className="font-serif text-2xl text-gray-900 dark:text-white">
+        <span className="font-serif text-2xl text-gray-900 text-secondary">
           ${amount.toLocaleString()}
         </span>
         <span className="text-xs font-medium text-stone-text">

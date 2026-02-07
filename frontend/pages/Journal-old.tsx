@@ -6,7 +6,7 @@ const Journal: React.FC = () => {
     <div className="max-w-[1000px] mx-auto px-6 py-10 lg:px-12 lg:py-16 animate-in fade-in slide-in-from-bottom-2 duration-700">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
         <div className="flex flex-col gap-3 max-w-lg">
-          <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl font-medium leading-tight tracking-tight text-gray-900 dark:text-white">
+          <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl font-medium leading-tight tracking-tight text-gray-900 text-secondary">
             Journal of <br/><span className="italic text-stone-text">Transactions</span>
           </h2>
           <p className="text-stone-text text-sm md:text-base font-light max-w-xs pl-1">
@@ -19,7 +19,7 @@ const Journal: React.FC = () => {
               <span className="material-symbols-outlined">search</span>
             </div>
             <input 
-              className="flex-1 bg-transparent border-none text-base text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-stone-text/50 focus:ring-0 px-2" 
+              className="flex-1 bg-transparent border-none text-base text-gray-900 text-secondary placeholder:text-gray-400 dark:placeholder:text-stone-text/50 focus:ring-0 px-2" 
               placeholder="Search entries..." 
               type="text"
             />
@@ -60,7 +60,7 @@ const JournalItem: React.FC<{ icon: string; merchant: string; category: string; 
         <span className="material-symbols-outlined">{icon}</span>
       </div>
       <div className="flex flex-col gap-2">
-        <span className="text-xl font-medium text-gray-900 dark:text-white tracking-tight">{merchant}</span>
+        <span className="text-xl font-medium text-gray-900 text-secondary tracking-tight">{merchant}</span>
         <div className="flex items-center gap-3">
           <span className={`inline-flex items-center rounded-full border px-3 py-0.5 text-xs font-medium ${isPositive ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-gray-300 dark:border-white/20 text-gray-500 dark:text-stone-text'}`}>
             {category}
@@ -70,7 +70,7 @@ const JournalItem: React.FC<{ icon: string; merchant: string; category: string; 
       </div>
     </div>
     <div className="mt-4 sm:mt-0">
-      <span className={`text-2xl md:text-3xl font-serif font-medium ${isHighValue ? 'text-primary' : isPositive ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-900 dark:text-white'}`}>
+      <span className={`text-2xl md:text-3xl font-serif font-medium ${isHighValue ? 'text-primary' : isPositive ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-900 text-secondary'}`}>
         {isPositive ? '+' : '-'}${Math.abs(amount).toLocaleString()}
       </span>
     </div>

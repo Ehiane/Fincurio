@@ -28,7 +28,8 @@
       "Bash(findstr:*)",
       "Bash(netstat:*)",
       "Bash(timeout:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(find:*)"
     ]
   }
 }

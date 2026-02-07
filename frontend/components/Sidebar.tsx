@@ -50,7 +50,7 @@ const Sidebar: React.FC = () => {
               className={({ isActive }) =>
                 `flex items-center gap-4 px-4 py-3 rounded-full transition-all group ${
                   isActive
-                    ? 'bg-primary/10 text-primary dark:bg-surface-dark dark:text-white'
+                    ? 'bg-primary/10 text-primary dark:bg-surface-dark text-secondary'
                     : 'text-stone-600 dark:text-stone-text hover:bg-stone-200 dark:hover:bg-white/5'
                 }`
               }
@@ -69,7 +69,7 @@ const Sidebar: React.FC = () => {
               {getInitials()}
             </div>
             <div className="flex flex-col">
-              <span className="text-sm font-semibold text-stone-800 dark:text-white">{getDisplayName()}</span>
+              <span className="text-sm font-semibold text-stone-800 text-secondary">{getDisplayName()}</span>
               <span className="text-xs text-stone-text">Member</span>
             </div>
           </div>
