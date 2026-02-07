@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://fincurio-api-bparg3cnadduedau.eastus-01.azurewebsites.net/api/:path*"
+    }
+  ]
+}
