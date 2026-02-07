@@ -1,5 +1,5 @@
 import React from 'react';
-import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './src/contexts/AuthContext';
 import Landing from './pages/Landing';
 import SignIn from './pages/SignIn';
@@ -14,7 +14,7 @@ import PrivateRoute from './components/PrivateRoute';
 const App: React.FC = () => {
   return (
     <AuthProvider>
-      <HashRouter>
+      <BrowserRouter>
         <div className="min-h-screen flex flex-col md:flex-row">
           <Routes>
             <Route path="/" element={<Landing />} />
@@ -42,7 +42,7 @@ const App: React.FC = () => {
             />
           </Routes>
         </div>
-      </HashRouter>
+      </BrowserRouter>
     </AuthProvider>
   );
 };
