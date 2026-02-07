@@ -56,9 +56,20 @@ builder.Services.AddCors(options =>
     options.AddPolicy("FincurioFrontend", policy =>
     {
         var frontendUrl = builder.Configuration["Frontend:Url"] ?? "http://localhost:3000";
-        var allowedOrigins = new[] { "http://localhost:3000", frontendUrl };
+        // Include both www and non-www variants
+        var wwwFrontendUrl = frontendUrl.Contains("://www.")
+            ? frontendUrl.Replace("://www.", "://")
+            : frontendUrl.Replace("://", "://www.");
+        var allowedOrigins = new[] { "http://localhost:3000", frontendUrl, wwwFrontendUrl };
 
-        policy.WithOrigins(allowedOrigins)
+        policy.SetIsOriginAllowed(origin =>
+            {
+                // Allow explicitly configured origins
+                if (allowedOrigins.Contains(origin)) return true;
+                // Allow Vercel preview deployments
+                if (origin.EndsWith(".vercel.app")) return true;
+                return false;
+            })
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
