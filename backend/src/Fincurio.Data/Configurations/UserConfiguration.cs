@@ -56,6 +56,24 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasColumnName("is_active")
             .HasDefaultValue(true);
 
+        // Email verification
+        builder.Property(u => u.IsEmailVerified)
+            .HasColumnName("is_email_verified")
+            .HasDefaultValue(false);
+
+        builder.Property(u => u.EmailVerificationToken)
+            .HasColumnName("email_verification_token");
+
+        builder.Property(u => u.EmailVerificationTokenExpiry)
+            .HasColumnName("email_verification_token_expiry");
+
+        // Password reset
+        builder.Property(u => u.PasswordResetToken)
+            .HasColumnName("password_reset_token");
+
+        builder.Property(u => u.PasswordResetTokenExpiry)
+            .HasColumnName("password_reset_token_expiry");
+
         // Relationships
         builder.HasMany(u => u.Transactions)
             .WithOne(t => t.User)

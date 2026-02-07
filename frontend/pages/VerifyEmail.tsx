@@ -10,17 +10,23 @@ const VerifyEmail: React.FC = () => {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
+    let mounted = true;
+
     const verifyEmail = async () => {
       const token = searchParams.get('token');
 
       if (!token) {
-        setStatus('error');
-        setMessage('Invalid verification link. Please check your email and try again.');
+        if (mounted) {
+          setStatus('error');
+          setMessage('Invalid verification link. Please check your email and try again.');
+        }
         return;
       }
 
       try {
         const response = await authApi.verifyEmail(token);
+
+        if (!mounted) return;
 
         if (response.success) {
           setStatus('success');
@@ -35,12 +41,17 @@ const VerifyEmail: React.FC = () => {
           setMessage(response.message);
         }
       } catch (err: any) {
+        if (!mounted) return;
         setStatus('error');
         setMessage(err.response?.data?.message || 'Verification failed. Please try again.');
       }
     };
 
     verifyEmail();
+
+    return () => {
+      mounted = false;
+    };
   }, [searchParams, navigate]);
 
   return (

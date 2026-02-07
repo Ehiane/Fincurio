@@ -30,7 +30,9 @@
       "Bash(timeout:*)",
       "Bash(grep:*)",
       "Bash(find:*)",
-      "Bash(dotnet clean:*)"
+      "Bash(dotnet clean:*)",
+      "Bash(tasklist:*)",
+      "Bash(xargs:*)"
     ]
   }
 }
