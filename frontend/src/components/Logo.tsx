@@ -74,7 +74,7 @@ const Logo: React.FC<LogoProps> = ({ className = "h-8", showText = true }) => {
 
       {/* Optional text */}
       {showText && (
-        <span className="text-xl font-serif font-medium tracking-wide text-gray-900 text-gray-100">
+        <span className="text-xl font-serif font-medium tracking-wide text-secondary">
           Fincurio
         </span>
       )}

@@ -2,12 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { insightsApi, DashboardResponse } from '../src/api/insights.api';
+import { userApi } from '../src/api/user.api';
+
+const currencySymbols: Record<string, string> = {
+  USD: '$', EUR: '€', GBP: '£', JPY: '¥', CAD: 'C$',
+};
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [data, setData] = useState<DashboardResponse | null>(null);
+  const [currencySymbol, setCurrencySymbol] = useState('$');
 
   useEffect(() => {
     fetchDashboard();
@@ -16,8 +22,13 @@ const Dashboard: React.FC = () => {
   const fetchDashboard = async () => {
     try {
       setLoading(true);
-      const dashboardData = await insightsApi.getDashboard();
+      const [dashboardData, profile] = await Promise.all([
+        insightsApi.getDashboard(),
+        userApi.getProfile(),
+      ]);
       setData(dashboardData);
+      const code = profile.preferences?.currency || 'USD';
+      setCurrencySymbol(currencySymbols[code] || code);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to load dashboard data');
     } finally {
@@ -29,12 +40,12 @@ const Dashboard: React.FC = () => {
     return (
       <div className="max-w-4xl mx-auto px-6 py-12 md:px-12">
         <div className="animate-pulse space-y-8">
-          <div className="h-48 bg-white/5 rounded-lg"></div>
-          <div className="h-96 bg-white/5 rounded-lg"></div>
+          <div className="h-48 bg-stone-200/60 rounded-lg"></div>
+          <div className="h-96 bg-stone-200/60 rounded-lg"></div>
           <div className="space-y-4">
-            <div className="h-16 bg-white/5 rounded-lg"></div>
-            <div className="h-16 bg-white/5 rounded-lg"></div>
-            <div className="h-16 bg-white/5 rounded-lg"></div>
+            <div className="h-16 bg-stone-200/60 rounded-lg"></div>
+            <div className="h-16 bg-stone-200/60 rounded-lg"></div>
+            <div className="h-16 bg-stone-200/60 rounded-lg"></div>
           </div>
         </div>
       </div>
@@ -68,8 +79,8 @@ const Dashboard: React.FC = () => {
       <section className="py-8 md:py-12 flex flex-col items-center justify-center text-center">
         <h2 className="text-xs sm:text-sm font-medium tracking-[0.2em] uppercase text-stone-text mb-4 md:mb-6">{currentMonth} Balance</h2>
         <div className="relative group cursor-default">
-          <h1 className="font-serif text-4xl sm:text-5xl md:text-5xl lg:text-6xl text-slate-900 dark:text-slate-50 leading-none tracking-tight">
-            ${Math.floor(data.currentBalance).toLocaleString()}
+          <h1 className="font-serif text-4xl sm:text-5xl md:text-5xl lg:text-6xl text-secondary leading-none tracking-tight">
+            {currencySymbol}{Math.floor(data.currentBalance).toLocaleString()}
             <span className="text-2xl sm:text-3xl md:text-3xl lg:text-4xl opacity-40 font-normal">
               .{(data.currentBalance % 1).toFixed(2).substring(2)}
             </span>
@@ -101,10 +112,10 @@ const Dashboard: React.FC = () => {
       {/* Money Flow Visual */}
       <section className="py-12 w-full">
         <div className="flex items-center justify-between mb-8 px-2">
-          <h3 className="font-serif text-2xl italic text-slate-800 dark:text-slate-200">Money Flow</h3>
+          <h3 className="font-serif text-2xl italic text-secondary">Money Flow</h3>
           <div className="flex gap-4 text-xs font-medium tracking-wide uppercase text-stone-text">
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-slate-400"></div> Income
+              <div className="w-2 h-2 rounded-full bg-emerald-500"></div> Income
             </div>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-primary"></div> Spending
@@ -113,27 +124,29 @@ const Dashboard: React.FC = () => {
         </div>
 
         {data.monthlyFlow.length > 0 ? (
-          <div className="h-64 md:h-80 w-full">
+          <div className="h-64 md:h-80 w-full rounded-2xl p-4 bg-gradient-to-br from-white/60 via-background-light to-surface-dark/40 border border-stone-300/60">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={data.monthlyFlow}>
                 <defs>
                   <linearGradient id="incomeColor" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#94a3b8" stopOpacity={0.2} />
-                    <stop offset="95%" stopColor="#94a3b8" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.2} />
+                    <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                   </linearGradient>
                   <linearGradient id="spendingColor" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#cf1736" stopOpacity={0.2} />
                     <stop offset="95%" stopColor="#cf1736" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#38292b" opacity={0.3} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#d6d3d1" opacity={0.5} />
                 <XAxis dataKey="date" hide />
                 <YAxis hide />
                 <Tooltip
-                  contentStyle={{ backgroundColor: '#181112', border: '1px solid #38292b', borderRadius: '8px' }}
+                  contentStyle={{ backgroundColor: '#faf8f5', border: '1px solid #d6d3d1', borderRadius: '8px', color: '#280905' }}
+                  labelStyle={{ color: '#280905' }}
                   itemStyle={{ fontSize: '12px' }}
+                  formatter={(value: number) => `${currencySymbol}${value.toLocaleString()}`}
                 />
-                <Area type="monotone" dataKey="income" stroke="#94a3b8" fillOpacity={1} fill="url(#incomeColor)" strokeWidth={2} />
+                <Area type="monotone" dataKey="income" stroke="#10b981" fillOpacity={1} fill="url(#incomeColor)" strokeWidth={2} />
                 <Area type="monotone" dataKey="spending" stroke="#cf1736" fillOpacity={1} fill="url(#spendingColor)" strokeWidth={3} />
               </AreaChart>
             </ResponsiveContainer>
@@ -148,7 +161,7 @@ const Dashboard: React.FC = () => {
       {/* Recent Activity Mini Ledger */}
       <section className="py-12">
         <div className="flex items-end justify-between mb-10 px-2">
-          <h3 className="font-serif text-2xl italic text-slate-800 dark:text-slate-200">Recent Activity</h3>
+          <h3 className="font-serif text-2xl italic text-secondary">Recent Activity</h3>
           <button
             onClick={() => navigate('/app/journal')}
             className="text-sm font-medium text-stone-text hover:text-primary transition-colors"
@@ -166,6 +179,7 @@ const Dashboard: React.FC = () => {
                 amount={transaction.type === 'expense' ? -transaction.amount : transaction.amount}
                 category={transaction.category.displayName}
                 isPositive={transaction.type === 'income'}
+                symbol={currencySymbol}
               />
             ))}
           </div>
@@ -182,7 +196,7 @@ const Dashboard: React.FC = () => {
         )}
       </section>
 
-      <div className="mt-12 mb-20 text-center border-t border-slate-200 dark:border-stone-800 pt-12">
+      <div className="mt-12 mb-20 text-center border-t border-stone-300 pt-12">
         <p className="font-serif italic text-stone-400 text-lg">"A penny saved is a penny earned."</p>
         <p className="text-xs font-bold text-stone-600 mt-2 uppercase tracking-widest">Benjamin Franklin</p>
       </div>
@@ -196,19 +210,20 @@ const TransactionItem: React.FC<{
   amount: number;
   category: string;
   isPositive?: boolean;
-}> = ({ date, merchant, amount, category, isPositive }) => (
-  <div className="group flex items-baseline justify-between hover:bg-white/5 px-4 py-3 rounded-lg transition-colors cursor-pointer">
+  symbol?: string;
+}> = ({ date, merchant, amount, category, isPositive, symbol = '$' }) => (
+  <div className="group flex items-baseline justify-between hover:bg-stone-200/50 px-4 py-3 rounded-lg transition-colors cursor-default">
     <div className="flex-1">
       <div className="flex items-baseline gap-4">
         <span className="text-sm font-medium text-stone-text font-mono w-16">{date}</span>
-        <span className="text-lg font-medium text-slate-800 dark:text-slate-200 group-hover:translate-x-1 transition-transform">
+        <span className="text-lg font-medium text-secondary group-hover:translate-x-1 transition-transform">
           {merchant}
         </span>
       </div>
       <p className="text-xs text-stone-500 pl-20 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">{category}</p>
     </div>
-    <span className={`text-lg font-medium tabular-nums ${isPositive ? 'text-emerald-500' : 'text-slate-800 dark:text-slate-200'}`}>
-      {isPositive ? '+' : '-'}${Math.abs(amount).toLocaleString()}
+    <span className={`text-lg font-medium tabular-nums ${isPositive ? 'text-emerald-500' : 'text-red-500'}`}>
+      {isPositive ? '+' : '-'}{symbol}{Math.abs(amount).toLocaleString()}
     </span>
   </div>
 );

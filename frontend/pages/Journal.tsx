@@ -91,10 +91,10 @@ const Journal: React.FC = () => {
     return (
       <div className="max-w-[1000px] mx-auto px-6 py-10 lg:px-12 lg:py-16">
         <div className="animate-pulse space-y-8">
-          <div className="h-32 bg-white/5 rounded-lg"></div>
+          <div className="h-32 bg-stone-200/60 rounded-lg"></div>
           <div className="space-y-4">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-24 bg-white/5 rounded-lg"></div>
+              <div key={i} className="h-24 bg-stone-200/60 rounded-lg"></div>
             ))}
           </div>
         </div>
@@ -105,8 +105,8 @@ const Journal: React.FC = () => {
   if (error) {
     return (
       <div className="max-w-[1000px] mx-auto px-6 py-10 lg:px-12 lg:py-16">
-        <div className="bg-red-50 bg-red-50 border border-red-200 border-red-200 rounded-2xl p-6 text-center">
-          <p className="text-red-800 text-red-800">{error}</p>
+        <div className="bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
+          <p className="text-red-800">{error}</p>
           <button
             onClick={fetchData}
             className="mt-4 px-6 py-2 bg-primary text-white rounded-full hover:bg-red-700 transition-colors"
@@ -124,7 +124,7 @@ const Journal: React.FC = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-8 md:py-12 lg:py-16 animate-in fade-in slide-in-from-bottom-2 duration-700">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 md:gap-8 mb-12 md:mb-16">
         <div className="flex flex-col gap-3 max-w-lg">
-          <h2 className="font-serif text-3xl sm:text-4xl md:text-4xl lg:text-5xl font-medium leading-tight tracking-tight text-gray-900 text-secondary">
+          <h2 className="font-serif text-3xl sm:text-4xl md:text-4xl lg:text-5xl font-medium leading-tight tracking-tight text-secondary">
             Journal of <br />
             <span className="italic text-stone-text">Transactions</span>
           </h2>
@@ -137,7 +137,7 @@ const Journal: React.FC = () => {
       {transactions.length === 0 ? (
         <div className="text-center py-20">
           <div className="text-6xl mb-4 opacity-20">📝</div>
-          <h3 className="text-2xl font-serif mb-2 text-gray-900 text-secondary">No transactions yet</h3>
+          <h3 className="text-2xl font-serif mb-2 text-secondary">No transactions yet</h3>
           <p className="text-stone-text mb-8">Start tracking your financial journey by adding your first transaction.</p>
           <button
             onClick={handleAddTransaction}
@@ -187,8 +187,8 @@ const Journal: React.FC = () => {
 };
 
 const DateGroup: React.FC<{ label: string }> = ({ label }) => (
-  <div className="mb-4 sticky top-0 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm z-10 py-4">
-    <h3 className="text-sm font-bold uppercase tracking-widest text-gray-400 text-stone-text">{label}</h3>
+  <div className="mb-4 sticky top-0 bg-background-light/95 backdrop-blur-sm z-10 py-4">
+    <h3 className="text-sm font-bold uppercase tracking-widest text-stone-text">{label}</h3>
   </div>
 );
 
@@ -201,19 +201,19 @@ const JournalItem: React.FC<{
   const isHighValue = transaction.amount > 1000;
 
   return (
-    <div className="group relative flex flex-col sm:flex-row sm:items-center justify-between py-8 border-b border-gray-200 border-gray-200 hover:bg-white/40 hover:bg-gray-100 transition-all duration-300 rounded-lg px-2 -mx-2">
+    <div className="group relative flex flex-col sm:flex-row sm:items-center justify-between py-8 border-b border-stone-200 hover:bg-white/40 transition-all duration-300 rounded-lg px-2 -mx-2">
       <div className="flex items-center gap-6">
         <div
           className={`hidden sm:flex items-center justify-center size-12 rounded-full shrink-0 transition-colors ${
             isPositive
-              ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400'
-              : 'bg-gray-100 bg-surface-dark text-stone-text group-hover:text-primary'
+              ? 'bg-white text-emerald-600'
+              : 'bg-white text-stone-text group-hover:text-primary'
           }`}
         >
           <span className="material-symbols-outlined">{transaction.category.icon}</span>
         </div>
         <div className="flex flex-col gap-2">
-          <span className="text-xl font-medium text-gray-900 text-secondary tracking-tight">
+          <span className="text-xl font-medium text-secondary tracking-tight">
             {transaction.merchant}
           </span>
           <div className="flex items-center gap-3">
@@ -221,13 +221,13 @@ const JournalItem: React.FC<{
               className={`inline-flex items-center rounded-full border px-3 py-0.5 text-xs font-medium ${
                 isPositive
                   ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
-                  : 'border-gray-300 dark:border-white/20 text-gray-500 text-stone-text'
+                  : 'border-stone-300 text-stone-text'
               }`}
             >
               {transaction.category.displayName}
             </span>
             {transaction.time && (
-              <span className="text-xs text-gray-400">
+              <span className="text-xs text-stone-text">
                 {new Date(`2000-01-01T${transaction.time}`).toLocaleTimeString('en-US', {
                   hour: 'numeric',
                   minute: '2-digit',
@@ -237,14 +237,14 @@ const JournalItem: React.FC<{
             )}
           </div>
           {transaction.notes && (
-            <p className="text-sm text-gray-500 text-stone-text mt-1">{transaction.notes}</p>
+            <p className="text-sm text-stone-text mt-1">{transaction.notes}</p>
           )}
         </div>
       </div>
       <div className="mt-4 sm:mt-0 flex items-center gap-4">
         <span
           className={`text-2xl md:text-3xl font-serif font-medium ${
-            isHighValue ? 'text-primary' : isPositive ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-900 text-secondary'
+            isPositive ? 'text-emerald-600' : 'text-red-500'
           }`}
         >
           {isPositive ? '+' : '-'}${Math.abs(transaction.amount).toLocaleString()}
@@ -252,13 +252,13 @@ const JournalItem: React.FC<{
         <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
           <button
             onClick={onEdit}
-            className="p-2 hover:bg-gray-200 dark:hover:bg-white/10 rounded-lg transition-colors"
+            className="p-2 hover:bg-stone-200 rounded-lg transition-colors"
           >
             <span className="material-symbols-outlined text-sm">edit</span>
           </button>
           <button
             onClick={onDelete}
-            className="p-2 hover:bg-red-100 dark:hover:bg-red-900/20 rounded-lg transition-colors text-red-600"
+            className="p-2 hover:bg-red-100 rounded-lg transition-colors text-red-600"
           >
             <span className="material-symbols-outlined text-sm">delete</span>
           </button>
@@ -327,15 +327,15 @@ const TransactionModal: React.FC<{
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white bg-surface-dark rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <div className="p-6 border-b border-gray-200 border-gray-200">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div className="p-6 border-b border-stone-200">
           <div className="flex items-center justify-between">
-            <h3 className="text-2xl font-serif text-gray-900 text-secondary">
+            <h3 className="text-2xl font-serif text-secondary">
               {transaction ? 'Edit Transaction' : 'Add Transaction'}
             </h3>
             <button
               onClick={() => onClose(false)}
-              className="p-2 hover:bg-gray-100 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 hover:bg-stone-100 rounded-lg transition-colors"
             >
               <span className="material-symbols-outlined">close</span>
             </button>
@@ -344,7 +344,7 @@ const TransactionModal: React.FC<{
 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {error && (
-            <div className="bg-red-50 bg-red-50 border border-red-200 border-red-200 rounded-xl p-4 text-red-800 text-red-800 text-sm">
+            <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-red-800 text-sm">
               {error}
             </div>
           )}
@@ -356,7 +356,7 @@ const TransactionModal: React.FC<{
               className={`flex-1 py-3 rounded-lg font-medium transition-colors ${
                 type === 'expense'
                   ? 'bg-primary text-white'
-                  : 'bg-gray-100 bg-white text-gray-600 text-gray-400'
+                  : 'bg-stone-100 text-stone-text'
               }`}
             >
               Expense
@@ -367,7 +367,7 @@ const TransactionModal: React.FC<{
               className={`flex-1 py-3 rounded-lg font-medium transition-colors ${
                 type === 'income'
                   ? 'bg-emerald-500 text-white'
-                  : 'bg-gray-100 bg-white text-gray-600 text-gray-400'
+                  : 'bg-stone-100 text-stone-text'
               }`}
             >
               Income
@@ -376,7 +376,7 @@ const TransactionModal: React.FC<{
 
           <div className="grid md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-stone-text mb-2">
                 Date
               </label>
               <input
@@ -384,11 +384,11 @@ const TransactionModal: React.FC<{
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
                 required
-                className="w-full px-4 py-3 bg-surface-dark bg-white border border-gray-300 border-gray-200 rounded-lg text-gray-900 text-secondary focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                className="w-full px-4 py-3 bg-white border border-stone-300 rounded-lg text-secondary focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-stone-text mb-2">
                 Time
               </label>
               <input
@@ -396,13 +396,13 @@ const TransactionModal: React.FC<{
                 value={time}
                 onChange={(e) => setTime(e.target.value)}
                 required
-                className="w-full px-4 py-3 bg-surface-dark bg-white border border-gray-300 border-gray-200 rounded-lg text-gray-900 text-secondary focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                className="w-full px-4 py-3 bg-white border border-stone-300 rounded-lg text-secondary focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-stone-text mb-2">
               Merchant
             </label>
             <input
@@ -412,7 +412,7 @@ const TransactionModal: React.FC<{
               onChange={(e) => setMerchant(e.target.value)}
               required
               placeholder="Apple Store"
-              className="w-full px-4 py-3 bg-surface-dark bg-white border border-gray-300 border-gray-200 rounded-lg text-gray-900 text-secondary placeholder:text-gray-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+              className="w-full px-4 py-3 bg-white border border-stone-300 rounded-lg text-secondary placeholder:text-stone-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
             />
             <datalist id="merchants-list">
               {merchants.map((merch) => (
@@ -422,18 +422,18 @@ const TransactionModal: React.FC<{
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-stone-text mb-2">
               Category
             </label>
             <select
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
               required
-              className="w-full px-4 py-3 bg-surface-dark bg-white border border-gray-300 border-gray-200 rounded-lg text-gray-900 text-secondary focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+              className="w-full px-4 py-3 bg-white border border-stone-300 rounded-lg text-secondary focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
             >
-              <option value="" className="bg-surface-dark">Select a category</option>
+              <option value="">Select a category</option>
               {categories.map((cat) => (
-                <option key={cat.id} value={cat.id} className="bg-surface-dark">
+                <option key={cat.id} value={cat.id}>
                   {cat.displayName}
                 </option>
               ))}
@@ -441,7 +441,7 @@ const TransactionModal: React.FC<{
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-stone-text mb-2">
               Amount
             </label>
             <input
@@ -451,12 +451,12 @@ const TransactionModal: React.FC<{
               onChange={(e) => setAmount(formatCurrency(e.target.value))}
               required
               placeholder="1,000.00"
-              className="w-full px-4 py-3 bg-surface-dark bg-white border border-gray-300 border-gray-200 rounded-lg text-gray-900 text-secondary placeholder:text-gray-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+              className="w-full px-4 py-3 bg-white border border-stone-300 rounded-lg text-secondary placeholder:text-stone-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-stone-text mb-2">
               Notes (optional)
             </label>
             <textarea
@@ -464,7 +464,7 @@ const TransactionModal: React.FC<{
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Add any additional details..."
               rows={3}
-              className="w-full px-4 py-3 bg-surface-dark bg-white border border-gray-300 border-gray-200 rounded-lg text-gray-900 text-secondary placeholder:text-gray-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
+              className="w-full px-4 py-3 bg-white border border-stone-300 rounded-lg text-secondary placeholder:text-stone-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
             />
           </div>
 
@@ -473,7 +473,7 @@ const TransactionModal: React.FC<{
               type="button"
               onClick={() => onClose(false)}
               disabled={loading}
-              className="flex-1 px-6 py-3 rounded-lg border border-gray-300 border-gray-200 text-gray-700 text-gray-300 font-medium hover:bg-gray-50 hover:bg-gray-100 transition-colors disabled:opacity-50"
+              className="flex-1 px-6 py-3 rounded-lg border border-stone-300 text-secondary font-medium hover:bg-stone-50 transition-colors disabled:opacity-50"
             >
               Cancel
             </button>
