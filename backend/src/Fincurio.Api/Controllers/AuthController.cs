@@ -41,7 +41,7 @@ public class AuthController : ControllerBase
     [HttpPost("logout")]
     public async Task<ActionResult> Logout()
     {
-        var userId = Guid.Parse(User.FindFirst("userId")?.Value ?? throw new UnauthorizedAccessException());
+        var userId = Guid.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? throw new UnauthorizedAccessException());
         await _authService.LogoutAsync(userId);
         return Ok(new { message = "Successfully logged out" });
     }

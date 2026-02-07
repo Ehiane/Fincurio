@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { transactionsApi, Transaction } from '../src/api/transactions.api';
 import { categoriesApi, Category } from '../src/api/categories.api';
+import { merchantsApi, Merchant } from '../src/api/merchants.api';
 
 const Journal: React.FC = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [merchants, setMerchants] = useState<Merchant[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showModal, setShowModal] = useState(false);
@@ -17,12 +19,14 @@ const Journal: React.FC = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [transData, catData] = await Promise.all([
+      const [transData, catData, merchData] = await Promise.all([
         transactionsApi.getAll(),
         categoriesApi.getAll(),
+        merchantsApi.getAll(),
       ]);
       setTransactions(transData.transactions);
       setCategories(catData);
+      setMerchants(merchData);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to load data');
     } finally {
@@ -173,6 +177,7 @@ const Journal: React.FC = () => {
         <TransactionModal
           transaction={editingTransaction}
           categories={categories}
+          merchants={merchants}
           onClose={handleModalClose}
         />
       )}
@@ -265,8 +270,9 @@ const JournalItem: React.FC<{
 const TransactionModal: React.FC<{
   transaction: Transaction | null;
   categories: Category[];
+  merchants: Merchant[];
   onClose: (refresh: boolean) => void;
-}> = ({ transaction, categories, onClose }) => {
+}> = ({ transaction, categories, merchants, onClose }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -376,7 +382,7 @@ const TransactionModal: React.FC<{
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
                 required
-                className="w-full px-4 py-3 bg-gray-50 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                className="w-full px-4 py-3 bg-surface-dark dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
               />
             </div>
             <div>
@@ -388,7 +394,7 @@ const TransactionModal: React.FC<{
                 value={time}
                 onChange={(e) => setTime(e.target.value)}
                 required
-                className="w-full px-4 py-3 bg-gray-50 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                className="w-full px-4 py-3 bg-surface-dark dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
               />
             </div>
           </div>
@@ -399,12 +405,18 @@ const TransactionModal: React.FC<{
             </label>
             <input
               type="text"
+              list="merchants-list"
               value={merchant}
               onChange={(e) => setMerchant(e.target.value)}
               required
               placeholder="Apple Store"
-              className="w-full px-4 py-3 bg-gray-50 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white placeholder:text-gray-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+              className="w-full px-4 py-3 bg-surface-dark dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white placeholder:text-gray-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
             />
+            <datalist id="merchants-list">
+              {merchants.map((merch) => (
+                <option key={merch.id} value={merch.name} />
+              ))}
+            </datalist>
           </div>
 
           <div>
@@ -415,11 +427,11 @@ const TransactionModal: React.FC<{
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
               required
-              className="w-full px-4 py-3 bg-gray-50 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+              className="w-full px-4 py-3 bg-surface-dark dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
             >
-              <option value="">Select a category</option>
+              <option value="" className="bg-surface-dark">Select a category</option>
               {categories.map((cat) => (
-                <option key={cat.id} value={cat.id}>
+                <option key={cat.id} value={cat.id} className="bg-surface-dark">
                   {cat.displayName}
                 </option>
               ))}
@@ -438,7 +450,7 @@ const TransactionModal: React.FC<{
               onChange={(e) => setAmount(e.target.value)}
               required
               placeholder="0.00"
-              className="w-full px-4 py-3 bg-gray-50 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white placeholder:text-gray-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+              className="w-full px-4 py-3 bg-surface-dark dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white placeholder:text-gray-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
             />
           </div>
 
@@ -451,7 +463,7 @@ const TransactionModal: React.FC<{
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Add any additional details..."
               rows={3}
-              className="w-full px-4 py-3 bg-gray-50 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white placeholder:text-gray-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
+              className="w-full px-4 py-3 bg-surface-dark dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white placeholder:text-gray-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
             />
           </div>
 

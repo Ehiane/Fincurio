@@ -3,6 +3,7 @@ using System;
 using Fincurio.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Fincurio.Data.Migrations
 {
     [DbContext(typeof(FincurioDbContext))]
-    partial class FincurioDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260207004403_AddMerchantsTable")]
+    partial class AddMerchantsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -67,13 +70,7 @@ namespace Fincurio.Data.Migrations
                         .HasColumnType("character varying(20)")
                         .HasColumnName("type");
 
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("categories", (string)null);
                 });
@@ -334,16 +331,6 @@ namespace Fincurio.Data.Migrations
                         .HasDatabaseName("idx_user_preferences_user_id");
 
                     b.ToTable("user_preferences", (string)null);
-                });
-
-            modelBuilder.Entity("Fincurio.Core.Models.Entities.Category", b =>
-                {
-                    b.HasOne("Fincurio.Core.Models.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Fincurio.Core.Models.Entities.Merchant", b =>

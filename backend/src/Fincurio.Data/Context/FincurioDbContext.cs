@@ -14,6 +14,7 @@ public class FincurioDbContext : DbContext
     public DbSet<Transaction> Transactions { get; set; }
     public DbSet<UserPreference> UserPreferences { get; set; }
     public DbSet<RefreshToken> RefreshTokens { get; set; }
+    public DbSet<Merchant> Merchants { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -42,22 +43,26 @@ public class FincurioDbContext : DbContext
 
         foreach (var entry in entries)
         {
+            var hasCreatedAt = entry.Metadata.FindProperty("CreatedAt") != null;
+            var hasUpdatedAt = entry.Metadata.FindProperty("UpdatedAt") != null;
+
             if (entry.State == EntityState.Added)
             {
-                if (entry.Property("CreatedAt").CurrentValue == null ||
-                    (DateTime)entry.Property("CreatedAt").CurrentValue == default)
+                if (hasCreatedAt &&
+                    (entry.Property("CreatedAt").CurrentValue == null ||
+                    (DateTime)entry.Property("CreatedAt").CurrentValue == default))
                 {
                     entry.Property("CreatedAt").CurrentValue = DateTime.UtcNow;
                 }
 
-                if (entry.Property("UpdatedAt") != null)
+                if (hasUpdatedAt)
                 {
                     entry.Property("UpdatedAt").CurrentValue = DateTime.UtcNow;
                 }
             }
             else if (entry.State == EntityState.Modified)
             {
-                if (entry.Property("UpdatedAt") != null)
+                if (hasUpdatedAt)
                 {
                     entry.Property("UpdatedAt").CurrentValue = DateTime.UtcNow;
                 }

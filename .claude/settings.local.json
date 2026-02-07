@@ -20,7 +20,8 @@
       "Bash(dotnet list:*)",
       "Bash(docker ps:*)",
       "Bash(dotnet run:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(taskkill:*)"
     ]
   }
 }

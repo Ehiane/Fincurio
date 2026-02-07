@@ -44,10 +44,23 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
             .HasColumnName("created_at")
             .IsRequired();
 
+        builder.Property(c => c.UserId)
+            .HasColumnName("user_id")
+            .IsRequired(false); // Nullable for global categories
+
         // Relationships
+        builder.HasOne(c => c.User)
+            .WithMany()
+            .HasForeignKey(c => c.UserId)
+            .OnDelete(DeleteBehavior.Cascade)
+            .IsRequired(false);
+
         builder.HasMany(c => c.Transactions)
             .WithOne(t => t.Category)
             .HasForeignKey(t => t.CategoryId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        // Indexes
+        builder.HasIndex(c => c.UserId);
     }
 }

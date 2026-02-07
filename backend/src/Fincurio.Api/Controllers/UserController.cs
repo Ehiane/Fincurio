@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Fincurio.Core.Interfaces.Services;
 using Fincurio.Core.Models.DTOs.User;
 using Microsoft.AspNetCore.Authorization;
@@ -19,7 +20,7 @@ public class UserController : ControllerBase
 
     private Guid GetUserId()
     {
-        return Guid.Parse(User.FindFirst("userId")?.Value ?? throw new UnauthorizedAccessException());
+        return Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new UnauthorizedAccessException());
     }
 
     [HttpGet("profile")]

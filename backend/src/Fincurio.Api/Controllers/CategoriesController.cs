@@ -17,10 +17,32 @@ public class CategoriesController : ControllerBase
         _categoryService = categoryService;
     }
 
+    private Guid GetUserId()
+    {
+        return Guid.Parse(User.FindFirst("userId")?.Value ?? throw new UnauthorizedAccessException());
+    }
+
     [HttpGet]
     public async Task<ActionResult<CategoryListResponseDto>> GetCategories()
     {
-        var categories = await _categoryService.GetAllAsync();
+        var userId = GetUserId();
+        var categories = await _categoryService.GetAllAsync(userId);
         return Ok(new CategoryListResponseDto { Categories = categories });
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<CategoryDto>> CreateCategory([FromBody] CreateCategoryDto request)
+    {
+        var userId = GetUserId();
+        var category = await _categoryService.CreateAsync(userId, request);
+        return CreatedAtAction(nameof(GetCategories), new { id = category.Id }, category);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> DeleteCategory(Guid id)
+    {
+        var userId = GetUserId();
+        await _categoryService.DeleteAsync(userId, id);
+        return NoContent();
     }
 }

@@ -19,7 +19,7 @@ public class InsightsController : ControllerBase
 
     private Guid GetUserId()
     {
-        return Guid.Parse(User.FindFirst("userId")?.Value ?? throw new UnauthorizedAccessException());
+        return Guid.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? throw new UnauthorizedAccessException());
     }
 
     [HttpGet("dashboard")]

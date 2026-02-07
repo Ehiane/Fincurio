@@ -10,13 +10,16 @@ public class TransactionService : ITransactionService
 {
     private readonly ITransactionRepository _transactionRepository;
     private readonly ICategoryRepository _categoryRepository;
+    private readonly IMerchantService _merchantService;
 
     public TransactionService(
         ITransactionRepository transactionRepository,
-        ICategoryRepository categoryRepository)
+        ICategoryRepository categoryRepository,
+        IMerchantService merchantService)
     {
         _transactionRepository = transactionRepository;
         _categoryRepository = categoryRepository;
+        _merchantService = merchantService;
     }
 
     public async Task<TransactionListResponseDto> GetTransactionsAsync(
@@ -67,6 +70,9 @@ public class TransactionService : ITransactionService
             throw new ValidationException("Invalid category");
         }
 
+        // Auto-save merchant (creates if doesn't exist, returns existing if it does)
+        await _merchantService.GetOrCreateAsync(userId, request.Merchant);
+
         var transaction = new Transaction
         {
             UserId = userId,
@@ -99,6 +105,9 @@ public class TransactionService : ITransactionService
         {
             throw new ValidationException("Invalid category");
         }
+
+        // Auto-save merchant (creates if doesn't exist, returns existing if it does)
+        await _merchantService.GetOrCreateAsync(userId, request.Merchant);
 
         transaction.CategoryId = request.CategoryId;
         transaction.Date = request.Date;
