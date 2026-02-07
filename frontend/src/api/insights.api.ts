@@ -12,7 +12,7 @@ export interface MoneyFlowResponse {
   latestDate: string | null;
   filterStart: string;
   filterEnd: string;
-  grouping: 'daily' | 'weekly' | 'monthly';
+  grouping: 'daily' | 'weekly' | 'monthly' | 'yearly';
   dataPoints: MonthlyFlow[];
 }
 
@@ -57,9 +57,9 @@ export const insightsApi = {
     return response.data;
   },
 
-  getMoneyFlow: async (startDate?: string, endDate?: string): Promise<MoneyFlowResponse> => {
+  getMoneyFlow: async (startDate?: string, endDate?: string, grouping?: string): Promise<MoneyFlowResponse> => {
     const response = await apiClient.get('/api/insights/money-flow', {
-      params: { startDate, endDate },
+      params: { startDate, endDate, grouping },
     });
     return response.data;
   },

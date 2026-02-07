@@ -166,10 +166,10 @@ public class InsightsService : IInsightsService
         return income - expenses;
     }
 
-    public async Task<MoneyFlowResponseDto> GetMoneyFlowAsync(Guid userId, DateTime? startDate = null, DateTime? endDate = null)
+    public async Task<MoneyFlowResponseDto> GetMoneyFlowAsync(Guid userId, DateTime? startDate = null, DateTime? endDate = null, string? grouping = null)
     {
-        _logger.LogInformation("Fetching money flow for user {UserId} | StartDate={StartDate}, EndDate={EndDate}",
-            userId, startDate, endDate);
+        _logger.LogInformation("Fetching money flow for user {UserId} | StartDate={StartDate}, EndDate={EndDate}, Grouping={Grouping}",
+            userId, startDate, endDate, grouping);
 
         // Get ALL transactions to find the earliest/latest dates for the user
         var allTransactions = await _transactionRepository.GetByUserIdAsync(userId, pageSize: int.MaxValue);
@@ -206,22 +206,19 @@ public class InsightsService : IInsightsService
         // Get transactions in the filtered range
         var transactions = await _transactionRepository.GetByDateRangeAsync(userId, filterStart, filterEnd);
 
-        // Determine grouping based on range span
+        // Use explicit grouping if provided, otherwise auto-detect based on range span
         var totalDays = (filterEnd - filterStart).TotalDays;
-        string grouping;
-        if (totalDays <= 60)
-            grouping = "daily";
-        else if (totalDays <= 365)
-            grouping = "weekly";
-        else
-            grouping = "monthly";
+        var validGroupings = new[] { "daily", "weekly", "monthly", "yearly" };
+        var effectiveGrouping = !string.IsNullOrWhiteSpace(grouping) && validGroupings.Contains(grouping.ToLowerInvariant())
+            ? grouping.ToLowerInvariant()
+            : totalDays <= 60 ? "daily" : totalDays <= 365 ? "weekly" : "monthly";
 
-        _logger.LogDebug("Money flow grouping for user {UserId}: {Grouping} ({Days} days span, {TxCount} transactions)",
-            userId, grouping, totalDays, transactions.Count);
+        _logger.LogDebug("Money flow grouping for user {UserId}: {Grouping} (requested: {Requested}, {Days} days span, {TxCount} transactions)",
+            userId, effectiveGrouping, grouping ?? "auto", totalDays, transactions.Count);
 
         var dataPoints = new List<MonthlyFlowDto>();
 
-        if (grouping == "daily")
+        if (effectiveGrouping == "daily")
         {
             var currentDate = filterStart;
             while (currentDate <= filterEnd)
@@ -236,7 +233,7 @@ public class InsightsService : IInsightsService
                 currentDate = currentDate.AddDays(1);
             }
         }
-        else if (grouping == "weekly")
+        else if (effectiveGrouping == "weekly")
         {
             var currentDate = filterStart;
             while (currentDate <= filterEnd)
@@ -254,7 +251,7 @@ public class InsightsService : IInsightsService
                 currentDate = weekEnd.AddDays(1);
             }
         }
-        else // monthly
+        else if (effectiveGrouping == "monthly")
         {
             var currentDate = new DateTime(filterStart.Year, filterStart.Month, 1);
             while (currentDate <= filterEnd)
@@ -270,9 +267,26 @@ public class InsightsService : IInsightsService
                 currentDate = currentDate.AddMonths(1);
             }
         }
+        else // yearly
+        {
+            var currentYear = filterStart.Year;
+            while (currentYear <= filterEnd.Year)
+            {
+                var yearStart = new DateTime(currentYear, 1, 1);
+                var yearEnd = new DateTime(currentYear, 12, 31);
+                var yearTransactions = transactions.Where(t => t.Date.Date >= yearStart && t.Date.Date <= yearEnd).ToList();
+                dataPoints.Add(new MonthlyFlowDto
+                {
+                    Date = currentYear.ToString(),
+                    Income = yearTransactions.Where(t => t.Type == "income").Sum(t => t.Amount),
+                    Spending = yearTransactions.Where(t => t.Type == "expense").Sum(t => t.Amount)
+                });
+                currentYear++;
+            }
+        }
 
         _logger.LogInformation("Money flow built for user {UserId} | Grouping={Grouping}, DataPoints={Count}, Range={Start}-{End}",
-            userId, grouping, dataPoints.Count, filterStart.ToString("yyyy-MM-dd"), filterEnd.ToString("yyyy-MM-dd"));
+            userId, effectiveGrouping, dataPoints.Count, filterStart.ToString("yyyy-MM-dd"), filterEnd.ToString("yyyy-MM-dd"));
 
         return new MoneyFlowResponseDto
         {
@@ -280,7 +294,7 @@ public class InsightsService : IInsightsService
             LatestDate = latestDate,
             FilterStart = filterStart,
             FilterEnd = filterEnd,
-            Grouping = grouping,
+            Grouping = effectiveGrouping,
             DataPoints = dataPoints
         };
     }

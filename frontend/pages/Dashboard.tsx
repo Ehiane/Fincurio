@@ -20,6 +20,7 @@ const Dashboard: React.FC = () => {
   const [flowLoading, setFlowLoading] = useState(false);
   const [flowStartDate, setFlowStartDate] = useState('');
   const [flowEndDate, setFlowEndDate] = useState('');
+  const [flowGrouping, setFlowGrouping] = useState<'daily' | 'weekly' | 'monthly' | 'yearly'>('monthly');
 
   useEffect(() => {
     fetchDashboard();
@@ -31,16 +32,17 @@ const Dashboard: React.FC = () => {
       const [dashboardData, profile, flowData] = await Promise.all([
         insightsApi.getDashboard(),
         userApi.getProfile(),
-        insightsApi.getMoneyFlow(),
+        insightsApi.getMoneyFlow(undefined, undefined, 'monthly'),
       ]);
       setData(dashboardData);
       setMoneyFlow(flowData);
 
-      // Initialize filter dates from the response
+      // Initialize filter dates and grouping from the response
       if (flowData.earliestDate) {
         setFlowStartDate(flowData.filterStart.split('T')[0]);
         setFlowEndDate(flowData.filterEnd.split('T')[0]);
       }
+      setFlowGrouping(flowData.grouping as 'daily' | 'weekly' | 'monthly' | 'yearly');
 
       const code = profile.preferences?.currency || 'USD';
       setCurrencySymbol(currencySymbols[code] || code);
@@ -51,10 +53,10 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const fetchMoneyFlow = async (start?: string, end?: string) => {
+  const fetchMoneyFlow = async (start?: string, end?: string, grouping?: string) => {
     try {
       setFlowLoading(true);
-      const flowData = await insightsApi.getMoneyFlow(start, end);
+      const flowData = await insightsApi.getMoneyFlow(start, end, grouping);
       setMoneyFlow(flowData);
     } catch (err: any) {
       console.error('Failed to fetch money flow:', err);
@@ -66,7 +68,8 @@ const Dashboard: React.FC = () => {
   const handleFlowFilterApply = () => {
     fetchMoneyFlow(
       flowStartDate || undefined,
-      flowEndDate || undefined
+      flowEndDate || undefined,
+      flowGrouping
     );
   };
 
@@ -76,7 +79,8 @@ const Dashboard: React.FC = () => {
       const end = moneyFlow.latestDate?.split('T')[0] || '';
       setFlowStartDate(start);
       setFlowEndDate(end);
-      fetchMoneyFlow();
+      setFlowGrouping('monthly');
+      fetchMoneyFlow(undefined, undefined, 'monthly');
     }
   };
 
@@ -206,11 +210,25 @@ const Dashboard: React.FC = () => {
             >
               All Time
             </button>
-            {moneyFlow.grouping && (
-              <span className="text-xs text-stone-400 ml-auto hidden sm:inline">
-                Grouped {moneyFlow.grouping}
-              </span>
-            )}
+            <div className="flex items-center gap-1 ml-auto">
+              {(['daily', 'weekly', 'monthly', 'yearly'] as const).map((g) => (
+                <button
+                  key={g}
+                  onClick={() => {
+                    setFlowGrouping(g);
+                    fetchMoneyFlow(flowStartDate || undefined, flowEndDate || undefined, g);
+                  }}
+                  disabled={flowLoading}
+                  className={`px-3 py-1.5 text-xs font-semibold uppercase tracking-wider rounded-lg transition-colors disabled:opacity-50 ${
+                    (moneyFlow?.grouping || flowGrouping) === g
+                      ? 'bg-secondary text-white'
+                      : 'text-stone-500 hover:text-secondary border border-stone-300/80 hover:border-stone-400'
+                  }`}
+                >
+                  {g.charAt(0).toUpperCase() + g.slice(1)}
+                </button>
+              ))}
+            </div>
           </div>
         )}
 

@@ -51,11 +51,12 @@ public class InsightsController : ControllerBase
     [HttpGet("money-flow")]
     public async Task<ActionResult<MoneyFlowResponseDto>> GetMoneyFlow(
         [FromQuery] DateTime? startDate,
-        [FromQuery] DateTime? endDate)
+        [FromQuery] DateTime? endDate,
+        [FromQuery] string? grouping = null)
     {
         var userId = GetUserId();
-        _logger.LogInformation("Fetching money flow for user {UserId} | StartDate={StartDate}, EndDate={EndDate}", userId, startDate, endDate);
-        var flow = await _insightsService.GetMoneyFlowAsync(userId, startDate, endDate);
+        _logger.LogInformation("Fetching money flow for user {UserId} | StartDate={StartDate}, EndDate={EndDate}, Grouping={Grouping}", userId, startDate, endDate, grouping);
+        var flow = await _insightsService.GetMoneyFlowAsync(userId, startDate, endDate, grouping);
         _logger.LogInformation("Money flow fetched for user {UserId} | Grouping={Grouping}, DataPoints={Count}",
             userId, flow.Grouping, flow.DataPoints.Count);
         return Ok(flow);
