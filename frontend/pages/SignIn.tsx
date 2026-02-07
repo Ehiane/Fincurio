@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../src/hooks/useAuth';
 import { authApi } from '../src/api/auth.api';
+import Logo from '../src/components/Logo';
 
 const SignIn: React.FC = () => {
   const navigate = useNavigate();
@@ -70,10 +71,7 @@ const SignIn: React.FC = () => {
 
       <div className="w-full max-w-2xl flex flex-col items-center z-10">
         <div className="mb-12 opacity-80 hover:opacity-100 transition-opacity">
-          <div className="flex items-center gap-3 text-primary">
-            <span className="material-symbols-outlined text-4xl">savings</span>
-            <span className="text-xl font-medium tracking-wide text-gray-800 dark:text-gray-200">Fincurio</span>
-          </div>
+          <Logo className="h-12" showText={true} />
         </div>
 
         <div className="text-center mb-16 space-y-4 max-w-lg">

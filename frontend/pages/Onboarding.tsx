@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { userApi } from '../src/api/user.api';
+import Logo from '../src/components/Logo';
 
 const Onboarding: React.FC = () => {
   const navigate = useNavigate();
@@ -205,12 +206,7 @@ const Onboarding: React.FC = () => {
   return (
     <div className="w-full min-h-screen bg-background-light dark:bg-background-dark flex flex-col transition-colors duration-300 relative overflow-hidden">
       <header className="w-full px-6 py-6 md:px-12 md:py-8 flex justify-between items-center z-10">
-        <div className="flex items-center gap-3">
-          <div className="text-primary">
-            <span className="material-symbols-outlined text-[32px]">savings</span>
-          </div>
-          <h2 className="text-xl md:text-2xl font-bold tracking-tight hidden md:block">Fincurio</h2>
-        </div>
+        <Logo className="h-10 md:h-12" showText={true} />
 
         <div className="absolute left-1/2 top-8 -translate-x-1/2 hidden md:flex items-center gap-2 px-4 py-2 bg-white/50 dark:bg-white/5 backdrop-blur-sm rounded-full border border-gray-200 dark:border-white/10">
           <span className="text-sm font-medium opacity-60">Step {step} of 3</span>

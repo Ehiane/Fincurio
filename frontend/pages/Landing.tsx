@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import Logo from '../src/components/Logo';
 
 const Landing: React.FC = () => {
   const navigate = useNavigate();
@@ -15,10 +16,7 @@ const Landing: React.FC = () => {
         {/* Navigation */}
         <nav className="absolute top-0 left-0 right-0 z-50 px-6 md:px-12 py-8">
           <div className="max-w-7xl mx-auto flex items-center justify-between">
-            <div className="flex items-center gap-3 text-primary">
-              <span className="material-symbols-outlined text-3xl">savings</span>
-              <span className="text-xl font-medium tracking-wide text-gray-900 dark:text-gray-100">Fincurio</span>
-            </div>
+            <Logo className="h-10" showText={true} />
             <button
               onClick={() => navigate('/signin')}
               className="px-6 py-2.5 rounded-full border border-primary/30 text-primary hover:bg-primary hover:text-white transition-all duration-300 text-sm font-medium tracking-wide"
@@ -275,9 +273,8 @@ const Landing: React.FC = () => {
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
             <div className="col-span-1 md:col-span-2">
-              <div className="flex items-center gap-3 text-primary mb-4">
-                <span className="material-symbols-outlined text-3xl">savings</span>
-                <span className="text-xl font-medium tracking-wide text-white">Fincurio</span>
+              <div className="mb-4">
+                <Logo className="h-10" showText={true} />
               </div>
               <p className="text-gray-400 text-sm leading-relaxed max-w-md">
                 A sanctuary for intentional financial living. Beyond budgets, beyond tracking—discover a practice of clarity and purpose.

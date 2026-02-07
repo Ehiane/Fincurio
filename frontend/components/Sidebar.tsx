@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../src/hooks/useAuth';
+import Logo from '../src/components/Logo';
 
 const Sidebar: React.FC = () => {
   const { user, logout } = useAuth();
@@ -38,7 +39,7 @@ const Sidebar: React.FC = () => {
     <aside className="w-full lg:w-72 flex-shrink-0 bg-background-light dark:bg-background-dark border-b lg:border-b-0 lg:border-r border-stone-200 dark:border-stone-800/50 p-6 lg:p-8 flex flex-col justify-between z-20">
       <div>
         <div className="mb-10 pl-2">
-          <h1 className="text-2xl font-bold tracking-tight text-primary">Fincurio</h1>
+          <Logo className="h-10 mb-2" showText={true} />
           <p className="text-stone-text text-sm font-medium tracking-wide mt-1 uppercase">MVP Edition</p>
         </div>
         <nav className="flex flex-col gap-3">
