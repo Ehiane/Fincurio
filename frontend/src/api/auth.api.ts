@@ -22,8 +22,29 @@ export interface AuthResponse {
   expiresIn: number;
 }
 
-export interface ResetPasswordRequest {
+export interface VerifyEmailResponse {
+  success: boolean;
+  message: string;
+}
+
+export interface ResendVerificationRequest {
   email: string;
+}
+
+export interface ResendVerificationResponse {
+  message: string;
+}
+
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface ForgotPasswordResponse {
+  message: string;
+}
+
+export interface ResetPasswordRequest {
+  token: string;
   newPassword: string;
 }
 
@@ -48,6 +69,21 @@ export const authApi = {
 
   getCurrentUser: async () => {
     const response = await apiClient.get('/api/user/profile');
+    return response.data;
+  },
+
+  verifyEmail: async (token: string): Promise<VerifyEmailResponse> => {
+    const response = await apiClient.post(`/api/auth/verify-email?token=${token}`);
+    return response.data;
+  },
+
+  resendVerification: async (data: ResendVerificationRequest): Promise<ResendVerificationResponse> => {
+    const response = await apiClient.post('/api/auth/resend-verification', data);
+    return response.data;
+  },
+
+  forgotPassword: async (data: ForgotPasswordRequest): Promise<ForgotPasswordResponse> => {
+    const response = await apiClient.post('/api/auth/forgot-password', data);
     return response.data;
   },
 

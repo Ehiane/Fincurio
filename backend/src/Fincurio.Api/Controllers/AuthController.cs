@@ -46,6 +46,27 @@ public class AuthController : ControllerBase
         return Ok(new { message = "Successfully logged out" });
     }
 
+    [HttpPost("verify-email")]
+    public async Task<ActionResult<VerifyEmailResponseDto>> VerifyEmail([FromQuery] string token)
+    {
+        var response = await _authService.VerifyEmailAsync(token);
+        return Ok(response);
+    }
+
+    [HttpPost("resend-verification")]
+    public async Task<ActionResult<ResendVerificationResponseDto>> ResendVerification([FromBody] ResendVerificationRequestDto request)
+    {
+        var response = await _authService.ResendVerificationEmailAsync(request.Email);
+        return Ok(response);
+    }
+
+    [HttpPost("forgot-password")]
+    public async Task<ActionResult<ForgotPasswordResponseDto>> ForgotPassword([FromBody] ForgotPasswordRequestDto request)
+    {
+        var response = await _authService.ForgotPasswordAsync(request.Email);
+        return Ok(response);
+    }
+
     [HttpPost("reset-password")]
     public async Task<ActionResult<ResetPasswordResponseDto>> ResetPassword([FromBody] ResetPasswordRequestDto request)
     {

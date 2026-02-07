@@ -9,7 +9,7 @@ const SignIn: React.FC = () => {
   const { login, register } = useAuth();
 
   const [isSignUp, setIsSignUp] = useState(false);
-  const [isResetPassword, setIsResetPassword] = useState(false);
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -45,30 +45,17 @@ const SignIn: React.FC = () => {
     setSuccess('');
 
     try {
-      if (isResetPassword) {
-        // Validate passwords match
-        if (password !== confirmPassword) {
-          setError('Passwords do not match');
-          setLoading(false);
-          return;
-        }
-        if (!allRequirementsMet) {
-          setError('Password does not meet all requirements');
-          setLoading(false);
-          return;
-        }
-
-        // Reset password
-        const response = await authApi.resetPassword({ email, newPassword: password });
+      if (isForgotPassword) {
+        // Send password reset email
+        const response = await authApi.forgotPassword({ email });
         setSuccess(response.message);
-        setPassword('');
-        setConfirmPassword('');
+        setEmail('');
 
-        // Switch back to login mode after 2 seconds
+        // Switch back to login mode after 5 seconds
         setTimeout(() => {
-          setIsResetPassword(false);
+          setIsForgotPassword(false);
           setSuccess('');
-        }, 2000);
+        }, 5000);
       } else if (isSignUp) {
         if (!allRequirementsMet) {
           setError('Password does not meet all requirements');
@@ -174,11 +161,11 @@ const SignIn: React.FC = () => {
 
           <div className="text-center mb-10 md:mb-12 space-y-3 w-full">
             <h1 className="font-serif text-2xl sm:text-3xl md:text-4xl font-normal leading-tight tracking-tight text-secondary">
-              {isResetPassword ? 'Reset your password.' : isSignUp ? 'Start your journey.' : 'Welcome back.'}
+              {isForgotPassword ? 'Reset your password.' : isSignUp ? 'Start your journey.' : 'Welcome back.'}
             </h1>
             <p className="text-stone-text text-sm sm:text-base font-light">
-              {isResetPassword
-                ? 'Enter your email and new password below.'
+              {isForgotPassword
+                ? 'Enter your email to receive a password reset link.'
                 : isSignUp
                   ? 'Create your Fincurio account to begin.'
                   : 'Sign in to continue your financial reflection.'}
@@ -198,7 +185,7 @@ const SignIn: React.FC = () => {
               </div>
             )}
 
-            {isSignUp && !isResetPassword && (
+            {isSignUp && !isForgotPassword && (
               <div className="flex gap-3">
                 <div className="relative flex items-center group flex-1">
                   <span className="absolute left-5 text-stone-text/60 material-symbols-outlined text-xl transition-colors group-focus-within:text-primary pointer-events-none">person</span>
@@ -237,29 +224,31 @@ const SignIn: React.FC = () => {
               />
             </div>
 
-            <div className="relative flex items-center group">
-              <span className="absolute left-5 text-stone-text/60 material-symbols-outlined text-xl transition-colors group-focus-within:text-primary pointer-events-none">lock</span>
-              <input
-                type={showPassword ? "text" : "password"}
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder={isResetPassword ? "New password" : "••••••••"}
-                className="w-full h-14 bg-surface-dark border-none rounded-full py-4 pl-14 pr-14 text-base text-secondary placeholder:text-stone-text/40 focus:ring-2 focus:ring-primary/20 transition-all shadow-sm"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-5 text-stone-text/50 hover:text-primary transition-colors"
-              >
-                <span className="material-symbols-outlined text-xl">
-                  {showPassword ? 'visibility_off' : 'visibility'}
-                </span>
-              </button>
-            </div>
+            {!isForgotPassword && (
+              <div className="relative flex items-center group">
+                <span className="absolute left-5 text-stone-text/60 material-symbols-outlined text-xl transition-colors group-focus-within:text-primary pointer-events-none">lock</span>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full h-14 bg-surface-dark border-none rounded-full py-4 pl-14 pr-14 text-base text-secondary placeholder:text-stone-text/40 focus:ring-2 focus:ring-primary/20 transition-all shadow-sm"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-5 text-stone-text/50 hover:text-primary transition-colors"
+                >
+                  <span className="material-symbols-outlined text-xl">
+                    {showPassword ? 'visibility_off' : 'visibility'}
+                  </span>
+                </button>
+              </div>
+            )}
 
-            {/* Password strength & requirements (sign-up and reset only) */}
-            {(isSignUp || isResetPassword) && password.length > 0 && (
+            {/* Password strength & requirements (sign-up only) */}
+            {isSignUp && password.length > 0 && (
               <div className="-mt-2 px-2 space-y-3">
                 {/* Strength bar */}
                 <div className="space-y-1.5">
@@ -302,8 +291,8 @@ const SignIn: React.FC = () => {
               </div>
             )}
 
-            {/* Confirm password (sign-up and reset) */}
-            {(isSignUp || isResetPassword) && (
+            {/* Confirm password (sign-up only) */}
+            {isSignUp && (
               <div className="relative flex items-center group">
                 <span className="absolute left-5 text-stone-text/60 material-symbols-outlined text-xl transition-colors group-focus-within:text-primary pointer-events-none">lock</span>
                 <input
@@ -326,11 +315,11 @@ const SignIn: React.FC = () => {
               </div>
             )}
 
-            {!isSignUp && !isResetPassword && (
+            {!isSignUp && !isForgotPassword && (
               <div className="flex justify-end -mt-1">
                 <button
                   type="button"
-                  onClick={() => setIsResetPassword(true)}
+                  onClick={() => setIsForgotPassword(true)}
                   className="text-xs text-primary/80 hover:text-primary hover:underline transition-all"
                 >
                   Forgot password?
@@ -343,18 +332,18 @@ const SignIn: React.FC = () => {
               disabled={loading}
               className="w-full h-14 rounded-full bg-primary hover:bg-[#c9431a] disabled:bg-stone-300 disabled:cursor-not-allowed text-white text-base font-medium tracking-wide shadow-lg shadow-primary/20 hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-2 group mt-2"
             >
-              <span>{loading ? 'Loading...' : (isResetPassword ? 'Reset Password' : isSignUp ? 'Create Account' : 'Enter Fincurio')}</span>
+              <span>{loading ? 'Loading...' : (isForgotPassword ? 'Send Reset Link' : isSignUp ? 'Create Account' : 'Enter Fincurio')}</span>
               {!loading && (
                 <span className="material-symbols-outlined text-sm transition-transform duration-300 group-hover:translate-x-1">arrow_forward</span>
               )}
             </button>
 
             <div className="flex justify-center items-center gap-4 mt-6 text-sm text-stone-text/70">
-              {isResetPassword ? (
+              {isForgotPassword ? (
                 <button
                   type="button"
                   onClick={() => {
-                    setIsResetPassword(false);
+                    setIsForgotPassword(false);
                     setError('');
                     setSuccess('');
                   }}

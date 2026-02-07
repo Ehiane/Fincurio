@@ -8,6 +8,7 @@ public class UserProfileDto
     public required string LastName { get; set; }
     public string? ProfileImageUrl { get; set; }
     public string? FinancialIntention { get; set; }
+    public bool IsEmailVerified { get; set; }
     public UserPreferencesDto? Preferences { get; set; }
     public DateTime CreatedAt { get; set; }
 }

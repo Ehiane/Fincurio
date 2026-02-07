@@ -29,7 +29,8 @@
       "Bash(netstat:*)",
       "Bash(timeout:*)",
       "Bash(grep:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(dotnet clean:*)"
     ]
   }
 }

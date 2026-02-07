@@ -13,6 +13,7 @@ export interface UserProfile {
   lastName: string;
   profileImageUrl?: string;
   financialIntention?: string;
+  isEmailVerified: boolean;
   preferences?: UserPreferences;
   createdAt: string;
 }

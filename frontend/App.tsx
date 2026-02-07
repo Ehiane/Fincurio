@@ -3,6 +3,8 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './src/contexts/AuthContext';
 import Landing from './pages/Landing';
 import SignIn from './pages/SignIn';
+import VerifyEmail from './pages/VerifyEmail';
+import ResetPassword from './pages/ResetPassword';
 import Onboarding from './pages/Onboarding';
 import Dashboard from './pages/Dashboard';
 import Journal from './pages/Journal';
@@ -10,6 +12,7 @@ import Reflections from './pages/Reflections';
 import Settings from './pages/Settings';
 import Sidebar from './components/Sidebar';
 import PrivateRoute from './components/PrivateRoute';
+import EmailVerificationBanner from './components/EmailVerificationBanner';
 
 const App: React.FC = () => {
   return (
@@ -19,6 +22,8 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/signin" element={<SignIn />} />
+            <Route path="/verify-email" element={<VerifyEmail />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/onboarding" element={<Onboarding />} />
 
             <Route
@@ -28,6 +33,7 @@ const App: React.FC = () => {
                   <div className="flex flex-1 flex-col md:flex-row h-screen overflow-hidden">
                     <Sidebar />
                     <div className="flex-1 overflow-y-auto">
+                      <EmailVerificationBanner />
                       <Routes>
                         <Route path="dashboard" element={<Dashboard />} />
                         <Route path="journal" element={<Journal />} />

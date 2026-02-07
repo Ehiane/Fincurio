@@ -31,6 +31,7 @@ public class UserService : IUserService
             LastName = user.LastName ?? "",
             ProfileImageUrl = user.ProfileImageUrl,
             FinancialIntention = user.FinancialIntention,
+            IsEmailVerified = user.IsEmailVerified,
             Preferences = user.Preferences != null ? new UserPreferencesDto
             {
                 Currency = user.Preferences.Currency,

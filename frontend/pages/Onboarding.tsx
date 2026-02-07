@@ -66,12 +66,12 @@ const Onboarding: React.FC = () => {
       case 1:
         return (
           <div className="w-full max-w-3xl flex flex-col items-center gap-8 text-center">
-            <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl leading-tight text-[#181112] dark:text-[#f3ebec]">
+            <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl leading-tight text-secondary">
               What is your primary intention for your finances this year?
             </h1>
 
             <div className="w-full max-w-xl mt-4 md:mt-8 relative group">
-              <div className="w-full pb-2 border-b border-gray-300 dark:border-white/20 relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:bg-primary after:w-0 group-focus-within:after:w-full after:transition-all after:duration-500">
+              <div className="w-full pb-2 border-b border-stone-300 relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:bg-primary after:w-0 group-focus-within:after:w-full after:transition-all after:duration-500">
                 <input
                   autoFocus
                   type="text"
@@ -79,10 +79,10 @@ const Onboarding: React.FC = () => {
                   onChange={(e) => setFinancialIntention(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && handleNext()}
                   placeholder="I want to feel..."
-                  className="w-full bg-transparent border-none p-0 text-2xl md:text-3xl lg:text-4xl text-center placeholder:text-gray-400 dark:placeholder:text-white/20 focus:ring-0 text-primary font-serif italic"
+                  className="w-full bg-transparent border-none p-0 text-2xl md:text-3xl lg:text-4xl text-center placeholder:text-stone-400 focus:ring-0 text-primary font-serif italic"
                 />
               </div>
-              <p className="mt-4 text-sm md:text-base text-gray-500 text-gray-400 font-light">
+              <p className="mt-4 text-sm md:text-base text-stone-text font-light">
                 Focus on a feeling, like 'security', 'freedom', or 'calm'.
               </p>
             </div>
@@ -90,7 +90,7 @@ const Onboarding: React.FC = () => {
             <button
               onClick={handleNext}
               disabled={!financialIntention.trim()}
-              className="group flex items-center justify-center gap-3 bg-primary hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white pl-8 pr-6 py-4 rounded-full transition-all duration-300 shadow-lg hover:pr-8 mt-12"
+              className="group flex items-center justify-center gap-3 bg-secondary hover:bg-secondary/90 disabled:bg-stone-400 disabled:cursor-not-allowed text-background-light pl-8 pr-6 py-4 rounded-full transition-all duration-300 shadow-lg hover:pr-8 mt-12"
             >
               <span className="text-lg font-medium">Continue</span>
               <span className="material-symbols-outlined transition-transform duration-300 group-hover:translate-x-1">arrow_forward</span>
@@ -101,7 +101,7 @@ const Onboarding: React.FC = () => {
       case 2:
         return (
           <div className="w-full max-w-3xl flex flex-col items-center gap-8 text-center">
-            <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl leading-tight text-[#181112] dark:text-[#f3ebec]">
+            <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl leading-tight text-secondary">
               What currency do you use?
             </h1>
 
@@ -112,13 +112,13 @@ const Onboarding: React.FC = () => {
                   onClick={() => setCurrency(curr.code)}
                   className={`p-6 rounded-2xl border-2 transition-all duration-300 ${
                     currency === curr.code
-                      ? 'border-primary bg-primary/5 dark:bg-primary/10'
-                      : 'border-gray-200 border-gray-200 hover:border-primary/50'
+                      ? 'border-primary bg-primary/5'
+                      : 'border-stone-300 hover:border-primary/50'
                   }`}
                 >
-                  <div className="text-4xl mb-2">{curr.symbol}</div>
-                  <div className="font-medium text-lg">{curr.code}</div>
-                  <div className="text-sm text-gray-500 text-gray-400">{curr.name}</div>
+                  <div className="text-4xl mb-2 text-secondary">{curr.symbol}</div>
+                  <div className="font-medium text-lg text-secondary">{curr.code}</div>
+                  <div className="text-sm text-stone-text">{curr.name}</div>
                 </button>
               ))}
             </div>
@@ -126,13 +126,13 @@ const Onboarding: React.FC = () => {
             <div className="flex gap-4 mt-8">
               <button
                 onClick={() => setStep(1)}
-                className="px-6 py-3 rounded-full border border-gray-300 dark:border-white/20 hover:border-primary transition-colors"
+                className="px-6 py-3 rounded-full border border-stone-300 text-stone-text hover:border-primary hover:text-secondary transition-colors"
               >
                 Back
               </button>
               <button
                 onClick={handleNext}
-                className="group flex items-center justify-center gap-3 bg-primary hover:bg-red-700 text-white pl-8 pr-6 py-4 rounded-full transition-all duration-300 shadow-lg hover:pr-8"
+                className="group flex items-center justify-center gap-3 bg-secondary hover:bg-secondary/90 text-background-light pl-8 pr-6 py-4 rounded-full transition-all duration-300 shadow-lg hover:pr-8"
               >
                 <span className="text-lg font-medium">Continue</span>
                 <span className="material-symbols-outlined transition-transform duration-300 group-hover:translate-x-1">arrow_forward</span>
@@ -144,12 +144,12 @@ const Onboarding: React.FC = () => {
       case 3:
         return (
           <form onSubmit={handleSubmit} className="w-full max-w-3xl flex flex-col items-center gap-8 text-center">
-            <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl leading-tight text-[#181112] dark:text-[#f3ebec]">
+            <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl leading-tight text-secondary">
               What's your monthly budget goal?
             </h1>
 
             <div className="w-full max-w-xl mt-4 md:mt-8 relative group">
-              <div className="w-full pb-2 border-b border-gray-300 dark:border-white/20 relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:bg-primary after:w-0 group-focus-within:after:w-full after:transition-all after:duration-500">
+              <div className="w-full pb-2 border-b border-stone-300 relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:bg-primary after:w-0 group-focus-within:after:w-full after:transition-all after:duration-500">
                 <div className="flex items-center justify-center gap-2">
                   <span className="text-3xl md:text-4xl lg:text-5xl text-primary font-serif">
                     {currencies.find((c) => c.code === currency)?.symbol}
@@ -161,17 +161,17 @@ const Onboarding: React.FC = () => {
                     value={monthlyBudgetGoal}
                     onChange={(e) => setMonthlyBudgetGoal(formatCurrency(e.target.value))}
                     placeholder="4,000.00"
-                    className="w-full bg-transparent border-none p-0 text-2xl md:text-3xl lg:text-4xl text-center placeholder:text-gray-400 dark:placeholder:text-white/20 focus:ring-0 text-primary font-serif"
+                    className="w-full bg-transparent border-none p-0 text-2xl md:text-3xl lg:text-4xl text-center placeholder:text-stone-400 focus:ring-0 text-primary font-serif"
                   />
                 </div>
               </div>
-              <p className="mt-4 text-sm md:text-base text-gray-500 text-gray-400 font-light">
+              <p className="mt-4 text-sm md:text-base text-stone-text font-light">
                 This helps us provide insights on your spending patterns.
               </p>
             </div>
 
             {error && (
-              <div className="bg-red-50 bg-red-50 border border-red-200 border-red-200 rounded-2xl p-4 text-red-800 text-red-800 text-sm max-w-xl">
+              <div className="bg-red-50 border border-red-200 rounded-2xl p-4 text-red-800 text-sm max-w-xl">
                 {error}
               </div>
             )}
@@ -181,14 +181,14 @@ const Onboarding: React.FC = () => {
                 type="button"
                 onClick={() => setStep(2)}
                 disabled={loading}
-                className="px-6 py-3 rounded-full border border-gray-300 dark:border-white/20 hover:border-primary transition-colors disabled:opacity-50"
+                className="px-6 py-3 rounded-full border border-stone-300 text-stone-text hover:border-primary hover:text-secondary transition-colors disabled:opacity-50"
               >
                 Back
               </button>
               <button
                 type="submit"
                 disabled={loading || !monthlyBudgetGoal}
-                className="group flex items-center justify-center gap-3 bg-primary hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white pl-8 pr-6 py-4 rounded-full transition-all duration-300 shadow-lg hover:pr-8"
+                className="group flex items-center justify-center gap-3 bg-secondary hover:bg-secondary/90 disabled:bg-stone-400 disabled:cursor-not-allowed text-background-light pl-8 pr-6 py-4 rounded-full transition-all duration-300 shadow-lg hover:pr-8"
               >
                 <span className="text-lg font-medium">{loading ? 'Saving...' : 'Get Started'}</span>
                 {!loading && (
@@ -209,14 +209,14 @@ const Onboarding: React.FC = () => {
       <header className="w-full px-6 py-6 md:px-12 md:py-8 flex justify-between items-center z-10">
         <Logo className="h-10 md:h-12" showText={true} />
 
-        <div className="absolute left-1/2 top-8 -translate-x-1/2 hidden md:flex items-center gap-2 px-4 py-2 bg-white/50 bg-white backdrop-blur-sm rounded-full border border-gray-200 border-gray-200">
-          <span className="text-sm font-medium opacity-60">Step {step} of 3</span>
+        <div className="absolute left-1/2 top-8 -translate-x-1/2 hidden md:flex items-center gap-2 px-4 py-2 bg-white/60 backdrop-blur-sm rounded-full border border-stone-300/60">
+          <span className="text-sm font-medium text-stone-text">Step {step} of 3</span>
           <div className="flex gap-1.5">
             {[1, 2, 3].map((s) => (
               <div
                 key={s}
                 className={`w-2 h-2 rounded-full transition-colors ${
-                  s <= step ? 'bg-primary' : 'bg-gray-300 dark:bg-white/20'
+                  s <= step ? 'bg-primary' : 'bg-stone-300'
                 }`}
               ></div>
             ))}
