@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../src/hooks/useAuth';
 import { userApi } from '../src/api/user.api';
+import { authApi } from '../src/api/auth.api';
 import { merchantsApi, Merchant } from '../src/api/merchants.api';
 import { categoriesApi, Category, CreateCategoryRequest } from '../src/api/categories.api';
 import { formatCurrency, parseCurrency } from '../src/utils/currencyFormatter';
@@ -10,6 +11,10 @@ const Settings: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+  // Email verification state
+  const [sendingVerification, setSendingVerification] = useState(false);
+  const [verificationMessage, setVerificationMessage] = useState('');
 
   // Profile state
   const [firstName, setFirstName] = useState('');
@@ -147,6 +152,27 @@ const Settings: React.FC = () => {
       setCategories(catData);
     } catch (err: any) {
       console.error('Failed to fetch merchants/categories', err);
+    }
+  };
+
+  const handleSendVerificationEmail = async () => {
+    if (!user?.email) return;
+
+    setSendingVerification(true);
+    setVerificationMessage('');
+
+    try {
+      const response = await authApi.resendVerification({ email: user.email });
+      setVerificationMessage(response.message);
+
+      // Clear message after 5 seconds
+      setTimeout(() => {
+        setVerificationMessage('');
+      }, 5000);
+    } catch (err: any) {
+      setVerificationMessage(err.response?.data?.message || 'Failed to send verification email. Please try again.');
+    } finally {
+      setSendingVerification(false);
     }
   };
 
@@ -361,7 +387,41 @@ const Settings: React.FC = () => {
         <h3 className="font-serif text-2xl font-light text-secondary mb-8 border-b border-stone-300 pb-2">Profile</h3>
         <div className="mb-6">
           <div className="text-sm text-stone-text mb-1">Email</div>
-          <div className="text-lg text-secondary">{user?.email}</div>
+          <div className="flex items-center gap-4 flex-wrap">
+            <div className="text-lg text-secondary">{user?.email}</div>
+            {!user?.isEmailVerified && (
+              <span className="px-3 py-1 bg-orange-100 text-orange-700 text-xs rounded-full font-medium">
+                Not Verified
+              </span>
+            )}
+            {user?.isEmailVerified && (
+              <span className="px-3 py-1 bg-green-100 text-green-700 text-xs rounded-full font-medium flex items-center gap-1">
+                <span className="material-symbols-outlined text-sm">check_circle</span>
+                Verified
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Email Verification Button - TEMPORARY FOR TESTING */}
+        <div className="mb-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="flex items-start justify-between gap-4 flex-wrap">
+            <div className="flex-1">
+              <p className="text-sm font-medium text-blue-900 mb-1">Email Verification (Testing)</p>
+              <p className="text-xs text-blue-700">Send a verification email to test the email flow</p>
+              {verificationMessage && (
+                <p className="text-xs text-blue-800 mt-2 font-medium">{verificationMessage}</p>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={handleSendVerificationEmail}
+              disabled={sendingVerification}
+              className="px-4 py-2 bg-primary hover:bg-[#c9431a] disabled:bg-gray-400 disabled:cursor-not-allowed text-white text-sm font-medium rounded-lg transition-all shadow-sm"
+            >
+              {sendingVerification ? 'Sending...' : 'Send Verification Email'}
+            </button>
+          </div>
         </div>
 
         <form onSubmit={handleUpdateProfile} className="space-y-6">
