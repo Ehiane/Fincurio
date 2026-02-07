@@ -8,7 +8,7 @@ const Landing: React.FC = () => {
   return (
     <div className="w-full min-h-screen bg-background-light dark:bg-background-dark overflow-x-hidden">
       {/* Hero Section */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center px-6 py-20 overflow-hidden">
+      <section className="relative min-h-screen flex flex-col items-center justify-center px-6 py-16 overflow-hidden">
         {/* Ambient Background Gradients */}
         <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-gradient-to-br from-primary/10 via-primary/5 to-transparent rounded-full blur-[150px] pointer-events-none"></div>
         <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-to-tr from-[#280905]/20 to-transparent rounded-full blur-[120px] pointer-events-none"></div>
@@ -27,19 +27,19 @@ const Landing: React.FC = () => {
         </nav>
 
         {/* Hero Content */}
-        <div className="relative z-10 max-w-5xl mx-auto text-center space-y-12">
+        <div className="relative z-10 max-w-5xl mx-auto text-center space-y-8">
           <div className="space-y-6 animate-fade-in-up">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
               <span className="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
               <span className="text-xs font-medium tracking-widest uppercase text-primary">Financial Reflection</span>
             </div>
 
-            <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-normal leading-[1.1] tracking-tight text-gray-900 dark:text-white px-4">
+            <h1 className="font-serif text-4xl sm:text-5xl md:text-5xl lg:text-6xl font-normal leading-[1.1] tracking-tight text-gray-900 dark:text-white px-4">
               Your money,<br />
               <span className="italic text-primary">reimagined</span>
             </h1>
 
-            <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-light leading-relaxed text-gray-600 dark:text-stone-text max-w-3xl mx-auto px-4">
+            <p className="text-base sm:text-lg md:text-lg lg:text-xl font-light leading-relaxed text-gray-600 dark:text-stone-text max-w-3xl mx-auto px-4">
               A sanctuary for intentional financial living. Beyond budgets, beyond tracking—discover a practice of clarity and purpose.
             </p>
           </div>
@@ -74,10 +74,10 @@ const Landing: React.FC = () => {
       </section>
 
       {/* Philosophy Section */}
-      <section id="philosophy" className="relative py-32 px-6 bg-white dark:bg-[#1c1917] border-t border-gray-200 dark:border-gray-800">
+      <section id="philosophy" className="relative py-20 px-6 bg-white dark:bg-[#1c1917] border-t border-gray-200 dark:border-gray-800">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
-            <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-normal text-gray-900 dark:text-white mb-6 px-4">
+            <h2 className="font-serif text-3xl sm:text-4xl md:text-4xl lg:text-5xl font-normal text-gray-900 dark:text-white mb-6 px-4">
               A different approach
             </h2>
             <div className="w-24 h-1 bg-primary mx-auto rounded-full"></div>
@@ -130,15 +130,15 @@ const Landing: React.FC = () => {
       </section>
 
       {/* Features Section */}
-      <section className="relative py-32 px-6 bg-background-light dark:bg-background-dark border-t border-gray-200 dark:border-gray-800">
+      <section className="relative py-20 px-6 bg-background-light dark:bg-background-dark border-t border-gray-200 dark:border-gray-800">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             {/* Feature 1 */}
             <div className="space-y-6">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium tracking-widest uppercase">
                 Journal
               </div>
-              <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-gray-900 dark:text-white leading-tight">
+              <h2 className="font-serif text-2xl sm:text-3xl md:text-3xl lg:text-4xl text-gray-900 dark:text-white leading-tight">
                 Your financial journal, refined
               </h2>
               <div className="w-16 h-1 bg-primary rounded-full"></div>
@@ -189,7 +189,7 @@ const Landing: React.FC = () => {
           </div>
 
           {/* Feature 2 */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center mt-32">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center mt-20">
             <div className="order-2 lg:order-1 relative group">
               <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 to-orange-900/20 rounded-3xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-500"></div>
               <div className="relative aspect-[4/3] bg-white dark:bg-surface-dark rounded-2xl border border-gray-200 dark:border-gray-800 shadow-2xl overflow-hidden p-8">
@@ -233,7 +233,7 @@ const Landing: React.FC = () => {
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium tracking-widest uppercase">
                 Insights
               </div>
-              <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-gray-900 dark:text-white leading-tight">
+              <h2 className="font-serif text-2xl sm:text-3xl md:text-3xl lg:text-4xl text-gray-900 dark:text-white leading-tight">
                 Monthly reflections, beautifully rendered
               </h2>
               <div className="w-16 h-1 bg-primary rounded-full"></div>
@@ -246,13 +246,13 @@ const Landing: React.FC = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="relative py-32 px-6 bg-gradient-to-br from-primary/95 via-primary to-primary/95 overflow-hidden">
+      <section className="relative py-20 px-6 bg-gradient-to-br from-primary/95 via-primary to-primary/95 overflow-hidden">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMiI+PHBhdGggZD0iTTM2IDM0djItaDJ2LTJoLTJ6bTAgNGgtMnYyaDJ2LTJ6bTQtNHYyaDJ2LTJoLTJ6bTAgNGgtMnYyaDJ2LTJ6bTQtNHYyaDJ2LTJoLTJ6bTAgNGgtMnYyaDJ2LTJ6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-50"></div>
         <div className="relative z-10 max-w-4xl mx-auto text-center space-y-8">
-          <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-normal text-white leading-tight px-4">
+          <h2 className="font-serif text-3xl sm:text-4xl md:text-4xl lg:text-5xl font-normal text-white leading-tight px-4">
             Ready to begin?
           </h2>
-          <p className="text-base sm:text-lg md:text-xl text-gray-300 max-w-2xl mx-auto px-4">
+          <p className="text-base sm:text-lg md:text-lg lg:text-xl text-gray-300 max-w-2xl mx-auto px-4">
             Join a community of thoughtful individuals cultivating a more intentional relationship with money.
           </p>
           <button

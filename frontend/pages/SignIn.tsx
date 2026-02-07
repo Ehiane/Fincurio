@@ -75,10 +75,10 @@ const SignIn: React.FC = () => {
         </div>
 
         <div className="text-center mb-12 md:mb-16 space-y-4 max-w-lg px-4">
-          <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-normal leading-tight tracking-tight text-gray-900 dark:text-white">
+          <h1 className="font-serif text-3xl sm:text-4xl md:text-4xl lg:text-5xl font-normal leading-tight tracking-tight text-gray-900 dark:text-white">
             {isResetPassword ? 'Reset your password.' : isSignUp ? 'Begin your financial reflection.' : 'Welcome back to your reflection.'}
           </h1>
-          <p className="text-gray-500 dark:text-stone-text text-base sm:text-lg font-light">
+          <p className="text-gray-500 dark:text-stone-text text-base sm:text-base md:text-lg font-light">
             {isResetPassword ? 'Enter your email and new password.' : 'Clarity in finance begins here.'}
           </p>
         </div>

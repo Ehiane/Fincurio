@@ -123,7 +123,7 @@ const Journal: React.FC = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-8 md:py-12 lg:py-16 animate-in fade-in slide-in-from-bottom-2 duration-700">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 md:gap-8 mb-12 md:mb-16">
         <div className="flex flex-col gap-3 max-w-lg">
-          <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium leading-tight tracking-tight text-gray-900 dark:text-white">
+          <h2 className="font-serif text-3xl sm:text-4xl md:text-4xl lg:text-5xl font-medium leading-tight tracking-tight text-gray-900 dark:text-white">
             Journal of <br />
             <span className="italic text-stone-text">Transactions</span>
           </h2>
