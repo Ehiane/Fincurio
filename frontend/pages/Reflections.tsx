@@ -59,7 +59,7 @@ const Reflections: React.FC = () => {
       </div>
     ) : !data ? null : (
     <StaggerChildren className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-8 md:py-12 lg:py-16 flex flex-col gap-8 md:gap-12">
-      <header className="flex flex-col gap-6">
+      <header className="flex flex-col gap-6 relative z-10">
         <div className="flex flex-col gap-2">
           <h2 className="font-serif text-4xl md:text-5xl font-light tracking-tight text-gray-900 text-secondary">
             Monthly Reflections
@@ -80,7 +80,7 @@ const Reflections: React.FC = () => {
           </button>
 
           {showMonthPicker && (
-            <div className="absolute top-12 left-0 z-10 bg-white border border-stone-200 rounded-2xl shadow-lg p-4 w-72">
+            <div className="absolute top-12 left-0 z-50 bg-white border border-stone-200 rounded-2xl shadow-lg p-4 w-72">
               <div className="flex items-center justify-between mb-4">
                 <button
                   onClick={() => handleYearChange('prev')}

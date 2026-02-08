@@ -6,6 +6,8 @@ interface AuthContextType {
   user: UserProfile | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  isSigningIn: boolean;
+  isSigningOut: boolean;
   login: (data: LoginRequest) => Promise<void>;
   register: (data: RegisterRequest) => Promise<void>;
   logout: () => Promise<void>;
@@ -16,6 +18,8 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSigningIn, setIsSigningIn] = useState(false);
+  const [isSigningOut, setIsSigningOut] = useState(false);
 
   useEffect(() => {
     const initAuth = async () => {
@@ -48,6 +52,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       createdAt: new Date().toISOString(),
     });
     userApi.getProfile().then(setUser).catch(() => {});
+
+    // Show sign-in overlay animation
+    setIsSigningIn(true);
+    await new Promise((resolve) => setTimeout(resolve, 1800));
+    setIsSigningIn(false);
   };
 
   const register = async (data: RegisterRequest) => {
@@ -68,17 +77,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const logout = async () => {
+    setIsSigningOut(true);
     try {
       await authApi.logout();
     } catch {
       // Ignore errors on logout
     }
+    // Delay clearing state so the sign-out overlay can animate
+    await new Promise((resolve) => setTimeout(resolve, 1400));
     localStorage.clear();
     setUser(null);
+    setIsSigningOut(false);
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, isSigningIn, isSigningOut, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );

@@ -18,8 +18,11 @@ const StaggerChildren: React.FC<StaggerChildrenProps> = ({
       {items.map((child, index) => (
         <div
           key={index}
-          className="fade-in-up"
-          style={{ animationDelay: `${index * staggerMs}ms` }}
+          className="fade-in-up relative"
+          style={{
+            animationDelay: `${index * staggerMs}ms`,
+            zIndex: items.length - index,
+          }}
         >
           {child}
         </div>

@@ -7,5 +7,6 @@ public class MoneyFlowResponseDto
     public DateTime FilterStart { get; set; }
     public DateTime FilterEnd { get; set; }
     public string Grouping { get; set; } = "weekly"; // "daily", "weekly", "monthly", "yearly"
+    public decimal BalanceChange { get; set; } // % change vs previous period (based on grouping)
     public List<MonthlyFlowDto> DataPoints { get; set; } = new();
 }

@@ -23,7 +23,7 @@ const Dashboard: React.FC = () => {
   const [flowLoading, setFlowLoading] = useState(false);
   const [flowStartDate, setFlowStartDate] = useState('');
   const [flowEndDate, setFlowEndDate] = useState('');
-  const [flowGrouping, setFlowGrouping] = useState<'daily' | 'weekly' | 'monthly' | 'yearly'>('monthly');
+  const [flowGrouping, setFlowGrouping] = useState<'daily' | 'weekly' | 'monthly' | 'yearly'>('weekly');
 
   useEffect(() => {
     fetchDashboard();
@@ -54,7 +54,7 @@ const Dashboard: React.FC = () => {
       const [dashboardData, profile, flowData] = await Promise.all([
         insightsApi.getDashboard(),
         userApi.getProfile(),
-        insightsApi.getMoneyFlow(undefined, undefined, 'monthly'),
+        insightsApi.getMoneyFlow(undefined, undefined, 'weekly'),
       ]);
       setData(dashboardData);
       setMoneyFlow(flowData);
@@ -104,13 +104,14 @@ const Dashboard: React.FC = () => {
       const end = moneyFlow.latestDate?.split('T')[0] || '';
       setFlowStartDate(start);
       setFlowEndDate(end);
-      setFlowGrouping('monthly');
-      fetchMoneyFlow(undefined, undefined, 'monthly');
+      setFlowGrouping('weekly');
+      fetchMoneyFlow(undefined, undefined, 'weekly');
     }
   };
 
   const currentMonth = new Date().toLocaleDateString('en-US', { month: 'long' });
-  const balanceChangePositive = data ? data.balanceChange >= 0 : true;
+  const balanceChangeValue = moneyFlow?.balanceChange ?? 0;
+  const balanceChangePositive = balanceChangeValue >= 0;
 
   return (
     <EditorialLoader variant="dashboard" isLoading={loading}>
@@ -138,7 +139,7 @@ const Dashboard: React.FC = () => {
               .{(data.currentBalance % 1).toFixed(2).substring(2)}
             </span>
           </h1>
-          {data.balanceChange !== 0 && (
+          {balanceChangeValue !== 0 && (
             <div className="absolute -right-8 top-0 md:-right-12 flex flex-col items-start opacity-0 group-hover:opacity-100 transition-opacity duration-500">
               <span className={`flex items-center text-sm font-medium px-2 py-1 rounded-full ${
                 balanceChangePositive
@@ -148,17 +149,17 @@ const Dashboard: React.FC = () => {
                 <span className="material-symbols-outlined text-sm mr-1">
                   {balanceChangePositive ? 'arrow_outward' : 'arrow_downward'}
                 </span>
-                {Math.abs(data.balanceChange).toFixed(1)}%
+                {Math.abs(balanceChangeValue).toFixed(1)}%
               </span>
             </div>
           )}
         </div>
         <p className="mt-6 text-stone-500 font-light max-w-md mx-auto leading-relaxed">
           {balanceChangePositive
-            ? `Your balance has increased by ${data.balanceChange.toFixed(1)}% compared to last month.`
-            : data.balanceChange < 0
-            ? `Your balance has decreased by ${Math.abs(data.balanceChange).toFixed(1)}% compared to last month.`
-            : 'Your balance remains stable compared to last month.'}
+            ? `Your balance has increased by ${balanceChangeValue.toFixed(1)}% compared to last ${{ daily: 'day', weekly: 'week', monthly: 'month', yearly: 'year' }[flowGrouping]}.`
+            : balanceChangeValue < 0
+            ? `Your balance has decreased by ${Math.abs(balanceChangeValue).toFixed(1)}% compared to last ${{ daily: 'day', weekly: 'week', monthly: 'month', yearly: 'year' }[flowGrouping]}.`
+            : `Your balance remains stable compared to last ${{ daily: 'day', weekly: 'week', monthly: 'month', yearly: 'year' }[flowGrouping]}.`}
         </p>
       </section>
 

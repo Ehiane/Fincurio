@@ -285,8 +285,11 @@ public class InsightsService : IInsightsService
             }
         }
 
-        _logger.LogInformation("Money flow built for user {UserId} | Grouping={Grouping}, DataPoints={Count}, Range={Start}-{End}",
-            userId, effectiveGrouping, dataPoints.Count, filterStart.ToString("yyyy-MM-dd"), filterEnd.ToString("yyyy-MM-dd"));
+        // Calculate balance change vs the previous period based on grouping
+        var balanceChange = await CalculatePeriodBalanceChangeAsync(userId, filterEnd, effectiveGrouping);
+
+        _logger.LogInformation("Money flow built for user {UserId} | Grouping={Grouping}, DataPoints={Count}, Range={Start}-{End}, BalanceChange={Change}%",
+            userId, effectiveGrouping, dataPoints.Count, filterStart.ToString("yyyy-MM-dd"), filterEnd.ToString("yyyy-MM-dd"), balanceChange);
 
         return new MoneyFlowResponseDto
         {
@@ -295,7 +298,58 @@ public class InsightsService : IInsightsService
             FilterStart = filterStart,
             FilterEnd = filterEnd,
             Grouping = effectiveGrouping,
+            BalanceChange = balanceChange,
             DataPoints = dataPoints
         };
+    }
+
+    /// <summary>
+    /// Calculates the percentage balance change between the current period and the previous period,
+    /// where "period" length is determined by the grouping (day, week, month, year).
+    /// </summary>
+    private async Task<decimal> CalculatePeriodBalanceChangeAsync(Guid userId, DateTime referenceDate, string grouping)
+    {
+        DateTime currentStart, currentEnd, previousStart, previousEnd;
+
+        switch (grouping)
+        {
+            case "daily":
+                currentStart = referenceDate.Date;
+                currentEnd = referenceDate.Date;
+                previousStart = currentStart.AddDays(-1);
+                previousEnd = previousStart;
+                break;
+            case "weekly":
+                // Current week: last 7 days ending on referenceDate
+                currentEnd = referenceDate.Date;
+                currentStart = currentEnd.AddDays(-6);
+                previousEnd = currentStart.AddDays(-1);
+                previousStart = previousEnd.AddDays(-6);
+                break;
+            case "yearly":
+                currentStart = new DateTime(referenceDate.Year, 1, 1);
+                currentEnd = new DateTime(referenceDate.Year, 12, 31);
+                previousStart = new DateTime(referenceDate.Year - 1, 1, 1);
+                previousEnd = new DateTime(referenceDate.Year - 1, 12, 31);
+                break;
+            default: // monthly
+                currentStart = new DateTime(referenceDate.Year, referenceDate.Month, 1);
+                currentEnd = currentStart.AddMonths(1).AddDays(-1);
+                previousStart = currentStart.AddMonths(-1);
+                previousEnd = currentStart.AddDays(-1);
+                break;
+        }
+
+        var currentTransactions = await _transactionRepository.GetByDateRangeAsync(userId, currentStart, currentEnd);
+        var previousTransactions = await _transactionRepository.GetByDateRangeAsync(userId, previousStart, previousEnd);
+
+        var currentNet = currentTransactions.Where(t => t.Type == "income").Sum(t => t.Amount)
+                       - currentTransactions.Where(t => t.Type == "expense").Sum(t => t.Amount);
+        var previousNet = previousTransactions.Where(t => t.Type == "income").Sum(t => t.Amount)
+                        - previousTransactions.Where(t => t.Type == "expense").Sum(t => t.Amount);
+
+        if (previousNet == 0) return 0;
+
+        return Math.Round(((currentNet - previousNet) / Math.Abs(previousNet)) * 100, 1);
     }
 }

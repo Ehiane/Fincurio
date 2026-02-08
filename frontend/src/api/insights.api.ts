@@ -13,6 +13,7 @@ export interface MoneyFlowResponse {
   filterStart: string;
   filterEnd: string;
   grouping: 'daily' | 'weekly' | 'monthly' | 'yearly';
+  balanceChange: number;
   dataPoints: MonthlyFlow[];
 }
 
