@@ -137,7 +137,7 @@ public class EmailService : IEmailService
                     <tr>
                         <td style=""background:#280905;border-radius:0 0 20px 20px;padding:32px 48px;text-align:center;"">
                             <p style=""color:#f3efe9;font-size:12px;margin:0 0 8px 0;opacity:0.6;line-height:1.6;"">If you didn't create a Fincurio account, you can safely ignore this email.</p>
-                            <p style=""color:#f3efe9;font-size:11px;margin:0;opacity:0.4;font-family:'Playfair Display',Georgia,serif;font-style:italic;"">&copy; {DateTime.Now.Year} Fincurio &middot; Money, Reflected.</p>
+                            <p style=""color:#f3efe9;font-size:11px;margin:0;opacity:0.4;font-family:'Playfair Display',Georgia,serif;font-style:italic;"">&copy; {DateTime.Now.Year} Fincurio &middot; Your Money, Understood.</p>
                         </td>
                     </tr>
                 </table>
@@ -210,7 +210,7 @@ public class EmailService : IEmailService
                     <tr>
                         <td style=""background:#280905;border-radius:0 0 20px 20px;padding:32px 48px;text-align:center;"">
                             <p style=""color:#f3efe9;font-size:12px;margin:0 0 8px 0;opacity:0.6;line-height:1.6;"">Need help? Reach us at support@fincurio.com</p>
-                            <p style=""color:#f3efe9;font-size:11px;margin:0;opacity:0.4;font-family:'Playfair Display',Georgia,serif;font-style:italic;"">&copy; {DateTime.Now.Year} Fincurio &middot; Money, Reflected.</p>
+                            <p style=""color:#f3efe9;font-size:11px;margin:0;opacity:0.4;font-family:'Playfair Display',Georgia,serif;font-style:italic;"">&copy; {DateTime.Now.Year} Fincurio &middot; Your Money, Understood.</p>
                         </td>
                     </tr>
                 </table>

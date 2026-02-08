@@ -2,6 +2,8 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './src/contexts/AuthContext';
 import Landing from './pages/Landing';
+import Privacy from './pages/Privacy';
+import Terms from './pages/Terms';
 import SignIn from './pages/SignIn';
 import VerifyEmail from './pages/VerifyEmail';
 import ResetPassword from './pages/ResetPassword';
@@ -21,6 +23,8 @@ const App: React.FC = () => {
         <div className="min-h-screen flex flex-col md:flex-row">
           <Routes>
             <Route path="/" element={<Landing />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
             <Route path="/signin" element={<SignIn />} />
             <Route path="/verify-email" element={<VerifyEmail />} />
             <Route path="/reset-password" element={<ResetPassword />} />

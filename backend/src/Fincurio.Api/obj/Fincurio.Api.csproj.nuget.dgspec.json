@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Ehiso\\OneDrive\\Desktop\\empire\\fincurio\\backend\\src\\Fincurio.Api\\Fincurio.Api.csproj": {}
+    "c:\\Users\\Ehiso\\OneDrive\\Desktop\\empire\\fincurio\\backend\\src\\Fincurio.Api\\Fincurio.Api.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Ehiso\\OneDrive\\Desktop\\empire\\fincurio\\backend\\src\\Fincurio.Api\\Fincurio.Api.csproj": {
+    "c:\\Users\\Ehiso\\OneDrive\\Desktop\\empire\\fincurio\\backend\\src\\Fincurio.Api\\Fincurio.Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Ehiso\\OneDrive\\Desktop\\empire\\fincurio\\backend\\src\\Fincurio.Api\\Fincurio.Api.csproj",
+        "projectUniqueName": "c:\\Users\\Ehiso\\OneDrive\\Desktop\\empire\\fincurio\\backend\\src\\Fincurio.Api\\Fincurio.Api.csproj",
         "projectName": "Fincurio.Api",
-        "projectPath": "C:\\Users\\Ehiso\\OneDrive\\Desktop\\empire\\fincurio\\backend\\src\\Fincurio.Api\\Fincurio.Api.csproj",
+        "projectPath": "c:\\Users\\Ehiso\\OneDrive\\Desktop\\empire\\fincurio\\backend\\src\\Fincurio.Api\\Fincurio.Api.csproj",
         "packagesPath": "C:\\Users\\Ehiso\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Ehiso\\OneDrive\\Desktop\\empire\\fincurio\\backend\\src\\Fincurio.Api\\obj\\",
+        "outputPath": "c:\\Users\\Ehiso\\OneDrive\\Desktop\\empire\\fincurio\\backend\\src\\Fincurio.Api\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Ehiso\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -26,11 +26,11 @@
           "net10.0": {
             "targetAlias": "net10.0",
             "projectReferences": {
-              "C:\\Users\\Ehiso\\OneDrive\\Desktop\\empire\\fincurio\\backend\\src\\Fincurio.Core\\Fincurio.Core.csproj": {
-                "projectPath": "C:\\Users\\Ehiso\\OneDrive\\Desktop\\empire\\fincurio\\backend\\src\\Fincurio.Core\\Fincurio.Core.csproj"
+              "c:\\Users\\Ehiso\\OneDrive\\Desktop\\empire\\fincurio\\backend\\src\\Fincurio.Core\\Fincurio.Core.csproj": {
+                "projectPath": "c:\\Users\\Ehiso\\OneDrive\\Desktop\\empire\\fincurio\\backend\\src\\Fincurio.Core\\Fincurio.Core.csproj"
               },
-              "C:\\Users\\Ehiso\\OneDrive\\Desktop\\empire\\fincurio\\backend\\src\\Fincurio.Data\\Fincurio.Data.csproj": {
-                "projectPath": "C:\\Users\\Ehiso\\OneDrive\\Desktop\\empire\\fincurio\\backend\\src\\Fincurio.Data\\Fincurio.Data.csproj"
+              "c:\\Users\\Ehiso\\OneDrive\\Desktop\\empire\\fincurio\\backend\\src\\Fincurio.Data\\Fincurio.Data.csproj": {
+                "projectPath": "c:\\Users\\Ehiso\\OneDrive\\Desktop\\empire\\fincurio\\backend\\src\\Fincurio.Data\\Fincurio.Data.csproj"
               }
             }
           }
@@ -511,14 +511,14 @@
         }
       }
     },
-    "C:\\Users\\Ehiso\\OneDrive\\Desktop\\empire\\fincurio\\backend\\src\\Fincurio.Core\\Fincurio.Core.csproj": {
+    "c:\\Users\\Ehiso\\OneDrive\\Desktop\\empire\\fincurio\\backend\\src\\Fincurio.Core\\Fincurio.Core.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Ehiso\\OneDrive\\Desktop\\empire\\fincurio\\backend\\src\\Fincurio.Core\\Fincurio.Core.csproj",
+        "projectUniqueName": "c:\\Users\\Ehiso\\OneDrive\\Desktop\\empire\\fincurio\\backend\\src\\Fincurio.Core\\Fincurio.Core.csproj",
         "projectName": "Fincurio.Core",
-        "projectPath": "C:\\Users\\Ehiso\\OneDrive\\Desktop\\empire\\fincurio\\backend\\src\\Fincurio.Core\\Fincurio.Core.csproj",
+        "projectPath": "c:\\Users\\Ehiso\\OneDrive\\Desktop\\empire\\fincurio\\backend\\src\\Fincurio.Core\\Fincurio.Core.csproj",
         "packagesPath": "C:\\Users\\Ehiso\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Ehiso\\OneDrive\\Desktop\\empire\\fincurio\\backend\\src\\Fincurio.Core\\obj\\",
+        "outputPath": "c:\\Users\\Ehiso\\OneDrive\\Desktop\\empire\\fincurio\\backend\\src\\Fincurio.Core\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Ehiso\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -862,14 +862,14 @@
         }
       }
     },
-    "C:\\Users\\Ehiso\\OneDrive\\Desktop\\empire\\fincurio\\backend\\src\\Fincurio.Data\\Fincurio.Data.csproj": {
+    "c:\\Users\\Ehiso\\OneDrive\\Desktop\\empire\\fincurio\\backend\\src\\Fincurio.Data\\Fincurio.Data.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Ehiso\\OneDrive\\Desktop\\empire\\fincurio\\backend\\src\\Fincurio.Data\\Fincurio.Data.csproj",
+        "projectUniqueName": "c:\\Users\\Ehiso\\OneDrive\\Desktop\\empire\\fincurio\\backend\\src\\Fincurio.Data\\Fincurio.Data.csproj",
         "projectName": "Fincurio.Data",
-        "projectPath": "C:\\Users\\Ehiso\\OneDrive\\Desktop\\empire\\fincurio\\backend\\src\\Fincurio.Data\\Fincurio.Data.csproj",
+        "projectPath": "c:\\Users\\Ehiso\\OneDrive\\Desktop\\empire\\fincurio\\backend\\src\\Fincurio.Data\\Fincurio.Data.csproj",
         "packagesPath": "C:\\Users\\Ehiso\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Ehiso\\OneDrive\\Desktop\\empire\\fincurio\\backend\\src\\Fincurio.Data\\obj\\",
+        "outputPath": "c:\\Users\\Ehiso\\OneDrive\\Desktop\\empire\\fincurio\\backend\\src\\Fincurio.Data\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Ehiso\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -884,8 +884,8 @@
           "net10.0": {
             "targetAlias": "net10.0",
             "projectReferences": {
-              "C:\\Users\\Ehiso\\OneDrive\\Desktop\\empire\\fincurio\\backend\\src\\Fincurio.Core\\Fincurio.Core.csproj": {
-                "projectPath": "C:\\Users\\Ehiso\\OneDrive\\Desktop\\empire\\fincurio\\backend\\src\\Fincurio.Core\\Fincurio.Core.csproj"
+              "c:\\Users\\Ehiso\\OneDrive\\Desktop\\empire\\fincurio\\backend\\src\\Fincurio.Core\\Fincurio.Core.csproj": {
+                "projectPath": "c:\\Users\\Ehiso\\OneDrive\\Desktop\\empire\\fincurio\\backend\\src\\Fincurio.Core\\Fincurio.Core.csproj"
               }
             }
           }

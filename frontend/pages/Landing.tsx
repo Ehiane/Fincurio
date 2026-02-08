@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Logo from '../src/components/Logo';
 
 /* ─── Scroll-reveal wrapper ─── */
@@ -516,14 +517,14 @@ const Landing: React.FC = () => {
             <div className="md:col-span-2">
               <h4 className="text-white/50 text-xs tracking-[0.15em] uppercase mb-4">Legal</h4>
               <ul className="space-y-3 text-sm">
-                <li><a href="#" className="text-white/30 hover:text-white/70 transition-colors">Privacy</a></li>
-                <li><a href="#" className="text-white/30 hover:text-white/70 transition-colors">Terms</a></li>
+                <li><Link to="/privacy" className="text-white/30 hover:text-white/70 transition-colors">Privacy</Link></li>
+                <li><Link to="/terms" className="text-white/30 hover:text-white/70 transition-colors">Terms</Link></li>
               </ul>
             </div>
           </div>
 
           <div className="pt-8 border-t border-white/[0.06] flex items-center justify-center">
-            <p className="text-white/20 text-xs tracking-wide">© 2026 Fincurio. Wealth is a mindset.</p>
+            <p className="text-white/20 text-xs tracking-wide">© {new Date().getFullYear()} Fincurio. Your Money, Understood.</p>
           </div>
         </Reveal>
       </footer>
