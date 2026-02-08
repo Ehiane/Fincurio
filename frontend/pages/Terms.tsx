@@ -5,16 +5,20 @@ import Logo from '../src/components/Logo';
 const Terms: React.FC = () => {
   return (
     <div className="min-h-screen bg-background-light text-secondary">
-      {/* Navigation */}
-      <nav className="px-6 md:px-12 lg:px-20 py-6 flex items-center justify-center max-w-[1400px] mx-auto">
-        <Link to="/">
-          <Logo className="h-8" showText={true} />
-        </Link>
+      {/* Navigation — matches Landing page header */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-background-light/80 backdrop-blur-md px-4 md:px-8 lg:px-14">
+        <div className="max-w-[1400px] mx-auto">
+          <div className="flex items-center justify-between py-5 border-b border-secondary/[0.06]">
+            <Link to="/">
+              <Logo className="h-10" showText={true} />
+            </Link>
+          </div>
+        </div>
       </nav>
 
-      {/* Content */}
-      <main className="max-w-[720px] mx-auto px-6 md:px-8 py-12 md:py-20 text-center">
-        <header className="mb-16">
+      {/* Content — centered reading column */}
+      <main className="max-w-[1800px] mx-auto px-6 md:px-12 lg:px-20 pt-32 md:pt-40 pb-16 md:pb-24">
+        <header className="mb-20 text-center">
           <h1 className="font-serif text-4xl md:text-5xl text-secondary mb-4">Terms of Service</h1>
           <p className="text-stone-text text-sm tracking-wide">Last updated: February 2026</p>
         </header>
