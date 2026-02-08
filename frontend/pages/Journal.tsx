@@ -3,6 +3,9 @@ import { transactionsApi, Transaction } from '../src/api/transactions.api';
 import { categoriesApi, Category } from '../src/api/categories.api';
 import { merchantsApi, Merchant } from '../src/api/merchants.api';
 import { formatCurrency, parseCurrency } from '../src/utils/currencyFormatter';
+import { getCached, setCache, invalidateCache } from '../src/utils/apiCache';
+import EditorialLoader from '../src/components/EditorialLoader';
+import StaggerChildren from '../src/components/StaggerChildren';
 
 const Journal: React.FC = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -17,17 +20,34 @@ const Journal: React.FC = () => {
     fetchData();
   }, []);
 
-  const fetchData = async () => {
+  const fetchData = async (skipCache = false) => {
     try {
       setLoading(true);
+
+      const cachedTrans = !skipCache ? getCached<Transaction[]>('journal:transactions') : null;
+      const cachedCats = getCached<Category[]>('categories');
+      const cachedMerch = getCached<Merchant[]>('merchants');
+
+      if (cachedTrans && cachedCats && cachedMerch) {
+        setTransactions(cachedTrans);
+        setCategories(cachedCats);
+        setMerchants(cachedMerch);
+        setLoading(false);
+        return;
+      }
+
       const [transData, catData, merchData] = await Promise.all([
         transactionsApi.getAll(),
-        categoriesApi.getAll(),
-        merchantsApi.getAll(),
+        cachedCats ? Promise.resolve(cachedCats) : categoriesApi.getAll(),
+        cachedMerch ? Promise.resolve(cachedMerch) : merchantsApi.getAll(),
       ]);
-      setTransactions(transData.transactions);
+      const txList = transData.transactions ?? transData;
+      setTransactions(txList);
       setCategories(catData);
       setMerchants(merchData);
+      setCache('journal:transactions', txList);
+      setCache('categories', catData);
+      setCache('merchants', merchData);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to load data');
     } finally {
@@ -50,7 +70,8 @@ const Journal: React.FC = () => {
 
     try {
       await transactionsApi.delete(id);
-      await fetchData();
+      invalidateCache('journal:', 'dashboard', 'moneyflow:');
+      await fetchData(true);
     } catch (err: any) {
       alert(err.response?.data?.message || 'Failed to delete transaction');
     }
@@ -59,7 +80,10 @@ const Journal: React.FC = () => {
   const handleModalClose = async (refresh: boolean) => {
     setShowModal(false);
     setEditingTransaction(null);
-    if (refresh) await fetchData();
+    if (refresh) {
+      invalidateCache('journal:', 'dashboard', 'moneyflow:');
+      await fetchData(true);
+    }
   };
 
   const groupTransactionsByDate = () => {
@@ -87,23 +111,11 @@ const Journal: React.FC = () => {
     return Object.entries(groups);
   };
 
-  if (loading) {
-    return (
-      <div className="max-w-[1000px] mx-auto px-6 py-10 lg:px-12 lg:py-16">
-        <div className="animate-pulse space-y-8">
-          <div className="h-32 bg-stone-200/60 rounded-lg"></div>
-          <div className="space-y-4">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-24 bg-stone-200/60 rounded-lg"></div>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const groupedTransactions = groupTransactionsByDate();
 
-  if (error) {
-    return (
+  return (
+    <EditorialLoader variant="journal" isLoading={loading}>
+    {error ? (
       <div className="max-w-[1000px] mx-auto px-6 py-10 lg:px-12 lg:py-16">
         <div className="bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
           <p className="text-red-800">{error}</p>
@@ -115,13 +127,8 @@ const Journal: React.FC = () => {
           </button>
         </div>
       </div>
-    );
-  }
-
-  const groupedTransactions = groupTransactionsByDate();
-
-  return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-8 md:py-12 lg:py-16 animate-in fade-in slide-in-from-bottom-2 duration-700">
+    ) : (
+    <StaggerChildren className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-8 md:py-12 lg:py-16">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 md:gap-8 mb-12 md:mb-16">
         <div className="flex flex-col gap-3 max-w-lg">
           <h2 className="font-serif text-3xl sm:text-4xl md:text-4xl lg:text-5xl font-medium leading-tight tracking-tight text-secondary">
@@ -165,6 +172,9 @@ const Journal: React.FC = () => {
         </div>
       )}
 
+    </StaggerChildren>
+    )}
+
       <button
         onClick={handleAddTransaction}
         className="fixed bottom-8 right-8 md:bottom-12 md:right-12 size-16 bg-primary hover:bg-red-700 text-white rounded-full shadow-2xl flex items-center justify-center transition-all hover:scale-105 group z-50"
@@ -182,7 +192,7 @@ const Journal: React.FC = () => {
           onClose={handleModalClose}
         />
       )}
-    </div>
+    </EditorialLoader>
   );
 };
 

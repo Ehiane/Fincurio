@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Fincurio.Data")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0ff9dcc80332d7f74db4674634424ee457bec4ad")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a4f710aaa1373b62061085bb779f0c9fe5fc6949")]
 [assembly: System.Reflection.AssemblyProductAttribute("Fincurio.Data")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Fincurio.Data")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

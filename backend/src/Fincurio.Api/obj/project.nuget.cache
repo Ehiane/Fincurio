@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "B/UtD/pwgWc=",
+  "dgSpecHash": "J5CTLbJIQXM=",
   "success": true,
-  "projectFilePath": "c:\\Users\\Ehiso\\OneDrive\\Desktop\\empire\\fincurio\\backend\\src\\Fincurio.Api\\Fincurio.Api.csproj",
+  "projectFilePath": "C:\\Users\\Ehiso\\OneDrive\\Desktop\\empire\\fincurio\\backend\\src\\Fincurio.Api\\Fincurio.Api.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Ehiso\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
     "C:\\Users\\Ehiso\\.nuget\\packages\\dotnetenv\\3.1.1\\dotnetenv.3.1.1.nupkg.sha512",

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { insightsApi, MonthlyInsightResponse } from '../src/api/insights.api';
+import EditorialLoader from '../src/components/EditorialLoader';
+import StaggerChildren from '../src/components/StaggerChildren';
 
 const Reflections: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -41,27 +43,12 @@ const Reflections: React.FC = () => {
     setSelectedYear(direction === 'prev' ? selectedYear - 1 : selectedYear + 1);
   };
 
-  if (loading) {
-    return (
+  return (
+    <EditorialLoader variant="reflections" isLoading={loading}>
+    {error ? (
       <div className="max-w-3xl mx-auto px-4 py-8 md:px-8 md:py-16">
-        <div className="animate-pulse space-y-8">
-          <div className="h-32 bg-stone-200/60 rounded-lg"></div>
-          <div className="h-64 bg-stone-200/60 rounded-lg"></div>
-          <div className="space-y-4">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-24 bg-stone-200/60 rounded-lg"></div>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="max-w-3xl mx-auto px-4 py-8 md:px-8 md:py-16">
-        <div className="bg-red-50 bg-red-50 border border-red-200 border-red-200 rounded-2xl p-6 text-center">
-          <p className="text-red-800 text-red-800">{error}</p>
+        <div className="bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
+          <p className="text-red-800">{error}</p>
           <button
             onClick={fetchMonthlyInsights}
             className="mt-4 px-6 py-2 bg-primary text-white rounded-full hover:bg-red-700 transition-colors"
@@ -70,13 +57,8 @@ const Reflections: React.FC = () => {
           </button>
         </div>
       </div>
-    );
-  }
-
-  if (!data) return null;
-
-  return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-8 md:py-12 lg:py-16 flex flex-col gap-8 md:gap-12 animate-in fade-in duration-700">
+    ) : !data ? null : (
+    <StaggerChildren className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-8 md:py-12 lg:py-16 flex flex-col gap-8 md:gap-12">
       <header className="flex flex-col gap-6">
         <div className="flex flex-col gap-2">
           <h2 className="font-serif text-4xl md:text-5xl font-light tracking-tight text-gray-900 text-secondary">
@@ -197,7 +179,9 @@ const Reflections: React.FC = () => {
           "Do not save what is left after spending, but spend what is left after saving."
         </p>
       </div>
-    </div>
+    </StaggerChildren>
+    )}
+    </EditorialLoader>
   );
 };
 

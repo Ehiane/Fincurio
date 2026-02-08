@@ -15,6 +15,7 @@ DotNetEnv.Env.Load();
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
+builder.Services.AddMemoryCache();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
@@ -60,7 +61,7 @@ builder.Services.AddCors(options =>
         var wwwFrontendUrl = frontendUrl.Contains("://www.")
             ? frontendUrl.Replace("://www.", "://")
             : frontendUrl.Replace("://", "://www.");
-        var allowedOrigins = new[] { "http://localhost:3000", frontendUrl, wwwFrontendUrl };
+        var allowedOrigins = new[] { "http://localhost:3000", "http://localhost:3001", frontendUrl, wwwFrontendUrl };
 
         policy.SetIsOriginAllowed(origin =>
             {
@@ -114,7 +115,18 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// Lightweight health endpoint for warm-up pings (no auth, no DB)
-app.MapGet("/health", () => Results.Ok(new { status = "healthy" }));
+// Health endpoint that primes the database connection pool
+app.MapGet("/health", async (FincurioDbContext db) =>
+{
+    try
+    {
+        await db.Database.ExecuteSqlRawAsync("SELECT 1");
+        return Results.Ok(new { status = "healthy", db = "connected" });
+    }
+    catch
+    {
+        return Results.Ok(new { status = "healthy", db = "unavailable" });
+    }
+});
 
 app.Run();

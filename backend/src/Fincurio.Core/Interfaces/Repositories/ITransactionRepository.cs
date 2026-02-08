@@ -26,4 +26,5 @@ public interface ITransactionRepository
     Task<decimal> GetBalanceAsync(Guid userId);
     Task<List<Transaction>> GetByMonthAsync(Guid userId, int year, int month);
     Task<List<Transaction>> GetByDateRangeAsync(Guid userId, DateTime startDate, DateTime endDate);
+    Task<(DateTime? Earliest, DateTime? Latest)> GetDateRangeAsync(Guid userId);
 }

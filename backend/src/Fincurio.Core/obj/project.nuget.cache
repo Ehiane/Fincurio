@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "UeWlhpIQ5C8=",
+  "dgSpecHash": "sdRuI1qM1Z4=",
   "success": true,
-  "projectFilePath": "c:\\Users\\Ehiso\\OneDrive\\Desktop\\empire\\fincurio\\backend\\src\\Fincurio.Core\\Fincurio.Core.csproj",
+  "projectFilePath": "C:\\Users\\Ehiso\\OneDrive\\Desktop\\empire\\fincurio\\backend\\src\\Fincurio.Core\\Fincurio.Core.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Ehiso\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
     "C:\\Users\\Ehiso\\.nuget\\packages\\microsoft.extensions.configuration.abstractions\\10.0.2\\microsoft.extensions.configuration.abstractions.10.0.2.nupkg.sha512",

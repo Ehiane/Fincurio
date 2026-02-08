@@ -145,4 +145,19 @@ public class TransactionRepository : ITransactionRepository
             .ThenBy(t => t.Time)
             .ToListAsync();
     }
+
+    public async Task<(DateTime? Earliest, DateTime? Latest)> GetDateRangeAsync(Guid userId)
+    {
+        var dates = await _context.Transactions
+            .Where(t => t.UserId == userId)
+            .GroupBy(_ => 1)
+            .Select(g => new
+            {
+                Earliest = (DateTime?)g.Min(t => t.Date),
+                Latest = (DateTime?)g.Max(t => t.Date)
+            })
+            .FirstOrDefaultAsync();
+
+        return (dates?.Earliest, dates?.Latest);
+    }
 }

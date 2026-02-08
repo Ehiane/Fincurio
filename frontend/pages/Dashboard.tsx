@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { insightsApi, DashboardResponse, MoneyFlowResponse } from '../src/api/insights.api';
 import { userApi } from '../src/api/user.api';
+import { getCached, setCache } from '../src/utils/apiCache';
+import EditorialLoader from '../src/components/EditorialLoader';
+import StaggerChildren from '../src/components/StaggerChildren';
 
 const currencySymbols: Record<string, string> = {
   USD: '$', EUR: '€', GBP: '£', JPY: '¥', CAD: 'C$',
@@ -29,6 +32,25 @@ const Dashboard: React.FC = () => {
   const fetchDashboard = async () => {
     try {
       setLoading(true);
+
+      // Check cache first for instant page switches
+      const cachedDashboard = getCached<DashboardResponse>('dashboard');
+      const cachedFlow = getCached<MoneyFlowResponse>('moneyflow:default');
+      const cachedCurrency = getCached<string>('currencySymbol');
+
+      if (cachedDashboard && cachedFlow && cachedCurrency) {
+        setData(cachedDashboard);
+        setMoneyFlow(cachedFlow);
+        setCurrencySymbol(cachedCurrency);
+        if (cachedFlow.earliestDate) {
+          setFlowStartDate(cachedFlow.filterStart.split('T')[0]);
+          setFlowEndDate(cachedFlow.filterEnd.split('T')[0]);
+        }
+        setFlowGrouping(cachedFlow.grouping as 'daily' | 'weekly' | 'monthly' | 'yearly');
+        setLoading(false);
+        return;
+      }
+
       const [dashboardData, profile, flowData] = await Promise.all([
         insightsApi.getDashboard(),
         userApi.getProfile(),
@@ -36,6 +58,8 @@ const Dashboard: React.FC = () => {
       ]);
       setData(dashboardData);
       setMoneyFlow(flowData);
+      setCache('dashboard', dashboardData);
+      setCache('moneyflow:default', flowData);
 
       // Initialize filter dates and grouping from the response
       if (flowData.earliestDate) {
@@ -46,6 +70,7 @@ const Dashboard: React.FC = () => {
 
       const code = profile.preferences?.currency || 'USD';
       setCurrencySymbol(currencySymbols[code] || code);
+      setCache('currencySymbol', currencySymbols[code] || code);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to load dashboard data');
     } finally {
@@ -84,27 +109,15 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="max-w-4xl mx-auto px-6 py-12 md:px-12">
-        <div className="animate-pulse space-y-8">
-          <div className="h-48 bg-stone-200/60 rounded-lg"></div>
-          <div className="h-96 bg-stone-200/60 rounded-lg"></div>
-          <div className="space-y-4">
-            <div className="h-16 bg-stone-200/60 rounded-lg"></div>
-            <div className="h-16 bg-stone-200/60 rounded-lg"></div>
-            <div className="h-16 bg-stone-200/60 rounded-lg"></div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const currentMonth = new Date().toLocaleDateString('en-US', { month: 'long' });
+  const balanceChangePositive = data ? data.balanceChange >= 0 : true;
 
-  if (error) {
-    return (
+  return (
+    <EditorialLoader variant="dashboard" isLoading={loading}>
+    {error ? (
       <div className="max-w-4xl mx-auto px-6 py-12 md:px-12">
-        <div className="bg-red-50 bg-red-50 border border-red-200 border-red-200 rounded-2xl p-6 text-center">
-          <p className="text-red-800 text-red-800">{error}</p>
+        <div className="bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
+          <p className="text-red-800">{error}</p>
           <button
             onClick={fetchDashboard}
             className="mt-4 px-6 py-2 bg-primary text-white rounded-full hover:bg-red-700 transition-colors"
@@ -113,16 +126,8 @@ const Dashboard: React.FC = () => {
           </button>
         </div>
       </div>
-    );
-  }
-
-  if (!data) return null;
-
-  const currentMonth = new Date().toLocaleDateString('en-US', { month: 'long' });
-  const balanceChangePositive = data.balanceChange >= 0;
-
-  return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-8 md:py-12 flex flex-col animate-in fade-in duration-700">
+    ) : !data ? null : (
+    <StaggerChildren className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-8 md:py-12 flex flex-col">
       {/* Hero Balance */}
       <section className="py-8 md:py-12 flex flex-col items-center justify-center text-center">
         <h2 className="text-xs sm:text-sm font-medium tracking-[0.2em] uppercase text-stone-text mb-4 md:mb-6">{currentMonth} Balance</h2>
@@ -317,7 +322,9 @@ const Dashboard: React.FC = () => {
         <p className="font-serif italic text-stone-400 text-lg">"A penny saved is a penny earned."</p>
         <p className="text-xs font-bold text-stone-600 mt-2 uppercase tracking-widest">Benjamin Franklin</p>
       </div>
-    </div>
+    </StaggerChildren>
+    )}
+    </EditorialLoader>
   );
 };
 

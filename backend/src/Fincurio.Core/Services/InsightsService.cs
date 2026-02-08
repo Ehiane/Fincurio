@@ -171,10 +171,10 @@ public class InsightsService : IInsightsService
         _logger.LogInformation("Fetching money flow for user {UserId} | StartDate={StartDate}, EndDate={EndDate}, Grouping={Grouping}",
             userId, startDate, endDate, grouping);
 
-        // Get ALL transactions to find the earliest/latest dates for the user
-        var allTransactions = await _transactionRepository.GetByUserIdAsync(userId, pageSize: int.MaxValue);
+        // Get min/max dates with a lightweight aggregate query (no row loading)
+        var (earliest, latest) = await _transactionRepository.GetDateRangeAsync(userId);
 
-        if (allTransactions.Count == 0)
+        if (earliest == null || latest == null)
         {
             _logger.LogInformation("No transactions found for user {UserId}, returning empty money flow", userId);
             return new MoneyFlowResponseDto
@@ -188,8 +188,8 @@ public class InsightsService : IInsightsService
             };
         }
 
-        var earliestDate = allTransactions.Min(t => t.Date).Date;
-        var latestDate = allTransactions.Max(t => t.Date).Date;
+        var earliestDate = earliest.Value.Date;
+        var latestDate = latest.Value.Date;
 
         // Apply filters or default to full range
         var filterStart = (startDate ?? earliestDate).Date;
