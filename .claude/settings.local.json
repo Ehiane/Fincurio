@@ -45,7 +45,10 @@
       "Bash(gh issue view:*)",
       "WebFetch(domain:github.com)",
       "Bash(dotnet package search:*)",
-      "Bash(git status:*)"
+      "Bash(git status:*)",
+      "Bash(gh:*)",
+      "Bash(where:*)",
+      "Bash(where.exe:*)"
     ]
   }
 }
