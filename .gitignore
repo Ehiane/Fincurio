@@ -6,8 +6,8 @@ frontend/.env.development.local
 frontend/.env.production.local
 
 # Backend
-backend/bin/
-backend/obj/
+**/bin/
+**/obj/
 backend/**/*.user
 backend/**/*.suo
 backend/**/appsettings.Development.json
