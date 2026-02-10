@@ -24,6 +24,7 @@ backend/**/.env
 .vscode/
 .idea/
 .claude/
+test-connection/
 *.swp
 *.swo
 *~
