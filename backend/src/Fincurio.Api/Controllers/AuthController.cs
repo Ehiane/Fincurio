@@ -2,6 +2,7 @@ using Fincurio.Core.Interfaces.Services;
 using Fincurio.Core.Models.DTOs.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Fincurio.Api.Controllers;
 
@@ -19,6 +20,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")]
+    [EnableRateLimiting("auth")]
     public async Task<ActionResult<AuthResponseDto>> Register([FromBody] RegisterRequestDto request)
     {
         _logger.LogInformation("Registration attempt for email: {Email}", request.Email);
@@ -28,6 +30,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
+    [EnableRateLimiting("auth")]
     public async Task<ActionResult<AuthResponseDto>> Login([FromBody] LoginRequestDto request)
     {
         _logger.LogInformation("Login attempt for email: {Email}", request.Email);
@@ -75,6 +78,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("forgot-password")]
+    [EnableRateLimiting("auth")]
     public async Task<ActionResult<ForgotPasswordResponseDto>> ForgotPassword([FromBody] ForgotPasswordRequestDto request)
     {
         _logger.LogInformation("Forgot password requested for: {Email}", request.Email);
@@ -84,6 +88,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("reset-password")]
+    [EnableRateLimiting("auth")]
     public async Task<ActionResult<ResetPasswordResponseDto>> ResetPassword([FromBody] ResetPasswordRequestDto request)
     {
         _logger.LogInformation("Password reset attempted with token: {TokenPrefix}...", request.Token[..Math.Min(8, request.Token.Length)]);

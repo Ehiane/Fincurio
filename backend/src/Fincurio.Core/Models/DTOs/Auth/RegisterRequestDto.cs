@@ -9,7 +9,9 @@ public class RegisterRequestDto
     public required string Email { get; set; }
 
     [Required]
-    [MinLength(6)]
+    [MinLength(8, ErrorMessage = "Password must be at least 8 characters")]
+    [RegularExpression(@"^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?~`]).{8,}$",
+        ErrorMessage = "Password must contain at least one uppercase letter, one digit, and one special character")]
     public required string Password { get; set; }
 
     [Required]
