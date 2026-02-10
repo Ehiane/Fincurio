@@ -19,10 +19,11 @@ backend/**/.env
 *.db-shm
 *.db-wal
 
-# IDE
+# IDE & Tools
 .vs/
 .vscode/
 .idea/
+.claude/
 *.swp
 *.swo
 *~
