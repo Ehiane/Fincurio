@@ -187,8 +187,6 @@ const Journal: React.FC = () => {
       {showModal && (
         <TransactionModal
           transaction={editingTransaction}
-          categories={categories}
-          merchants={merchants}
           onClose={handleModalClose}
         />
       )}
@@ -280,12 +278,34 @@ const JournalItem: React.FC<{
 
 const TransactionModal: React.FC<{
   transaction: Transaction | null;
-  categories: Category[];
-  merchants: Merchant[];
   onClose: (refresh: boolean) => void;
-}> = ({ transaction, categories, merchants, onClose }) => {
+}> = ({ transaction, onClose }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [merchants, setMerchants] = useState<Merchant[]>([]);
+  const [dataLoading, setDataLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchModalData = async () => {
+      try {
+        setDataLoading(true);
+        const [catData, merchData] = await Promise.all([
+          categoriesApi.getAll(),
+          merchantsApi.getAll(),
+        ]);
+        setCategories(catData);
+        setMerchants(merchData);
+        setCache('categories', catData);
+        setCache('merchants', merchData);
+      } catch {
+        setError('Failed to load categories and merchants');
+      } finally {
+        setDataLoading(false);
+      }
+    };
+    fetchModalData();
+  }, []);
 
   const [date, setDate] = useState(
     transaction?.date || new Date().toISOString().split('T')[0]
@@ -360,6 +380,11 @@ const TransactionModal: React.FC<{
             </div>
           )}
 
+          {dataLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="animate-spin rounded-full h-8 w-8 border-2 border-stone-300 border-t-primary"></div>
+            </div>
+          ) : <>
           {/* Type Toggle */}
           <div className="flex gap-3">
             <button
@@ -503,6 +528,7 @@ const TransactionModal: React.FC<{
               {loading ? 'Saving...' : transaction ? 'Update' : 'Add Transaction'}
             </button>
           </div>
+          </>}
         </form>
       </div>
     </div>
