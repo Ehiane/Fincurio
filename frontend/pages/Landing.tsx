@@ -49,13 +49,39 @@ const Landing: React.FC = () => {
   const [heroLoaded, setHeroLoaded] = useState(false);
   const [barsVisible, setBarsVisible] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showIntro, setShowIntro] = useState(true);
+  const [introFading, setIntroFading] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const barsRef = useRef<HTMLDivElement>(null);
 
-  // Hero entrance on mount
-  useEffect(() => {
-    const timer = setTimeout(() => setHeroLoaded(true), 100);
-    return () => clearTimeout(timer);
+  // Handle intro video end → fade out → show landing
+  const handleVideoEnd = useCallback(() => {
+    setIntroFading(true);
+    setTimeout(() => {
+      setShowIntro(false);
+      setTimeout(() => setHeroLoaded(true), 100);
+    }, 800);
   }, []);
+
+  // Fallback: skip intro if video fails to load
+  const handleVideoError = useCallback(() => {
+    setShowIntro(false);
+    setTimeout(() => setHeroLoaded(true), 100);
+  }, []);
+
+  // Allow clicking to skip the intro
+  const handleSkipIntro = useCallback(() => {
+    if (videoRef.current) videoRef.current.pause();
+    handleVideoEnd();
+  }, [handleVideoEnd]);
+
+  // Hero entrance when intro is skipped/not shown
+  useEffect(() => {
+    if (!showIntro) {
+      const timer = setTimeout(() => setHeroLoaded(true), 100);
+      return () => clearTimeout(timer);
+    }
+  }, [showIntro]);
 
   // Parallax hero on scroll
   useEffect(() => {
@@ -89,6 +115,33 @@ const Landing: React.FC = () => {
 
   return (
     <div className="w-full bg-background-light overflow-x-hidden">
+
+      {/* ─── Launch Video Intro ─── */}
+      {showIntro && (
+        <div
+          className={`fixed inset-0 z-[100] bg-black flex items-center justify-center cursor-pointer transition-opacity duration-700 ease-out ${
+            introFading ? 'opacity-0' : 'opacity-100'
+          }`}
+          onClick={handleSkipIntro}
+        >
+          <video
+            ref={videoRef}
+            src="/fincurio_launch_vid.mp4"
+            autoPlay
+            muted
+            playsInline
+            onEnded={handleVideoEnd}
+            onError={handleVideoError}
+            className="w-full h-full object-contain"
+          />
+          <button
+            onClick={(e) => { e.stopPropagation(); handleSkipIntro(); }}
+            className="absolute bottom-8 right-8 text-white/40 hover:text-white/80 text-sm tracking-wide transition-colors"
+          >
+            Skip
+          </button>
+        </div>
+      )}
 
       {/* ─── Navigation ─── */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background-light/80 backdrop-blur-md px-4 md:px-8 lg:px-14">
