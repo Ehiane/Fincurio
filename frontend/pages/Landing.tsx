@@ -49,13 +49,14 @@ const Landing: React.FC = () => {
   const [heroLoaded, setHeroLoaded] = useState(false);
   const [barsVisible, setBarsVisible] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [showIntro, setShowIntro] = useState(true);
+  const [showIntro, setShowIntro] = useState(() => !sessionStorage.getItem('introPlayed'));
   const [introFading, setIntroFading] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const barsRef = useRef<HTMLDivElement>(null);
 
   // Handle intro video end → fade out → show landing
   const handleVideoEnd = useCallback(() => {
+    sessionStorage.setItem('introPlayed', '1');
     setIntroFading(true);
     setTimeout(() => {
       setShowIntro(false);
@@ -132,7 +133,7 @@ const Landing: React.FC = () => {
             playsInline
             onEnded={handleVideoEnd}
             onError={handleVideoError}
-            className="w-full h-full object-contain"
+            className="w-full h-full object-cover"
           />
           <button
             onClick={(e) => { e.stopPropagation(); handleSkipIntro(); }}
