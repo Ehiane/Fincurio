@@ -2,6 +2,7 @@ using Fincurio.Core.Interfaces.Services;
 using Fincurio.Core.Models.DTOs.Transaction;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Fincurio.Api.Controllers;
 
@@ -11,12 +12,22 @@ namespace Fincurio.Api.Controllers;
 public class TransactionsController : ControllerBase
 {
     private readonly ITransactionService _transactionService;
+    private readonly IMemoryCache _cache;
     private readonly ILogger<TransactionsController> _logger;
 
-    public TransactionsController(ITransactionService transactionService, ILogger<TransactionsController> logger)
+    public TransactionsController(ITransactionService transactionService, IMemoryCache cache, ILogger<TransactionsController> logger)
     {
         _transactionService = transactionService;
+        _cache = cache;
         _logger = logger;
+    }
+
+    private void InvalidateInsightsCache(Guid userId)
+    {
+        _cache.Remove($"dashboard:{userId}");
+        _cache.Remove($"monthly:{userId}:{DateTime.UtcNow.Year}:{DateTime.UtcNow.Month}");
+        // Money flow cache keys include date params, so we can't easily remove all.
+        // The 5-minute TTL will handle those.
     }
 
     private Guid GetUserId()
@@ -61,6 +72,7 @@ public class TransactionsController : ControllerBase
         _logger.LogInformation("Creating transaction for user {UserId} | Merchant={Merchant}, Amount={Amount}, Type={Type}, CategoryId={CategoryId}, Date={Date}",
             userId, request.Merchant, request.Amount, request.Type, request.CategoryId, request.Date);
         var transaction = await _transactionService.CreateAsync(userId, request);
+        InvalidateInsightsCache(userId);
         _logger.LogInformation("Transaction created successfully: {TransactionId} for user {UserId}", transaction.Id, userId);
         return CreatedAtAction(nameof(GetTransaction), new { id = transaction.Id }, transaction);
     }
@@ -72,6 +84,7 @@ public class TransactionsController : ControllerBase
         _logger.LogInformation("Updating transaction {TransactionId} for user {UserId} | Merchant={Merchant}, Amount={Amount}, Type={Type}, CategoryId={CategoryId}, Date={Date}",
             id, userId, request.Merchant, request.Amount, request.Type, request.CategoryId, request.Date);
         var transaction = await _transactionService.UpdateAsync(id, userId, request);
+        InvalidateInsightsCache(userId);
         _logger.LogInformation("Transaction {TransactionId} updated successfully for user {UserId}", id, userId);
         return Ok(transaction);
     }
@@ -82,6 +95,7 @@ public class TransactionsController : ControllerBase
         var userId = GetUserId();
         _logger.LogInformation("Deleting transaction {TransactionId} for user {UserId}", id, userId);
         await _transactionService.DeleteAsync(id, userId);
+        InvalidateInsightsCache(userId);
         _logger.LogInformation("Transaction {TransactionId} deleted successfully for user {UserId}", id, userId);
         return NoContent();
     }

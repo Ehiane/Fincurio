@@ -31,9 +31,7 @@ const Dashboard: React.FC = () => {
 
   const fetchDashboard = async () => {
     try {
-      setLoading(true);
-
-      // Check cache first for instant page switches
+      // Show cached data instantly while fetching fresh data (stale-while-revalidate)
       const cachedDashboard = getCached<DashboardResponse>('dashboard');
       const cachedFlow = getCached<MoneyFlowResponse>('moneyflow:default');
       const cachedCurrency = getCached<string>('currencySymbol');
@@ -48,9 +46,11 @@ const Dashboard: React.FC = () => {
         }
         setFlowGrouping(cachedFlow.grouping as 'daily' | 'weekly' | 'monthly' | 'yearly');
         setLoading(false);
-        return;
+      } else {
+        setLoading(true);
       }
 
+      // Always fetch fresh data from the API
       const [dashboardData, profile, flowData] = await Promise.all([
         insightsApi.getDashboard(),
         userApi.getProfile(),
@@ -134,9 +134,9 @@ const Dashboard: React.FC = () => {
         <h2 className="text-xs sm:text-sm font-medium tracking-[0.2em] uppercase text-stone-text mb-4 md:mb-6">{currentMonth} Balance</h2>
         <div className="relative group cursor-default">
           <h1 className="font-serif text-4xl sm:text-5xl md:text-5xl lg:text-6xl text-secondary leading-none tracking-tight">
-            {currencySymbol}{Math.floor(data.currentBalance).toLocaleString()}
+            {data.currentBalance < 0 ? '-' : ''}{currencySymbol}{Math.floor(Math.abs(data.currentBalance)).toLocaleString()}
             <span className="text-2xl sm:text-3xl md:text-3xl lg:text-4xl opacity-40 font-normal">
-              .{(data.currentBalance % 1).toFixed(2).substring(2)}
+              .{(Math.abs(data.currentBalance) % 1).toFixed(2).substring(2)}
             </span>
           </h1>
           {balanceChangeValue !== 0 && (
