@@ -157,10 +157,10 @@ const Onboarding: React.FC = () => {
                   <input
                     autoFocus
                     type="text"
-                    inputMode="decimal"
+                    inputMode="numeric"
                     value={monthlyBudgetGoal}
                     onChange={(e) => setMonthlyBudgetGoal(formatCurrency(e.target.value))}
-                    placeholder="4,000.00"
+                    placeholder="0.00"
                     className="w-full bg-transparent border-none p-0 text-2xl md:text-3xl lg:text-4xl text-center placeholder:text-stone-400 focus:ring-0 text-primary font-serif"
                   />
                 </div>

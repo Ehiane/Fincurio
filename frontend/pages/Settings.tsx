@@ -3,7 +3,7 @@ import { useAuth } from '../src/hooks/useAuth';
 import { userApi } from '../src/api/user.api';
 import { merchantsApi, Merchant } from '../src/api/merchants.api';
 import { categoriesApi, Category, CreateCategoryRequest } from '../src/api/categories.api';
-import { formatCurrency, parseCurrency } from '../src/utils/currencyFormatter';
+import { formatCurrency, parseCurrency, toCurrencyDisplay } from '../src/utils/currencyFormatter';
 
 const Settings: React.FC = () => {
   const { user, logout } = useAuth();
@@ -130,7 +130,7 @@ const Settings: React.FC = () => {
       setFinancialIntention(user.financialIntention || '');
       setCurrency(user.preferences?.currency || 'USD');
       setTimezone(user.preferences?.timezone || 'UTC');
-      setMonthlyBudgetGoal(user.preferences?.monthlyBudgetGoal?.toString() || '');
+      setMonthlyBudgetGoal(user.preferences?.monthlyBudgetGoal ? toCurrencyDisplay(user.preferences.monthlyBudgetGoal) : '');
 
       // Fetch merchants and categories
       fetchMerchantsAndCategories();
@@ -472,11 +472,11 @@ const Settings: React.FC = () => {
               </span>
               <input
                 type="text"
-                inputMode="decimal"
+                inputMode="numeric"
                 value={monthlyBudgetGoal}
                 onChange={(e) => setMonthlyBudgetGoal(formatCurrency(e.target.value))}
                 className="w-full pl-10 pr-4 py-3 bg-white border border-stone-300 rounded-lg text-secondary placeholder:text-stone-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                placeholder="4,000.00"
+                placeholder="0.00"
               />
             </div>
             <p className="text-xs text-stone-text mt-2">Your target monthly spending limit</p>

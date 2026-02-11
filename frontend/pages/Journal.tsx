@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { transactionsApi, Transaction } from '../src/api/transactions.api';
 import { categoriesApi, Category } from '../src/api/categories.api';
 import { merchantsApi, Merchant } from '../src/api/merchants.api';
-import { formatCurrency, parseCurrency } from '../src/utils/currencyFormatter';
+import { formatCurrency, parseCurrency, toCurrencyDisplay } from '../src/utils/currencyFormatter';
 import { getCached, setCache, invalidateCache } from '../src/utils/apiCache';
 import EditorialLoader from '../src/components/EditorialLoader';
 import StaggerChildren from '../src/components/StaggerChildren';
@@ -315,7 +315,7 @@ const TransactionModal: React.FC<{
   );
   const [merchant, setMerchant] = useState(transaction?.merchant || '');
   const [categoryId, setCategoryId] = useState(transaction?.category.id || '');
-  const [amount, setAmount] = useState(transaction?.amount.toString() || '');
+  const [amount, setAmount] = useState(transaction ? toCurrencyDisplay(transaction.amount) : '');
   const [type, setType] = useState<'income' | 'expense'>(transaction?.type || 'expense');
   const [notes, setNotes] = useState(transaction?.notes || '');
 
@@ -487,11 +487,11 @@ const TransactionModal: React.FC<{
             </label>
             <input
               type="text"
-              inputMode="decimal"
+              inputMode="numeric"
               value={amount}
               onChange={(e) => setAmount(formatCurrency(e.target.value))}
               required
-              placeholder="1,000.00"
+              placeholder="0.00"
               className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white/80 border border-stone-300/60 rounded-xl text-secondary placeholder:text-stone-400 focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all font-serif text-base sm:text-lg"
             />
           </div>
