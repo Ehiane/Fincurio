@@ -23,6 +23,7 @@ import Sidebar from './components/Sidebar';
 import PrivateRoute from './components/PrivateRoute';
 import OnboardingRoute from './components/OnboardingRoute';
 import EmailVerificationBanner from './components/EmailVerificationBanner';
+import OnboardingBanner from './components/OnboardingBanner';
 import ErrorBoundary from './src/components/ErrorBoundary';
 import SignOutOverlay from './src/components/SignOutOverlay';
 import SignInOverlay from './src/components/SignInOverlay';
@@ -56,6 +57,7 @@ const AppRoutes: React.FC = () => {
                   <Sidebar />
                   <div className="flex-1 overflow-y-auto pt-14 lg:pt-0">
                     <EmailVerificationBanner />
+                    <OnboardingBanner />
                     <Routes>
                       <Route path="dashboard" element={<Dashboard />} />
                       <Route path="journal" element={<Journal />} />
