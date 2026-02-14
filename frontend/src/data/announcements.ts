@@ -23,7 +23,7 @@ const announcements: Announcement[] = [
     date: '2026-02-14',
     title: 'New Onboarding Experience',
     description:
-      'Set up your income, taxes, deductions, and budget goals in a guided 8-step flow — so your dashboard feels personalised from day one.',
+      'Set up your income, taxes, deductions, and preferences in a guided 8-step flow — so your dashboard feels personalised from day one.',
     type: 'feature',
     icon: 'rocket_launch',
   },

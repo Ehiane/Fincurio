@@ -64,4 +64,17 @@ public class UserController : ControllerBase
         await _userService.CompleteOnboardingAsync(userId);
         return Ok(new { message = "Onboarding completed" });
     }
+
+    [HttpPut("last-seen-announcement")]
+    public async Task<ActionResult> UpdateLastSeenAnnouncement([FromBody] UpdateLastSeenAnnouncementDto request)
+    {
+        var userId = GetUserId();
+        await _userService.UpdateLastSeenAnnouncementAsync(userId, request.AnnouncementId);
+        return Ok(new { message = "Announcement read status updated" });
+    }
+}
+
+public class UpdateLastSeenAnnouncementDto
+{
+    public required string AnnouncementId { get; set; }
 }

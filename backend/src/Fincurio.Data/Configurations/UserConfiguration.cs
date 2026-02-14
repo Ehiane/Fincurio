@@ -78,6 +78,10 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.PasswordResetTokenExpiry)
             .HasColumnName("password_reset_token_expiry");
 
+        builder.Property(u => u.LastSeenAnnouncementId)
+            .HasColumnName("last_seen_announcement_id")
+            .HasMaxLength(100);
+
         // Relationships
         builder.HasMany(u => u.Transactions)
             .WithOne(t => t.User)

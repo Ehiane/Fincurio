@@ -8,4 +8,5 @@ public interface IUserService
     Task<UserProfileDto> UpdateProfileAsync(Guid userId, UpdateProfileDto request);
     Task UpdatePreferencesAsync(Guid userId, UpdatePreferencesDto request);
     Task CompleteOnboardingAsync(Guid userId);
+    Task UpdateLastSeenAnnouncementAsync(Guid userId, string announcementId);
 }

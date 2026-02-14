@@ -24,6 +24,9 @@ public class User
     public string? PasswordResetToken { get; set; }
     public DateTime? PasswordResetTokenExpiry { get; set; }
 
+    // Announcements
+    public string? LastSeenAnnouncementId { get; set; }
+
     // Navigation properties
     public ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
     public UserPreference? Preferences { get; set; }

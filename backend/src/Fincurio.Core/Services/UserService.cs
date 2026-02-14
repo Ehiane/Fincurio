@@ -44,6 +44,7 @@ public class UserService : IUserService
             FinancialIntention = user.FinancialIntention,
             IsEmailVerified = user.IsEmailVerified,
             HasCompletedOnboarding = user.HasCompletedOnboarding,
+            LastSeenAnnouncementId = user.LastSeenAnnouncementId,
             Preferences = user.Preferences != null ? new UserPreferencesDto
             {
                 Currency = user.Preferences.Currency,
@@ -126,6 +127,17 @@ public class UserService : IUserService
         user.HasCompletedOnboarding = true;
         await _userRepository.UpdateAsync(user);
         _logger.LogInformation("Onboarding completed for user {UserId}", userId);
+    }
+
+    public async Task UpdateLastSeenAnnouncementAsync(Guid userId, string announcementId)
+    {
+        var user = await _userRepository.GetByIdAsync(userId);
+        if (user == null)
+            throw new NotFoundException("User not found");
+
+        user.LastSeenAnnouncementId = announcementId;
+        await _userRepository.UpdateAsync(user);
+        _logger.LogInformation("Last seen announcement updated for user {UserId} to {AnnouncementId}", userId, announcementId);
     }
 
     private static IncomeProfileDto MapIncomeProfileToDto(IncomeProfile profile)

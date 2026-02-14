@@ -38,6 +38,7 @@ export interface UserProfile {
   financialIntention?: string;
   isEmailVerified: boolean;
   hasCompletedOnboarding: boolean;
+  lastSeenAnnouncementId?: string;
   preferences?: UserPreferences;
   incomeProfile?: IncomeProfileData;
   createdAt: string;
@@ -72,5 +73,9 @@ export const userApi = {
 
   completeOnboarding: async (): Promise<void> => {
     await apiClient.post('/api/user/complete-onboarding');
+  },
+
+  updateLastSeenAnnouncement: async (announcementId: string): Promise<void> => {
+    await apiClient.put('/api/user/last-seen-announcement', { announcementId });
   },
 };

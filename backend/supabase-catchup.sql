@@ -10,6 +10,7 @@
 -- Migrations covered:
 --   1. 20260212150208_UpdateDeductionFieldsV2  (partial — you already ran 4 ALTER TABLEs)
 --   2. 20260214074644_AddHasCompletedOnboarding
+--   3. 20260214092843_AddLastSeenAnnouncementId
 -- ============================================================
 
 BEGIN;
@@ -19,6 +20,12 @@ BEGIN;
 -- ──────────────────────────────────────────────────────────
 ALTER TABLE users
   ADD COLUMN IF NOT EXISTS has_completed_onboarding boolean NOT NULL DEFAULT false;
+
+-- ──────────────────────────────────────────────────────────
+-- 1b. USERS — add last_seen_announcement_id
+-- ──────────────────────────────────────────────────────────
+ALTER TABLE users
+  ADD COLUMN IF NOT EXISTS last_seen_announcement_id character varying(100);
 
 
 -- ──────────────────────────────────────────────────────────
@@ -172,6 +179,10 @@ ON CONFLICT ("MigrationId") DO NOTHING;
 
 INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
 VALUES ('20260214074644_AddHasCompletedOnboarding', '10.0.2')
+ON CONFLICT ("MigrationId") DO NOTHING;
+
+INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+VALUES ('20260214092843_AddLastSeenAnnouncementId', '10.0.2')
 ON CONFLICT ("MigrationId") DO NOTHING;
 
 
