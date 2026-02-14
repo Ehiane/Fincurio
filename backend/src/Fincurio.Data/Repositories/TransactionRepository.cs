@@ -18,6 +18,7 @@ public class TransactionRepository : ITransactionRepository
     {
         return await _context.Transactions
             .Include(t => t.Category)
+            .Include(t => t.Goal)
             .FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
     }
 
@@ -32,6 +33,7 @@ public class TransactionRepository : ITransactionRepository
     {
         var query = _context.Transactions
             .Include(t => t.Category)
+            .Include(t => t.Goal)
             .Where(t => t.UserId == userId);
 
         if (startDate.HasValue)
@@ -103,6 +105,7 @@ public class TransactionRepository : ITransactionRepository
     {
         return await _context.Transactions
             .Include(t => t.Category)
+            .Include(t => t.Goal)
             .Where(t => t.UserId == userId)
             .OrderByDescending(t => t.Date)
             .ThenByDescending(t => t.Time)
@@ -130,6 +133,7 @@ public class TransactionRepository : ITransactionRepository
 
         return await _context.Transactions
             .Include(t => t.Category)
+            .Include(t => t.Goal)
             .Where(t => t.UserId == userId && t.Date >= startDate && t.Date <= endDate)
             .OrderByDescending(t => t.Date)
             .ThenByDescending(t => t.Time)
@@ -140,6 +144,7 @@ public class TransactionRepository : ITransactionRepository
     {
         return await _context.Transactions
             .Include(t => t.Category)
+            .Include(t => t.Goal)
             .Where(t => t.UserId == userId && t.Date >= startDate && t.Date <= endDate)
             .OrderBy(t => t.Date)
             .ThenBy(t => t.Time)
@@ -159,5 +164,11 @@ public class TransactionRepository : ITransactionRepository
             .FirstOrDefaultAsync();
 
         return (dates?.Earliest, dates?.Latest);
+    }
+
+    public async Task<bool> HasLinkedToGoalAsync(Guid goalId, Guid userId)
+    {
+        return await _context.Transactions
+            .AnyAsync(t => t.GoalId == goalId && t.UserId == userId);
     }
 }

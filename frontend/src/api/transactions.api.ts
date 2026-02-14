@@ -15,6 +15,8 @@ export interface Transaction {
   amount: number;
   type: 'income' | 'expense';
   notes?: string;
+  goalId?: string;
+  goalName?: string;
 }
 
 export interface CreateTransactionRequest {
@@ -25,6 +27,7 @@ export interface CreateTransactionRequest {
   amount: number;
   type: 'income' | 'expense';
   notes?: string;
+  goalId?: string;
 }
 
 export interface TransactionListResponse {

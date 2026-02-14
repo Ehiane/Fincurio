@@ -26,6 +26,7 @@ public class TransactionsController : ControllerBase
     {
         _cache.Remove($"dashboard:{userId}");
         _cache.Remove($"monthly:{userId}:{DateTime.UtcNow.Year}:{DateTime.UtcNow.Month}");
+        _cache.Remove($"goals:{userId}");
         // Money flow cache keys include date params, so we can't easily remove all.
         // The 5-minute TTL will handle those.
     }

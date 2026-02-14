@@ -18,6 +18,7 @@ public class FincurioDbContext : DbContext
     public DbSet<IncomeProfile> IncomeProfiles { get; set; }
     public DbSet<BudgetGoal> BudgetGoals { get; set; }
     public DbSet<CategoryBudget> CategoryBudgets { get; set; }
+    public DbSet<Goal> Goals { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

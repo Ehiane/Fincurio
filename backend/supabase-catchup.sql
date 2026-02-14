@@ -197,6 +197,38 @@ ON CONFLICT ("MigrationId") DO NOTHING;
 COMMIT;
 
 -- ============================================================
+-- 6. CATEGORY GROUPS + GOAL LINKING (AddCategoryGroupsAndGoalLinking)
+-- ============================================================
+BEGIN;
+
+-- 6a. Add category_group column to categories
+ALTER TABLE categories ADD COLUMN IF NOT EXISTS category_group varchar(50);
+
+-- 6b. Set category_group for seeded categories
+UPDATE categories SET category_group = 'Shopping' WHERE name = 'Tech'       AND category_group IS NULL;
+UPDATE categories SET category_group = 'Food'     WHERE name = 'Groceries'  AND category_group IS NULL;
+UPDATE categories SET category_group = 'Income'   WHERE name = 'Salary'     AND category_group IS NULL;
+UPDATE categories SET category_group = 'Food'     WHERE name = 'Dining'     AND category_group IS NULL;
+UPDATE categories SET category_group = 'Bills'    WHERE name = 'Subscription' AND category_group IS NULL;
+UPDATE categories SET category_group = 'Travel'   WHERE name = 'Transport'  AND category_group IS NULL;
+UPDATE categories SET category_group = 'Housing'  WHERE name = 'Shelter'    AND category_group IS NULL;
+UPDATE categories SET category_group = 'Health'   WHERE name = 'Wellness'   AND category_group IS NULL;
+UPDATE categories SET category_group = 'Leisure'  WHERE name = 'Culture'    AND category_group IS NULL;
+
+-- 6c. Add goal_id FK to transactions (nullable, ON DELETE SET NULL)
+ALTER TABLE transactions ADD COLUMN IF NOT EXISTS goal_id uuid REFERENCES goals(id) ON DELETE SET NULL;
+
+-- 6d. Index for goal_id lookups
+CREATE INDEX IF NOT EXISTS idx_transactions_goal ON transactions(goal_id);
+
+-- 6e. Record migration
+INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+VALUES ('20260214192747_AddCategoryGroupsAndGoalLinking', '10.0.2')
+ON CONFLICT ("MigrationId") DO NOTHING;
+
+COMMIT;
+
+-- ============================================================
 -- DONE! Verify with:
 --   SELECT * FROM "__EFMigrationsHistory" ORDER BY "MigrationId";
 -- ============================================================

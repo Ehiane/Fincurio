@@ -9,6 +9,7 @@ public class Category
     public required string Type { get; set; } // "income" or "expense"
     public string? Icon { get; set; }
     public string? Color { get; set; }
+    public string? CategoryGroup { get; set; }
     public int SortOrder { get; set; }
     public DateTime CreatedAt { get; set; }
 

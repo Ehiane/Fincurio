@@ -3,6 +3,7 @@ using System;
 using Fincurio.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Fincurio.Data.Migrations
 {
     [DbContext(typeof(FincurioDbContext))]
-    partial class FincurioDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260214165348_AddGoalsTable")]
+    partial class AddGoalsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -60,11 +63,6 @@ namespace Fincurio.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
-
-                    b.Property<string>("CategoryGroup")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("category_group");
 
                     b.Property<string>("Color")
                         .HasMaxLength(7)
@@ -439,10 +437,6 @@ namespace Fincurio.Data.Migrations
                         .HasColumnType("date")
                         .HasColumnName("date");
 
-                    b.Property<Guid?>("GoalId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("goal_id");
-
                     b.Property<string>("Merchant")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -478,9 +472,6 @@ namespace Fincurio.Data.Migrations
 
                     b.HasIndex("Date")
                         .HasDatabaseName("idx_transactions_date");
-
-                    b.HasIndex("GoalId")
-                        .HasDatabaseName("idx_transactions_goal");
 
                     b.HasIndex("UserId")
                         .HasDatabaseName("idx_transactions_user_id");
@@ -735,11 +726,6 @@ namespace Fincurio.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Fincurio.Core.Models.Entities.Goal", "Goal")
-                        .WithMany("Transactions")
-                        .HasForeignKey("GoalId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.HasOne("Fincurio.Core.Models.Entities.User", "User")
                         .WithMany("Transactions")
                         .HasForeignKey("UserId")
@@ -747,8 +733,6 @@ namespace Fincurio.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Category");
-
-                    b.Navigation("Goal");
 
                     b.Navigation("User");
                 });
@@ -765,11 +749,6 @@ namespace Fincurio.Data.Migrations
                 });
 
             modelBuilder.Entity("Fincurio.Core.Models.Entities.Category", b =>
-                {
-                    b.Navigation("Transactions");
-                });
-
-            modelBuilder.Entity("Fincurio.Core.Models.Entities.Goal", b =>
                 {
                     b.Navigation("Transactions");
                 });

@@ -6,6 +6,7 @@ export interface Category {
   displayName: string;
   icon: string;
   color: string;
+  categoryGroup?: string;
   isCustom: boolean;
 }
 
@@ -19,6 +20,7 @@ export interface CreateCategoryRequest {
   type: 'income' | 'expense';
   icon: string;
   color: string;
+  categoryGroup?: string;
 }
 
 export const categoriesApi = {

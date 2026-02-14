@@ -48,6 +48,9 @@ public class TransactionConfiguration : IEntityTypeConfiguration<Transaction>
         builder.Property(t => t.Notes)
             .HasColumnName("notes");
 
+        builder.Property(t => t.GoalId)
+            .HasColumnName("goal_id");
+
         builder.Property(t => t.CreatedAt)
             .HasColumnName("created_at")
             .IsRequired();
@@ -68,6 +71,16 @@ public class TransactionConfiguration : IEntityTypeConfiguration<Transaction>
 
         builder.HasIndex(t => t.CategoryId)
             .HasDatabaseName("idx_transactions_category");
+
+        // Goal relationship (optional — for savings goals)
+        builder.HasOne(t => t.Goal)
+            .WithMany(g => g.Transactions)
+            .HasForeignKey(t => t.GoalId)
+            .OnDelete(DeleteBehavior.SetNull)
+            .IsRequired(false);
+
+        builder.HasIndex(t => t.GoalId)
+            .HasDatabaseName("idx_transactions_goal");
 
         // Relationships configured in UserConfiguration and CategoryConfiguration
     }

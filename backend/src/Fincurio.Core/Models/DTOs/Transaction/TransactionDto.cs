@@ -10,6 +10,8 @@ public class TransactionDto
     public decimal Amount { get; set; }
     public required string Type { get; set; }
     public string? Notes { get; set; }
+    public Guid? GoalId { get; set; }
+    public string? GoalName { get; set; }
 }
 
 public class CategoryDto

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { transactionsApi, Transaction } from '../src/api/transactions.api';
 import { categoriesApi, Category } from '../src/api/categories.api';
 import { merchantsApi, Merchant } from '../src/api/merchants.api';
+import { goalsApi, Goal } from '../src/api/goals.api';
 import { formatCurrency, parseCurrency, toCurrencyDisplay } from '../src/utils/currencyFormatter';
 import { getCached, setCache, invalidateCache } from '../src/utils/apiCache';
 import EditorialLoader from '../src/components/EditorialLoader';
@@ -284,18 +285,21 @@ const TransactionModal: React.FC<{
   const [error, setError] = useState('');
   const [categories, setCategories] = useState<Category[]>([]);
   const [merchants, setMerchants] = useState<Merchant[]>([]);
+  const [savingsGoals, setSavingsGoals] = useState<Goal[]>([]);
   const [dataLoading, setDataLoading] = useState(true);
 
   useEffect(() => {
     const fetchModalData = async () => {
       try {
         setDataLoading(true);
-        const [catData, merchData] = await Promise.all([
+        const [catData, merchData, goalsData] = await Promise.all([
           categoriesApi.getAll(),
           merchantsApi.getAll(),
+          goalsApi.getAll(),
         ]);
         setCategories(catData);
         setMerchants(merchData);
+        setSavingsGoals(goalsData.goals.filter(g => g.type === 'savings'));
         setCache('categories', catData);
         setCache('merchants', merchData);
       } catch {
@@ -318,6 +322,18 @@ const TransactionModal: React.FC<{
   const [amount, setAmount] = useState(transaction ? toCurrencyDisplay(transaction.amount) : '');
   const [type, setType] = useState<'income' | 'expense'>(transaction?.type || 'expense');
   const [notes, setNotes] = useState(transaction?.notes || '');
+  const [goalId, setGoalId] = useState(transaction?.goalId || '');
+
+  // Group categories by categoryGroup
+  const groupedCategories = categories.reduce<Record<string, Category[]>>((acc, cat) => {
+    const group = cat.categoryGroup || 'Other';
+    if (!acc[group]) acc[group] = [];
+    acc[group].push(cat);
+    return acc;
+  }, {});
+  const sortedGroups = Object.keys(groupedCategories).sort((a, b) =>
+    a === 'Other' ? 1 : b === 'Other' ? -1 : a.localeCompare(b)
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -339,6 +355,7 @@ const TransactionModal: React.FC<{
         amount: amountValue,
         type,
         notes: notes || undefined,
+        goalId: goalId || undefined,
       };
 
       if (transaction) {
@@ -472,10 +489,14 @@ const TransactionModal: React.FC<{
               className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white/80 border border-stone-300/60 rounded-xl text-secondary text-sm sm:text-base focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
             >
               <option value="">Select a category</option>
-              {categories.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.displayName}
-                </option>
+              {sortedGroups.map((group) => (
+                <optgroup key={group} label={group}>
+                  {groupedCategories[group].map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.displayName}
+                    </option>
+                  ))}
+                </optgroup>
               ))}
             </select>
           </div>
@@ -509,6 +530,27 @@ const TransactionModal: React.FC<{
               className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white/80 border border-stone-300/60 rounded-xl text-secondary text-sm sm:text-base placeholder:text-stone-400 focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all resize-none"
             />
           </div>
+
+          {/* Link to Savings Goal (optional) */}
+          {savingsGoals.length > 0 && (
+            <div>
+              <label className="block text-xs uppercase tracking-widest text-stone-text font-semibold mb-1.5 sm:mb-2">
+                Savings Goal <span className="normal-case tracking-normal font-normal text-stone-400">(optional)</span>
+              </label>
+              <select
+                value={goalId}
+                onChange={(e) => setGoalId(e.target.value)}
+                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white/80 border border-stone-300/60 rounded-xl text-secondary text-sm sm:text-base focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
+              >
+                <option value="">None</option>
+                {savingsGoals.map((g) => (
+                  <option key={g.id} value={g.id}>
+                    {g.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           {/* Actions */}
           <div className="flex gap-3 sm:gap-4 pt-2 border-t border-stone-300/40">

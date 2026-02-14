@@ -35,6 +35,7 @@ public class CategoryService : ICategoryService
             DisplayName = c.DisplayName,
             Icon = c.Icon ?? "",
             Color = c.Color ?? "",
+            CategoryGroup = c.CategoryGroup,
             IsCustom = c.UserId.HasValue
         }).ToList();
     }
@@ -59,6 +60,7 @@ public class CategoryService : ICategoryService
             Type = dto.Type,
             Icon = dto.Icon,
             Color = dto.Color,
+            CategoryGroup = dto.CategoryGroup,
             SortOrder = 1000 // User categories appear after global ones
         };
 
@@ -72,6 +74,7 @@ public class CategoryService : ICategoryService
             DisplayName = created.DisplayName,
             Icon = created.Icon ?? "",
             Color = created.Color ?? "",
+            CategoryGroup = created.CategoryGroup,
             IsCustom = true
         };
     }

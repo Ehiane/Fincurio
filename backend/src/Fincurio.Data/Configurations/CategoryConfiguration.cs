@@ -36,6 +36,10 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
             .HasColumnName("color")
             .HasMaxLength(7);
 
+        builder.Property(c => c.CategoryGroup)
+            .HasColumnName("category_group")
+            .HasMaxLength(50);
+
         builder.Property(c => c.SortOrder)
             .HasColumnName("sort_order")
             .HasDefaultValue(0);

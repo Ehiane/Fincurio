@@ -25,4 +25,6 @@ public class CreateTransactionDto
     public required string Type { get; set; }
 
     public string? Notes { get; set; }
+
+    public Guid? GoalId { get; set; }
 }

@@ -103,6 +103,7 @@ public class TransactionService : ITransactionService
             Amount = request.Amount,
             Type = request.Type,
             Notes = request.Notes,
+            GoalId = request.GoalId,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
@@ -146,6 +147,7 @@ public class TransactionService : ITransactionService
         transaction.Amount = request.Amount;
         transaction.Type = request.Type;
         transaction.Notes = request.Notes;
+        transaction.GoalId = request.GoalId;
 
         await _transactionRepository.UpdateAsync(transaction);
 
@@ -189,7 +191,9 @@ public class TransactionService : ITransactionService
             },
             Amount = transaction.Amount,
             Type = transaction.Type,
-            Notes = transaction.Notes
+            Notes = transaction.Notes,
+            GoalId = transaction.GoalId,
+            GoalName = transaction.Goal?.Name
         };
     }
 }
