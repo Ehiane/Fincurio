@@ -1,9 +1,21 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useAuth } from '../src/hooks/useAuth';
 import { userApi } from '../src/api/user.api';
+import { incomeApi, IncomeProfile, CreateIncomeProfileRequest, OtherDeductionItem } from '../src/api/income.api';
 import { merchantsApi, Merchant } from '../src/api/merchants.api';
 import { categoriesApi, Category, CreateCategoryRequest } from '../src/api/categories.api';
 import { formatCurrency, parseCurrency, toCurrencyDisplay } from '../src/utils/currencyFormatter';
+import {
+  US_STATES,
+  calculateFederalTax,
+  calculateStateTax,
+  calculateGrossAnnual,
+  calculateNetAnnual,
+  annualizePerPaycheck,
+  retirementAnnualFromPercent,
+  formatMoney,
+  PAY_FREQUENCY_MULTIPLIERS,
+} from '../src/utils/taxCalculator';
 
 const Settings: React.FC = () => {
   const { user, logout } = useAuth();
@@ -20,6 +32,41 @@ const Settings: React.FC = () => {
   const [currency, setCurrency] = useState('USD');
   const [timezone, setTimezone] = useState('UTC');
   const [monthlyBudgetGoal, setMonthlyBudgetGoal] = useState('');
+
+  // Income profile state
+  const [incEmploymentType, setIncEmploymentType] = useState('');
+  const [incEarningMethod, setIncEarningMethod] = useState('');
+  const [incPayFrequency, setIncPayFrequency] = useState('');
+  const [incAnnualSalary, setIncAnnualSalary] = useState('');
+  const [incHourlyRate, setIncHourlyRate] = useState('');
+  const [incHoursPerWeek, setIncHoursPerWeek] = useState('40');
+  const [incStateTaxCode, setIncStateTaxCode] = useState('');
+  const [incRetirementPercent, setIncRetirementPercent] = useState('');
+  const [incHealthInsPerPaycheck, setIncHealthInsPerPaycheck] = useState('');
+  const [incOtherDeductions, setIncOtherDeductions] = useState<OtherDeductionItem[]>([]);
+  const [incomeLoading, setIncomeLoading] = useState(false);
+
+  // Income computed values
+  const isUSD = currency === 'USD';
+  const currencySymbol = useMemo(() => {
+    const symbols: Record<string, string> = { USD: '$', EUR: '\u20AC', GBP: '\u00A3', JPY: '\u00A5', CAD: 'C$' };
+    return symbols[currency] || '$';
+  }, [currency]);
+
+  const incGrossAnnual = useMemo(
+    () => calculateGrossAnnual(incEarningMethod, parseCurrency(incAnnualSalary), parseCurrency(incHourlyRate), parseFloat(incHoursPerWeek) || 0),
+    [incEarningMethod, incAnnualSalary, incHourlyRate, incHoursPerWeek]
+  );
+  const incFederalTax = useMemo(() => (isUSD ? calculateFederalTax(incGrossAnnual) : 0), [incGrossAnnual, isUSD]);
+  const incStateTax = useMemo(() => (isUSD ? calculateStateTax(incGrossAnnual, incStateTaxCode) : 0), [incGrossAnnual, incStateTaxCode, isUSD]);
+  const incRetirePct = parseFloat(incRetirementPercent) || 0;
+  const incHealthPP = parseCurrency(incHealthInsPerPaycheck);
+  const incRetirementAnnual = retirementAnnualFromPercent(incGrossAnnual, incRetirePct);
+  const incHealthAnnual = annualizePerPaycheck(incHealthPP, incPayFrequency);
+  const incMultiplier = PAY_FREQUENCY_MULTIPLIERS[incPayFrequency] ?? 12;
+  const incOtherAnnual = incOtherDeductions.reduce((sum, d) => sum + d.amountPerPaycheck, 0) * incMultiplier;
+  const incNetAnnual = calculateNetAnnual(incGrossAnnual, incFederalTax, incStateTax, incHealthAnnual, incRetirementAnnual, incOtherAnnual);
+  const incEffectiveFedRate = incGrossAnnual > 0 ? ((incFederalTax / incGrossAnnual) * 100).toFixed(1) : '0';
 
   // Merchants state
   const [merchants, setMerchants] = useState<Merchant[]>([]);
@@ -132,6 +179,21 @@ const Settings: React.FC = () => {
       setTimezone(user.preferences?.timezone || 'UTC');
       setMonthlyBudgetGoal(user.preferences?.monthlyBudgetGoal ? toCurrencyDisplay(user.preferences.monthlyBudgetGoal) : '');
 
+      // Populate income profile from user data if available
+      if (user.incomeProfile) {
+        const ip = user.incomeProfile;
+        setIncEmploymentType(ip.employmentType || '');
+        setIncEarningMethod(ip.earningMethod || '');
+        setIncPayFrequency(ip.payFrequency || '');
+        setIncAnnualSalary(ip.annualSalary ? toCurrencyDisplay(ip.annualSalary) : '');
+        setIncHourlyRate(ip.hourlyRate ? toCurrencyDisplay(ip.hourlyRate) : '');
+        setIncHoursPerWeek(ip.hoursPerWeek ? String(ip.hoursPerWeek) : '40');
+        setIncStateTaxCode(ip.stateTaxCode || '');
+        setIncRetirementPercent(ip.retirementPercent != null ? String(ip.retirementPercent) : '');
+        setIncHealthInsPerPaycheck(ip.healthInsurancePerPaycheck ? toCurrencyDisplay(ip.healthInsurancePerPaycheck) : '');
+        setIncOtherDeductions(ip.otherDeductionItems ?? []);
+      }
+
       // Fetch merchants and categories
       fetchMerchantsAndCategories();
     }
@@ -185,6 +247,38 @@ const Settings: React.FC = () => {
       setError(err.response?.data?.message || 'Failed to update preferences');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSaveIncomeProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!incEmploymentType || !incEarningMethod || !incPayFrequency) {
+      setError('Please fill in employment type, earning method, and pay frequency.');
+      return;
+    }
+    setIncomeLoading(true);
+    setError('');
+    setSuccess('');
+
+    try {
+      await incomeApi.createOrUpdate({
+        employmentType: incEmploymentType,
+        earningMethod: incEarningMethod,
+        payFrequency: incPayFrequency,
+        annualSalary: incEarningMethod === 'salaried' ? parseCurrency(incAnnualSalary) : undefined,
+        hourlyRate: incEarningMethod === 'hourly' ? parseCurrency(incHourlyRate) : undefined,
+        hoursPerWeek: incEarningMethod === 'hourly' ? parseFloat(incHoursPerWeek) || 0 : undefined,
+        stateTaxCode: isUSD && incStateTaxCode ? incStateTaxCode : undefined,
+        healthInsurancePerPaycheck: incHealthPP,
+        retirementPercent: incRetirePct,
+        otherDeductions: incOtherDeductions.filter((d) => d.name.trim() && d.amountPerPaycheck > 0),
+      });
+      setSuccess('Income profile saved successfully!');
+      setTimeout(() => setSuccess(''), 3000);
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to save income profile');
+    } finally {
+      setIncomeLoading(false);
     }
   };
 
@@ -419,6 +513,288 @@ const Settings: React.FC = () => {
             className="px-8 py-3 rounded-full bg-primary text-white font-medium hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all"
           >
             {loading ? 'Saving...' : 'Save Profile'}
+          </button>
+        </form>
+      </section>
+
+      {/* Income Profile Section */}
+      <section className="mb-24 text-center md:text-left">
+        <h3 className="font-serif text-2xl font-light text-secondary mb-8 border-b border-stone-300 pb-2">Income Profile</h3>
+        <p className="text-sm text-stone-text mb-6">
+          Your employment and income details. Used to estimate take-home pay.
+        </p>
+
+        <form onSubmit={handleSaveIncomeProfile} className="space-y-6">
+          {/* Employment Type */}
+          <div>
+            <label className="block text-sm text-stone-text mb-2">Employment Type</label>
+            <select
+              value={incEmploymentType}
+              onChange={(e) => setIncEmploymentType(e.target.value)}
+              className="w-full px-4 py-3 bg-white border border-stone-300 rounded-lg text-secondary focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+            >
+              <option value="">Select...</option>
+              <option value="full-time">Full-time</option>
+              <option value="part-time">Part-time</option>
+              <option value="intern">Intern</option>
+            </select>
+          </div>
+
+          {/* Earning Method */}
+          <div>
+            <label className="block text-sm text-stone-text mb-2">Earning Method</label>
+            <select
+              value={incEarningMethod}
+              onChange={(e) => setIncEarningMethod(e.target.value)}
+              className="w-full px-4 py-3 bg-white border border-stone-300 rounded-lg text-secondary focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+            >
+              <option value="">Select...</option>
+              <option value="salaried">Salaried</option>
+              <option value="hourly">Hourly</option>
+            </select>
+          </div>
+
+          {/* Pay Frequency */}
+          <div>
+            <label className="block text-sm text-stone-text mb-2">Pay Frequency</label>
+            <select
+              value={incPayFrequency}
+              onChange={(e) => setIncPayFrequency(e.target.value)}
+              className="w-full px-4 py-3 bg-white border border-stone-300 rounded-lg text-secondary focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+            >
+              <option value="">Select...</option>
+              <option value="weekly">Weekly (52x/year)</option>
+              <option value="bi-weekly">Bi-weekly (26x/year)</option>
+              <option value="semi-monthly">Semi-monthly (24x/year)</option>
+              <option value="monthly">Monthly (12x/year)</option>
+            </select>
+          </div>
+
+          {/* Gross Income — conditional on earning method */}
+          {incEarningMethod === 'salaried' && (
+            <div>
+              <label className="block text-sm text-stone-text mb-2">Annual Salary</label>
+              <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary text-lg">{currencySymbol}</span>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={incAnnualSalary}
+                  onChange={(e) => setIncAnnualSalary(formatCurrency(e.target.value))}
+                  className="w-full pl-10 pr-4 py-3 bg-white border border-stone-300 rounded-lg text-secondary placeholder:text-stone-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                  placeholder="0.00"
+                />
+              </div>
+            </div>
+          )}
+
+          {incEarningMethod === 'hourly' && (
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm text-stone-text mb-2">Hourly Rate</label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary text-lg">{currencySymbol}</span>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    value={incHourlyRate}
+                    onChange={(e) => setIncHourlyRate(formatCurrency(e.target.value))}
+                    className="w-full pl-10 pr-4 py-3 bg-white border border-stone-300 rounded-lg text-secondary placeholder:text-stone-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                    placeholder="0.00"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm text-stone-text mb-2">Hours per Week</label>
+                <input
+                  type="number"
+                  value={incHoursPerWeek}
+                  onChange={(e) => setIncHoursPerWeek(e.target.value)}
+                  min="1"
+                  max="168"
+                  className="w-full px-4 py-3 bg-white border border-stone-300 rounded-lg text-secondary placeholder:text-stone-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                  placeholder="40"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* State Tax (USD only) */}
+          {isUSD && (
+            <div>
+              <label className="block text-sm text-stone-text mb-2">State (for tax estimation)</label>
+              <select
+                value={incStateTaxCode}
+                onChange={(e) => setIncStateTaxCode(e.target.value)}
+                className="w-full px-4 py-3 bg-white border border-stone-300 rounded-lg text-secondary focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+              >
+                <option value="">No state tax / Not in US</option>
+                {US_STATES.map((state) => (
+                  <option key={state.code} value={state.code}>{state.name}</option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {/* Deductions */}
+          <div className="space-y-4">
+            <label className="block text-sm text-stone-text mb-1">Pre-tax Deductions</label>
+
+            {/* Retirement — percentage */}
+            <div>
+              <label className="block text-xs text-stone-text mb-1">Retirement (401k) — % of gross</label>
+              <div className="relative w-40">
+                <input
+                  type="number"
+                  inputMode="decimal"
+                  value={incRetirementPercent}
+                  onChange={(e) => setIncRetirementPercent(e.target.value)}
+                  placeholder="0"
+                  min="0"
+                  max="100"
+                  step="0.5"
+                  className="w-full pr-10 pl-4 py-2.5 bg-white border border-stone-300 rounded-lg text-sm text-secondary placeholder:text-stone-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                />
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-stone-400 text-sm font-medium">%</span>
+              </div>
+              {incRetirePct > 0 && incGrossAnnual > 0 && (
+                <p className="text-xs text-stone-text mt-1">≈ {currencySymbol}{formatMoney(incRetirementAnnual)}/year</p>
+              )}
+            </div>
+
+            {/* Health Insurance — per paycheck */}
+            <div>
+              <label className="block text-xs text-stone-text mb-1">Health Insurance — per paycheck</label>
+              <div className="relative w-48">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 text-sm">{currencySymbol}</span>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={incHealthInsPerPaycheck}
+                  onChange={(e) => setIncHealthInsPerPaycheck(formatCurrency(e.target.value))}
+                  placeholder="0.00"
+                  className="w-full pl-8 pr-20 py-2.5 bg-white border border-stone-300 rounded-lg text-sm text-secondary placeholder:text-stone-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                />
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-stone-400">/ paycheck</span>
+              </div>
+              {incHealthPP > 0 && (
+                <p className="text-xs text-stone-text mt-1">≈ {currencySymbol}{formatMoney(incHealthAnnual)}/year</p>
+              )}
+            </div>
+
+            {/* Other Deductions — key-value list */}
+            <div>
+              <label className="block text-xs text-stone-text mb-2">Other Deductions (per paycheck)</label>
+              {incOtherDeductions.map((item, idx) => (
+                <div key={idx} className="flex items-center gap-2 mb-2">
+                  <input
+                    type="text"
+                    value={item.name}
+                    onChange={(e) => {
+                      const updated = [...incOtherDeductions];
+                      updated[idx] = { ...updated[idx], name: e.target.value };
+                      setIncOtherDeductions(updated);
+                    }}
+                    placeholder="Name (e.g. HSA)"
+                    className="flex-1 px-3 py-2 bg-white border border-stone-300 rounded-lg text-sm text-secondary placeholder:text-stone-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                  />
+                  <div className="relative w-28">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 text-xs">{currencySymbol}</span>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      value={item.amountPerPaycheck > 0 ? toCurrencyDisplay(item.amountPerPaycheck) : ''}
+                      onChange={(e) => {
+                        const updated = [...incOtherDeductions];
+                        updated[idx] = { ...updated[idx], amountPerPaycheck: parseCurrency(e.target.value) };
+                        setIncOtherDeductions(updated);
+                      }}
+                      placeholder="0.00"
+                      className="w-full pl-7 pr-3 py-2 bg-white border border-stone-300 rounded-lg text-sm text-secondary placeholder:text-stone-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setIncOtherDeductions(incOtherDeductions.filter((_, i) => i !== idx))}
+                    className="p-1.5 text-stone-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-sm">close</span>
+                  </button>
+                </div>
+              ))}
+              {incOtherDeductions.length < 10 && (
+                <button
+                  type="button"
+                  onClick={() => setIncOtherDeductions([...incOtherDeductions, { name: '', amountPerPaycheck: 0 }])}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-primary border border-primary/30 rounded-full hover:bg-primary/5 transition-colors"
+                >
+                  <span className="material-symbols-outlined text-sm">add</span>
+                  Add deduction
+                </button>
+              )}
+              {incOtherAnnual > 0 && (
+                <p className="text-xs text-stone-text mt-1">Total other: ≈ {currencySymbol}{formatMoney(incOtherAnnual)}/year</p>
+              )}
+            </div>
+          </div>
+
+          {/* Calculated Net Income Display */}
+          {incGrossAnnual > 0 && (
+            <div className="bg-stone-50 rounded-xl border border-stone-200 p-5 space-y-3">
+              <div className="text-sm font-medium text-secondary mb-2">Income Summary</div>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-stone-text">Gross Annual</span>
+                <span className="text-secondary font-medium">{currencySymbol}{formatMoney(incGrossAnnual)}</span>
+              </div>
+              {isUSD && (
+                <>
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-stone-text">Federal Tax ({incEffectiveFedRate}% effective)</span>
+                    <span className="text-red-600">-{currencySymbol}{formatMoney(incFederalTax)}</span>
+                  </div>
+                  {incStateTax > 0 && (
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-stone-text">State Tax ({incStateTaxCode})</span>
+                      <span className="text-red-600">-{currencySymbol}{formatMoney(incStateTax)}</span>
+                    </div>
+                  )}
+                </>
+              )}
+              {incRetirementAnnual > 0 && (
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-stone-text">Retirement ({incRetirePct}%)</span>
+                  <span className="text-red-600">-{currencySymbol}{formatMoney(incRetirementAnnual)}</span>
+                </div>
+              )}
+              {incHealthAnnual > 0 && (
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-stone-text">Health Insurance ({currencySymbol}{formatMoney(incHealthPP)}/paycheck)</span>
+                  <span className="text-red-600">-{currencySymbol}{formatMoney(incHealthAnnual)}</span>
+                </div>
+              )}
+              {incOtherDeductions.filter((d) => d.amountPerPaycheck > 0 && d.name.trim()).map((d, i) => (
+                <div key={i} className="flex justify-between items-center text-sm">
+                  <span className="text-stone-text">{d.name}</span>
+                  <span className="text-red-600">-{currencySymbol}{formatMoney(d.amountPerPaycheck * incMultiplier)}</span>
+                </div>
+              ))}
+              <div className="border-t border-stone-200 pt-3 flex justify-between items-center">
+                <span className="font-medium text-secondary">Net Annual Income</span>
+                <span className="font-serif text-xl text-primary">{currencySymbol}{formatMoney(incNetAnnual)}</span>
+              </div>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-stone-text">Monthly Take-Home</span>
+                <span className="font-medium text-secondary">{currencySymbol}{formatMoney(incNetAnnual / 12)}</span>
+              </div>
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={incomeLoading || !incEmploymentType || !incEarningMethod || !incPayFrequency}
+            className="px-8 py-3 rounded-full bg-primary text-white font-medium hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all"
+          >
+            {incomeLoading ? 'Saving...' : 'Save Income Profile'}
           </button>
         </form>
       </section>

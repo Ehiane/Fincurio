@@ -15,6 +15,9 @@ public class FincurioDbContext : DbContext
     public DbSet<UserPreference> UserPreferences { get; set; }
     public DbSet<RefreshToken> RefreshTokens { get; set; }
     public DbSet<Merchant> Merchants { get; set; }
+    public DbSet<IncomeProfile> IncomeProfiles { get; set; }
+    public DbSet<BudgetGoal> BudgetGoals { get; set; }
+    public DbSet<CategoryBudget> CategoryBudgets { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

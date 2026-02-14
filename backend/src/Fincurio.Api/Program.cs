@@ -113,6 +113,8 @@ builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 builder.Services.AddScoped<IMerchantRepository, MerchantRepository>();
+builder.Services.AddScoped<IIncomeProfileRepository, IncomeProfileRepository>();
+builder.Services.AddScoped<IBudgetGoalRepository, BudgetGoalRepository>();
 
 // Dependency Injection - Services
 builder.Services.AddHttpClient<IEmailService, EmailService>();
@@ -123,6 +125,8 @@ builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IInsightsService, InsightsService>();
 builder.Services.AddScoped<IMerchantService, MerchantService>();
+builder.Services.AddScoped<IIncomeService, IncomeService>();
+builder.Services.AddScoped<IBudgetService, BudgetService>();
 
 var app = builder.Build();
 

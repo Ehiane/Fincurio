@@ -18,6 +18,7 @@ public class UserRepository : IUserRepository
     {
         return await _context.Users
             .Include(u => u.Preferences)
+            .Include(u => u.IncomeProfile)
             .FirstOrDefaultAsync(u => u.Id == id);
     }
 
@@ -25,6 +26,7 @@ public class UserRepository : IUserRepository
     {
         return await _context.Users
             .Include(u => u.Preferences)
+            .Include(u => u.IncomeProfile)
             .FirstOrDefaultAsync(u => u.Email == email);
     }
 
@@ -32,6 +34,7 @@ public class UserRepository : IUserRepository
     {
         return await _context.Users
             .Include(u => u.Preferences)
+            .Include(u => u.IncomeProfile)
             .FirstOrDefaultAsync(u => u.EmailVerificationToken == token);
     }
 
@@ -39,6 +42,7 @@ public class UserRepository : IUserRepository
     {
         return await _context.Users
             .Include(u => u.Preferences)
+            .Include(u => u.IncomeProfile)
             .FirstOrDefaultAsync(u => u.PasswordResetToken == token);
     }
 

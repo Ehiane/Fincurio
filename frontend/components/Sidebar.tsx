@@ -20,6 +20,7 @@ const Sidebar: React.FC = () => {
     { icon: 'insights', label: 'Dashboard', path: '/app/dashboard', description: 'Overview' },
     { icon: 'menu_book', label: 'Journal', path: '/app/journal', description: 'Transactions' },
     { icon: 'psychology', label: 'Reflections', path: '/app/reflections', description: 'Insights' },
+    { icon: 'flag', label: 'Goals', path: '/app/goals', description: 'Budgets' },
     { icon: 'settings', label: 'Settings', path: '/app/settings', description: 'Preferences' },
   ];
 

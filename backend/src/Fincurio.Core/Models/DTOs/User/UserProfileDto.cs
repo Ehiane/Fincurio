@@ -1,3 +1,5 @@
+using Fincurio.Core.Models.DTOs.Income;
+
 namespace Fincurio.Core.Models.DTOs.User;
 
 public class UserProfileDto
@@ -10,6 +12,7 @@ public class UserProfileDto
     public string? FinancialIntention { get; set; }
     public bool IsEmailVerified { get; set; }
     public UserPreferencesDto? Preferences { get; set; }
+    public IncomeProfileDto? IncomeProfile { get; set; }
     public DateTime CreatedAt { get; set; }
 }
 

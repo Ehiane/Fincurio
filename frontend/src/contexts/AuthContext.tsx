@@ -11,6 +11,7 @@ interface AuthContextType {
   login: (data: LoginRequest) => Promise<void>;
   register: (data: RegisterRequest) => Promise<void>;
   logout: () => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -76,6 +77,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     userApi.getProfile().then(setUser).catch(() => {});
   };
 
+  const refreshUser = async () => {
+    try {
+      const userData = await userApi.getProfile();
+      setUser(userData);
+    } catch {
+      // Silently fail — user stays with current data
+    }
+  };
+
   const logout = async () => {
     setIsSigningOut(true);
     try {
@@ -91,7 +101,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, isSigningIn, isSigningOut, login, register, logout }}>
+    <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, isSigningIn, isSigningOut, login, register, logout, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

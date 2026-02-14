@@ -26,5 +26,7 @@ public class User
     // Navigation properties
     public ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
     public UserPreference? Preferences { get; set; }
+    public IncomeProfile? IncomeProfile { get; set; }
+    public BudgetGoal? BudgetGoal { get; set; }
     public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
 }

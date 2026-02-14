@@ -1,9 +1,32 @@
 import { apiClient } from './client';
+import type { OtherDeductionItem } from './income.api';
 
 export interface UserPreferences {
   currency: string;
   timezone: string;
   monthlyBudgetGoal?: number;
+}
+
+export interface IncomeProfileData {
+  employmentType: string;
+  earningMethod: string;
+  payFrequency: string;
+  annualSalary?: number;
+  hourlyRate?: number;
+  hoursPerWeek?: number;
+  stateTaxCode?: string;
+  estimatedFederalTax: number;
+  estimatedStateTax: number;
+  // v2 user-input fields
+  healthInsurancePerPaycheck: number;
+  retirementPercent: number;
+  otherDeductionItems: OtherDeductionItem[];
+  // Computed annual fields
+  healthInsurance: number;
+  retirementContribution: number;
+  totalOtherDeductions: number;
+  grossAnnualIncome: number;
+  netAnnualIncome: number;
 }
 
 export interface UserProfile {
@@ -15,6 +38,7 @@ export interface UserProfile {
   financialIntention?: string;
   isEmailVerified: boolean;
   preferences?: UserPreferences;
+  incomeProfile?: IncomeProfileData;
   createdAt: string;
 }
 

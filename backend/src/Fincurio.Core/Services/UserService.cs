@@ -1,6 +1,8 @@
+using System.Text.Json;
 using Fincurio.Core.Exceptions;
 using Fincurio.Core.Interfaces.Repositories;
 using Fincurio.Core.Interfaces.Services;
+using Fincurio.Core.Models.DTOs.Income;
 using Fincurio.Core.Models.DTOs.User;
 using Fincurio.Core.Models.Entities;
 using Microsoft.Extensions.Logging;
@@ -47,6 +49,7 @@ public class UserService : IUserService
                 Timezone = user.Preferences.Timezone,
                 MonthlyBudgetGoal = user.Preferences.MonthlyBudgetGoal
             } : null,
+            IncomeProfile = user.IncomeProfile != null ? MapIncomeProfileToDto(user.IncomeProfile) : null,
             CreatedAt = user.CreatedAt
         };
     }
@@ -111,5 +114,42 @@ public class UserService : IUserService
         await _userRepository.CreateOrUpdatePreferencesAsync(preferences);
         _logger.LogInformation("Preferences updated successfully for user {UserId} | Currency={Currency}, Timezone={Timezone}",
             userId, preferences.Currency, preferences.Timezone);
+    }
+
+    private static IncomeProfileDto MapIncomeProfileToDto(IncomeProfile profile)
+    {
+        var otherItems = new List<OtherDeductionItem>();
+        if (!string.IsNullOrEmpty(profile.OtherDeductionsJson))
+        {
+            try
+            {
+                otherItems = JsonSerializer.Deserialize<List<OtherDeductionItem>>(
+                    profile.OtherDeductionsJson,
+                    new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }
+                ) ?? new List<OtherDeductionItem>();
+            }
+            catch { /* fallback */ }
+        }
+
+        return new IncomeProfileDto
+        {
+            EmploymentType = profile.EmploymentType,
+            EarningMethod = profile.EarningMethod,
+            PayFrequency = profile.PayFrequency,
+            AnnualSalary = profile.AnnualSalary,
+            HourlyRate = profile.HourlyRate,
+            HoursPerWeek = profile.HoursPerWeek,
+            StateTaxCode = profile.StateTaxCode,
+            EstimatedFederalTax = profile.EstimatedFederalTax,
+            EstimatedStateTax = profile.EstimatedStateTax,
+            HealthInsurancePerPaycheck = profile.HealthInsurancePerPaycheck,
+            RetirementPercent = profile.RetirementPercent,
+            OtherDeductionItems = otherItems,
+            HealthInsurance = profile.HealthInsurance,
+            RetirementContribution = profile.RetirementContribution,
+            TotalOtherDeductions = profile.OtherDeductions,
+            GrossAnnualIncome = profile.GrossAnnualIncome,
+            NetAnnualIncome = profile.NetAnnualIncome,
+        };
     }
 }

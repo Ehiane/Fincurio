@@ -13,6 +13,7 @@ import Dashboard from './pages/Dashboard';
 import Journal from './pages/Journal';
 import Reflections from './pages/Reflections';
 import Settings from './pages/Settings';
+import Goals from './pages/Goals';
 import Sidebar from './components/Sidebar';
 import PrivateRoute from './components/PrivateRoute';
 import EmailVerificationBanner from './components/EmailVerificationBanner';
@@ -48,6 +49,7 @@ const AppRoutes: React.FC = () => {
                       <Route path="dashboard" element={<Dashboard />} />
                       <Route path="journal" element={<Journal />} />
                       <Route path="reflections" element={<Reflections />} />
+                      <Route path="goals" element={<Goals />} />
                       <Route path="settings" element={<Settings />} />
                       <Route path="*" element={<Navigate to="dashboard" />} />
                     </Routes>
