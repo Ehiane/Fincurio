@@ -43,6 +43,7 @@ public class UserService : IUserService
             ProfileImageUrl = user.ProfileImageUrl,
             FinancialIntention = user.FinancialIntention,
             IsEmailVerified = user.IsEmailVerified,
+            HasCompletedOnboarding = user.HasCompletedOnboarding,
             Preferences = user.Preferences != null ? new UserPreferencesDto
             {
                 Currency = user.Preferences.Currency,
@@ -114,6 +115,17 @@ public class UserService : IUserService
         await _userRepository.CreateOrUpdatePreferencesAsync(preferences);
         _logger.LogInformation("Preferences updated successfully for user {UserId} | Currency={Currency}, Timezone={Timezone}",
             userId, preferences.Currency, preferences.Timezone);
+    }
+
+    public async Task CompleteOnboardingAsync(Guid userId)
+    {
+        var user = await _userRepository.GetByIdAsync(userId);
+        if (user == null)
+            throw new NotFoundException("User not found");
+
+        user.HasCompletedOnboarding = true;
+        await _userRepository.UpdateAsync(user);
+        _logger.LogInformation("Onboarding completed for user {UserId}", userId);
     }
 
     private static IncomeProfileDto MapIncomeProfileToDto(IncomeProfile profile)

@@ -56,6 +56,10 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasColumnName("is_active")
             .HasDefaultValue(true);
 
+        builder.Property(u => u.HasCompletedOnboarding)
+            .HasColumnName("has_completed_onboarding")
+            .HasDefaultValue(false);
+
         // Email verification
         builder.Property(u => u.IsEmailVerified)
             .HasColumnName("is_email_verified")

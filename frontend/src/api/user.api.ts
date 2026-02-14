@@ -37,6 +37,7 @@ export interface UserProfile {
   profileImageUrl?: string;
   financialIntention?: string;
   isEmailVerified: boolean;
+  hasCompletedOnboarding: boolean;
   preferences?: UserPreferences;
   incomeProfile?: IncomeProfileData;
   createdAt: string;
@@ -67,5 +68,9 @@ export const userApi = {
 
   updatePreferences: async (data: UpdatePreferencesRequest): Promise<void> => {
     await apiClient.put('/api/user/preferences', data);
+  },
+
+  completeOnboarding: async (): Promise<void> => {
+    await apiClient.post('/api/user/complete-onboarding');
   },
 };

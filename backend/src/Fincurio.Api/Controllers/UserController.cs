@@ -56,4 +56,12 @@ public class UserController : ControllerBase
         _logger.LogInformation("Preferences updated successfully for user {UserId}", userId);
         return Ok(new { message = "Preferences updated successfully" });
     }
+
+    [HttpPost("complete-onboarding")]
+    public async Task<ActionResult> CompleteOnboarding()
+    {
+        var userId = GetUserId();
+        await _userService.CompleteOnboardingAsync(userId);
+        return Ok(new { message = "Onboarding completed" });
+    }
 }

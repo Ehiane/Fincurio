@@ -13,6 +13,7 @@ public class User
     public DateTime UpdatedAt { get; set; }
     public DateTime? LastLoginAt { get; set; }
     public bool IsActive { get; set; } = true;
+    public bool HasCompletedOnboarding { get; set; } = false;
 
     // Email verification
     public bool IsEmailVerified { get; set; } = false;

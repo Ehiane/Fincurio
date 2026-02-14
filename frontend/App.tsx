@@ -16,6 +16,7 @@ import Settings from './pages/Settings';
 import Goals from './pages/Goals';
 import Sidebar from './components/Sidebar';
 import PrivateRoute from './components/PrivateRoute';
+import OnboardingRoute from './components/OnboardingRoute';
 import EmailVerificationBanner from './components/EmailVerificationBanner';
 import SignOutOverlay from './src/components/SignOutOverlay';
 import SignInOverlay from './src/components/SignInOverlay';
@@ -35,7 +36,7 @@ const AppRoutes: React.FC = () => {
           <Route path="/signin" element={<SignIn />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/onboarding" element={<Onboarding />} />
+          <Route path="/onboarding" element={<OnboardingRoute><Onboarding /></OnboardingRoute>} />
 
           <Route
             path="/app/*"

@@ -11,6 +11,7 @@ public class UserProfileDto
     public string? ProfileImageUrl { get; set; }
     public string? FinancialIntention { get; set; }
     public bool IsEmailVerified { get; set; }
+    public bool HasCompletedOnboarding { get; set; }
     public UserPreferencesDto? Preferences { get; set; }
     public IncomeProfileDto? IncomeProfile { get; set; }
     public DateTime CreatedAt { get; set; }

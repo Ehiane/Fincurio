@@ -5,6 +5,7 @@ import { userApi } from '../src/api/user.api';
 import { incomeApi, OtherDeductionItem } from '../src/api/income.api';
 import Logo from '../src/components/Logo';
 import StaggerChildren from '../src/components/StaggerChildren';
+import InfoTooltip from '../src/components/InfoTooltip';
 import { formatCurrency, parseCurrency } from '../src/utils/currencyFormatter';
 import {
   calculateFederalTax,
@@ -19,6 +20,17 @@ import {
 } from '../src/utils/taxCalculator';
 
 const TOTAL_STEPS = 8;
+
+const STEP_INFO: Record<number, string> = {
+  1: 'We use your currency to format all monetary values throughout the app. This is purely for display — no currency conversion happens.',
+  2: 'Your employment type helps us tailor the onboarding questions. For example, interns may have different deduction options than full-time employees.',
+  3: 'Knowing whether you earn a fixed salary or hourly wages lets us calculate your gross annual income accurately.',
+  4: 'Your pay frequency is used to annualize per-paycheck deductions like health insurance, so we can show accurate yearly totals.',
+  5: 'This is your gross income before any taxes or deductions. We use it as the starting point for estimating your take-home pay.',
+  6: 'We estimate federal and state taxes using 2025 US tax brackets. These are rough estimates — consult a tax professional for exact figures.',
+  7: 'Pre-tax deductions reduce your taxable income. Common ones include retirement contributions (401k) and health insurance premiums.',
+  8: 'This summary shows your estimated take-home pay after taxes and deductions. You can update any of these values later in Settings.',
+};
 
 const Onboarding: React.FC = () => {
   const navigate = useNavigate();
@@ -171,6 +183,7 @@ const Onboarding: React.FC = () => {
         retirementPercent: retirePct,
         otherDeductions: otherDeductions.filter((d) => d.name.trim() && d.amountPerPaycheck > 0),
       });
+      await userApi.completeOnboarding();
       await refreshUser();
       navigate('/app/dashboard');
     } catch (err: any) {
@@ -181,6 +194,20 @@ const Onboarding: React.FC = () => {
   };
 
   // ─── Shared Components ───────────────────────────────────────────────────────
+
+  const StepHeading = ({ title, subtitle }: { title: string; subtitle: string }) => (
+    <div className="flex flex-col items-center gap-2">
+      <div className="flex items-center gap-2.5">
+        <h1 className="font-serif font-light text-3xl md:text-4xl lg:text-5xl leading-tight text-secondary">
+          {title}
+        </h1>
+        <InfoTooltip text={STEP_INFO[step]} />
+      </div>
+      <p className="text-sm md:text-base text-stone-text font-light max-w-xl">
+        {subtitle}
+      </p>
+    </div>
+  );
 
   const CardOption = ({
     selected,
@@ -199,7 +226,7 @@ const Onboarding: React.FC = () => {
       onClick={onClick}
       className={`p-5 md:p-6 rounded-2xl border transition-all duration-300 text-left hover:shadow-md hover:-translate-y-0.5 ${
         selected
-          ? 'border-primary bg-primary/5 shadow-sm'
+          ? 'border-primary ring-2 ring-primary/20 bg-primary/5 shadow-sm'
           : 'border-stone-300/60 bg-white/60 backdrop-blur-sm hover:border-primary/50'
       }`}
     >
@@ -230,39 +257,71 @@ const Onboarding: React.FC = () => {
     </button>
   );
 
+  // ─── Progress Indicator ──────────────────────────────────────────────────────
+
+  const displayStep = getDisplayStep(step);
+
+  const ProgressIndicator = () => (
+    <div className="flex items-center gap-0 px-4 py-2 bg-white/60 backdrop-blur-sm rounded-full border border-stone-300/60">
+      <span className="text-sm font-medium text-stone-text mr-3">Step {displayStep} of {actualTotalSteps}</span>
+      <div className="flex items-center">
+        {Array.from({ length: actualTotalSteps }, (_, i) => i + 1).map((s) => (
+          <React.Fragment key={s}>
+            {s > 1 && (
+              <div
+                className={`w-3 h-0.5 transition-all duration-300 ${
+                  s <= displayStep ? 'bg-primary/50' : 'bg-stone-300'
+                }`}
+              ></div>
+            )}
+            <div
+              className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                s === displayStep
+                  ? 'bg-primary shadow-sm shadow-primary/40 scale-125'
+                  : s < displayStep
+                  ? 'bg-primary/60'
+                  : 'bg-stone-300'
+              }`}
+            ></div>
+          </React.Fragment>
+        ))}
+      </div>
+    </div>
+  );
+
   // ─── Step Renderer ─────────────────────────────────────────────────────────
 
   const renderStep = () => {
     switch (step) {
-      // Step 1: Currency Selection
+      // Step 1: Currency Selection — horizontal scroll
       case 1:
         return (
-          <div key={1} className="w-full max-w-2xl flex flex-col items-center gap-8 text-center animate-in fade-in duration-500">
-            <h1 className="font-serif font-light text-3xl md:text-4xl lg:text-5xl leading-tight text-secondary">
-              What currency do you use?
-            </h1>
-            <p className="text-sm md:text-base text-stone-text font-light max-w-xl -mt-4">
-              Choose the currency you earn and spend in. This determines display formatting.
-            </p>
-            <StaggerChildren staggerMs={60}>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
-                {currencies.map((curr) => (
-                  <button
-                    key={curr.code}
-                    onClick={() => setCurrency(curr.code)}
-                    className={`p-5 md:p-6 rounded-2xl border transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 ${
-                      currency === curr.code
-                        ? 'border-primary bg-primary/5 shadow-sm'
-                        : 'border-stone-300/60 bg-white/60 backdrop-blur-sm hover:border-primary/50'
-                    }`}
-                  >
-                    <div className="text-3xl mb-1.5 text-secondary">{curr.symbol}</div>
-                    <div className="font-medium text-base text-secondary">{curr.code}</div>
-                    <div className="text-sm text-stone-text">{curr.name}</div>
-                  </button>
-                ))}
-              </div>
-            </StaggerChildren>
+          <div key={1} className="w-full max-w-2xl flex flex-col items-center gap-8 text-center slide-in-right">
+            <StepHeading
+              title="What currency do you use?"
+              subtitle="Choose the currency you earn and spend in. This determines display formatting."
+            />
+            <div
+              className="flex gap-4 overflow-x-auto md:overflow-visible w-full px-2 py-2 justify-start md:flex-wrap md:justify-center"
+              style={{ scrollbarWidth: 'none', scrollSnapType: 'x mandatory' }}
+            >
+              {currencies.map((curr, i) => (
+                <button
+                  key={curr.code}
+                  onClick={() => setCurrency(curr.code)}
+                  className={`flex-shrink-0 w-36 md:w-44 p-5 md:p-6 rounded-2xl border transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 fade-in-up ${
+                    currency === curr.code
+                      ? 'border-primary ring-2 ring-primary/20 bg-primary/5 shadow-sm'
+                      : 'border-stone-300/60 bg-white/60 backdrop-blur-sm hover:border-primary/50'
+                  }`}
+                  style={{ animationDelay: `${i * 60}ms`, scrollSnapAlign: 'center' }}
+                >
+                  <div className="text-3xl mb-1.5 text-secondary">{curr.symbol}</div>
+                  <div className="font-medium text-base text-secondary">{curr.code}</div>
+                  <div className="text-sm text-stone-text">{curr.name}</div>
+                </button>
+              ))}
+            </div>
             <div className="flex gap-4 mt-8">
               <ContinueButton />
             </div>
@@ -272,13 +331,11 @@ const Onboarding: React.FC = () => {
       // Step 2: Employment Type
       case 2:
         return (
-          <div key={2} className="w-full max-w-2xl flex flex-col items-center gap-8 text-center animate-in fade-in duration-500">
-            <h1 className="font-serif font-light text-3xl md:text-4xl lg:text-5xl leading-tight text-secondary">
-              What's your employment type?
-            </h1>
-            <p className="text-sm md:text-base text-stone-text font-light max-w-xl -mt-4">
-              This helps us understand your income structure.
-            </p>
+          <div key={2} className="w-full max-w-2xl flex flex-col items-center gap-8 text-center slide-in-right">
+            <StepHeading
+              title="What's your employment type?"
+              subtitle="This helps us understand your income structure."
+            />
             <StaggerChildren staggerMs={60}>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
               <CardOption
@@ -314,13 +371,11 @@ const Onboarding: React.FC = () => {
       // Step 3: Earning Method
       case 3:
         return (
-          <div key={3} className="w-full max-w-2xl flex flex-col items-center gap-8 text-center animate-in fade-in duration-500">
-            <h1 className="font-serif font-light text-3xl md:text-4xl lg:text-5xl leading-tight text-secondary">
-              How are you compensated?
-            </h1>
-            <p className="text-sm md:text-base text-stone-text font-light max-w-xl -mt-4">
-              How you're compensated determines how we calculate your gross income.
-            </p>
+          <div key={3} className="w-full max-w-2xl flex flex-col items-center gap-8 text-center slide-in-right">
+            <StepHeading
+              title="How are you compensated?"
+              subtitle="How you're compensated determines how we calculate your gross income."
+            />
             <StaggerChildren staggerMs={60}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-xl">
               <CardOption
@@ -349,13 +404,11 @@ const Onboarding: React.FC = () => {
       // Step 4: Pay Frequency
       case 4:
         return (
-          <div key={4} className="w-full max-w-2xl flex flex-col items-center gap-8 text-center animate-in fade-in duration-500">
-            <h1 className="font-serif font-light text-3xl md:text-4xl lg:text-5xl leading-tight text-secondary">
-              How often do you get paid?
-            </h1>
-            <p className="text-sm md:text-base text-stone-text font-light max-w-xl -mt-4">
-              We use this to annualize your per-paycheck deductions.
-            </p>
+          <div key={4} className="w-full max-w-2xl flex flex-col items-center gap-8 text-center slide-in-right">
+            <StepHeading
+              title="How often do you get paid?"
+              subtitle="We use this to annualize your per-paycheck deductions."
+            />
             <StaggerChildren staggerMs={60}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
               <CardOption
@@ -398,13 +451,11 @@ const Onboarding: React.FC = () => {
       // Step 5: Gross Income
       case 5:
         return (
-          <div key={5} className="w-full max-w-2xl flex flex-col items-center gap-8 text-center animate-in fade-in duration-500">
-            <h1 className="font-serif font-light text-3xl md:text-4xl lg:text-5xl leading-tight text-secondary">
-              {earningMethod === 'salaried' ? "What's your annual salary?" : "What's your hourly rate?"}
-            </h1>
-            <p className="text-sm md:text-base text-stone-text font-light max-w-xl -mt-4">
-              Starting point for estimating your take-home pay.
-            </p>
+          <div key={5} className="w-full max-w-2xl flex flex-col items-center gap-8 text-center slide-in-right">
+            <StepHeading
+              title={earningMethod === 'salaried' ? "What's your annual salary?" : "What's your hourly rate?"}
+              subtitle="Starting point for estimating your take-home pay."
+            />
             <div className="w-full max-w-xl mt-2">
               {earningMethod === 'salaried' ? (
                 <div className="relative group">
@@ -483,13 +534,11 @@ const Onboarding: React.FC = () => {
       // Step 6: Tax Estimation (USD only)
       case 6:
         return (
-          <div key={6} className="w-full max-w-2xl flex flex-col items-center gap-8 text-center animate-in fade-in duration-500">
-            <h1 className="font-serif font-light text-3xl md:text-4xl lg:text-5xl leading-tight text-secondary">
-              Tax estimation
-            </h1>
-            <p className="text-sm md:text-base text-stone-text font-light max-w-xl">
-              We'll estimate your taxes using 2025 US federal brackets. Select your state for a more accurate estimate.
-            </p>
+          <div key={6} className="w-full max-w-2xl flex flex-col items-center gap-8 text-center slide-in-right">
+            <StepHeading
+              title="Tax estimation"
+              subtitle="We'll estimate your taxes using 2025 US federal brackets. Select your state for a more accurate estimate."
+            />
 
             <div className="w-full max-w-xl space-y-4 mt-2">
               {/* Federal tax display */}
@@ -549,13 +598,11 @@ const Onboarding: React.FC = () => {
       // Step 7: Deductions (v2)
       case 7:
         return (
-          <div key={7} className="w-full max-w-2xl flex flex-col items-center gap-8 text-center animate-in fade-in duration-500">
-            <h1 className="font-serif font-light text-3xl md:text-4xl lg:text-5xl leading-tight text-secondary">
-              Pre-tax deductions
-            </h1>
-            <p className="text-sm md:text-base text-stone-text font-light max-w-xl">
-              Enter your deductions below. Leave blank if you're unsure — you can update these later in Settings.
-            </p>
+          <div key={7} className="w-full max-w-2xl flex flex-col items-center gap-8 text-center slide-in-right">
+            <StepHeading
+              title="Pre-tax deductions"
+              subtitle="Enter your deductions below. Leave blank if you're unsure — you can update these later in Settings."
+            />
 
             <StaggerChildren staggerMs={60}>
             <div className="w-full max-w-xl space-y-4 mt-2 text-left">
@@ -678,13 +725,11 @@ const Onboarding: React.FC = () => {
       // Step 8: Net Income Summary
       case 8:
         return (
-          <form key={8} onSubmit={handleSubmit} className="w-full max-w-2xl flex flex-col items-center gap-8 text-center animate-in fade-in duration-500">
-            <h1 className="font-serif font-light text-3xl md:text-4xl lg:text-5xl leading-tight text-secondary">
-              Your income summary
-            </h1>
-            <p className="text-sm md:text-base text-stone-text font-light max-w-xl">
-              Here's your estimated take-home pay breakdown.
-            </p>
+          <form key={8} onSubmit={handleSubmit} className="w-full max-w-2xl flex flex-col items-center gap-8 text-center slide-in-right">
+            <StepHeading
+              title="Your income summary"
+              subtitle="Here's your estimated take-home pay breakdown."
+            />
 
             <StaggerChildren staggerMs={60}>
             <div className="w-full max-w-xl space-y-3 mt-2">
@@ -779,23 +824,9 @@ const Onboarding: React.FC = () => {
       <header className="w-full px-6 py-5 md:px-12 md:py-6 flex justify-between items-center z-10">
         <Logo className="h-10 md:h-12" showText={true} />
 
-        {/* Always-visible step indicator */}
-        <div className="absolute left-1/2 top-6 -translate-x-1/2 flex items-center gap-2 px-4 py-2 bg-white/60 backdrop-blur-sm rounded-full border border-stone-300/60">
-          <span className="text-sm font-medium text-stone-text">Step {getDisplayStep(step)} of {actualTotalSteps}</span>
-          <div className="flex gap-1.5">
-            {Array.from({ length: actualTotalSteps }, (_, i) => i + 1).map((s) => (
-              <div
-                key={s}
-                className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                  s === getDisplayStep(step)
-                    ? 'bg-primary shadow-sm shadow-primary/40'
-                    : s < getDisplayStep(step)
-                    ? 'bg-primary/60'
-                    : 'bg-stone-300'
-                }`}
-              ></div>
-            ))}
-          </div>
+        {/* Progress indicator with connecting lines */}
+        <div className="absolute left-1/2 top-6 -translate-x-1/2 hidden md:block">
+          <ProgressIndicator />
         </div>
 
         <button
@@ -806,9 +837,21 @@ const Onboarding: React.FC = () => {
         </button>
       </header>
 
+      {/* Mobile progress indicator */}
+      <div className="flex justify-center md:hidden -mt-2 mb-2 z-10">
+        <ProgressIndicator />
+      </div>
+
       <main className="flex-1 flex flex-col items-center justify-center w-full px-6 pb-16 z-10">
-        <div className="absolute top-1/4 -left-20 w-96 h-96 bg-primary/5 rounded-full blur-[100px] pointer-events-none"></div>
-        <div className="absolute bottom-1/4 -right-20 w-80 h-80 bg-orange-500/5 rounded-full blur-[80px] pointer-events-none"></div>
+        {/* Background parallax blobs */}
+        <div
+          className="absolute top-1/4 -left-20 w-96 h-96 bg-primary/5 rounded-full blur-[100px] pointer-events-none transition-transform duration-700 ease-out"
+          style={{ transform: `translate(${step * 20}px, ${step * -10}px)` }}
+        ></div>
+        <div
+          className="absolute bottom-1/4 -right-20 w-80 h-80 bg-orange-500/5 rounded-full blur-[80px] pointer-events-none transition-transform duration-700 ease-out"
+          style={{ transform: `translate(${step * -15}px, ${step * 12}px)` }}
+        ></div>
 
         {error && step !== 8 && (
           <div className="bg-red-50 border border-red-200 rounded-2xl p-6 text-red-800 text-sm max-w-xl mb-4">

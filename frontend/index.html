@@ -99,11 +99,20 @@
         .accent-breathe {
             animation: breathe 2.4s ease-in-out infinite;
         }
+        /* Slide in from right for step transitions */
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .slide-in-right {
+            animation: slideInRight 0.4s ease-out both;
+        }
         @media (prefers-reduced-motion: reduce) {
             .shimmer { animation: none; background: rgba(214,209,201,0.4); }
             .fade-in-up { animation: none; opacity: 1; transform: none; }
             .quote-fade { animation: none; opacity: 1; }
             .accent-breathe { animation: none; opacity: 0.6; }
+            .slide-in-right { animation: none; opacity: 1; transform: none; }
         }
     </style>
 <script type="importmap">

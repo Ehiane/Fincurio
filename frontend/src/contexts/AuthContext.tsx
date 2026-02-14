@@ -50,6 +50,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       firstName: response.firstName || '',
       lastName: response.lastName || '',
       isEmailVerified: true,
+      hasCompletedOnboarding: true,
       createdAt: new Date().toISOString(),
     });
     userApi.getProfile().then(setUser).catch(() => {});
@@ -72,6 +73,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       firstName: response.firstName || '',
       lastName: response.lastName || '',
       isEmailVerified: false,
+      hasCompletedOnboarding: false,
       createdAt: new Date().toISOString(),
     });
     userApi.getProfile().then(setUser).catch(() => {});
