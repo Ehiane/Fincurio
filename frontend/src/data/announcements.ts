@@ -19,6 +19,15 @@ export interface Announcement {
  */
 const announcements: Announcement[] = [
   {
+    id: '2026-02-14-savings-goals',
+    date: '2026-02-14',
+    title: 'Savings Goals & Contributions',
+    description:
+      'Set savings targets with planned monthly contributions, log contributions as their own transaction type, and track your progress — all from the new Goals page.',
+    type: 'feature',
+    icon: 'savings',
+  },
+  {
     id: '2026-02-14-onboarding-v2',
     date: '2026-02-14',
     title: 'New Onboarding Experience',
