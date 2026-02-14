@@ -1,0 +1,60 @@
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import Logo from '../src/components/Logo';
+
+const SessionExpired: React.FC = () => {
+  const navigate = useNavigate();
+
+  return (
+    <div className="min-h-screen w-full flex flex-col bg-background-light relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute top-1/3 -left-32 w-96 h-96 bg-amber-500/5 rounded-full blur-[120px] pointer-events-none"></div>
+      <div className="absolute bottom-1/4 -right-24 w-80 h-80 bg-primary/5 rounded-full blur-[100px] pointer-events-none"></div>
+
+      {/* Header */}
+      <header className="w-full px-6 py-5 md:px-12 md:py-6 z-10">
+        <button onClick={() => navigate('/')} className="hover:opacity-80 transition-opacity">
+          <Logo className="h-10 md:h-12" showText={true} />
+        </button>
+      </header>
+
+      {/* Content */}
+      <main className="flex-1 flex flex-col items-center justify-center px-6 pb-24 z-10">
+        <div className="flex flex-col items-center gap-6 text-center max-w-lg fade-in-up">
+          {/* Icon */}
+          <div className="w-24 h-24 rounded-full bg-amber-50 border border-amber-200/60 flex items-center justify-center">
+            <span className="material-symbols-outlined text-5xl text-amber-500/70" style={{ fontVariationSettings: "'FILL' 0, 'wght' 200" }}>
+              schedule
+            </span>
+          </div>
+
+          {/* Message */}
+          <h1 className="font-serif font-light text-2xl md:text-3xl text-secondary">
+            Session expired
+          </h1>
+          <p className="text-stone-text text-sm md:text-base font-light leading-relaxed max-w-sm">
+            Your session has timed out for security. Sign in again to pick up where you left off.
+          </p>
+
+          {/* Actions */}
+          <div className="flex flex-col sm:flex-row items-center gap-3 mt-4">
+            <button
+              onClick={() => navigate('/')}
+              className="px-6 py-3 rounded-full border border-stone-300/60 bg-white/60 backdrop-blur-sm text-secondary text-sm font-medium hover:border-primary/50 hover:shadow-md transition-all duration-300"
+            >
+              Return home
+            </button>
+            <button
+              onClick={() => navigate('/signin')}
+              className="px-6 py-3 rounded-full bg-primary text-white text-sm font-medium hover:bg-primary/90 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300"
+            >
+              Sign in
+            </button>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+};
+
+export default SessionExpired;

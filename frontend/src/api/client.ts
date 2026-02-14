@@ -46,7 +46,7 @@ apiClient.interceptors.response.use(
         return apiClient(originalRequest);
       } catch {
         localStorage.clear();
-        window.location.href = '/signin';
+        window.location.href = '/session-expired';
       }
     }
 

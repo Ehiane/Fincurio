@@ -14,10 +14,14 @@ import Journal from './pages/Journal';
 import Reflections from './pages/Reflections';
 import Settings from './pages/Settings';
 import Goals from './pages/Goals';
+import NotFound from './pages/NotFound';
+import ServerError from './pages/ServerError';
+import SessionExpired from './pages/SessionExpired';
 import Sidebar from './components/Sidebar';
 import PrivateRoute from './components/PrivateRoute';
 import OnboardingRoute from './components/OnboardingRoute';
 import EmailVerificationBanner from './components/EmailVerificationBanner';
+import ErrorBoundary from './src/components/ErrorBoundary';
 import SignOutOverlay from './src/components/SignOutOverlay';
 import SignInOverlay from './src/components/SignInOverlay';
 
@@ -37,6 +41,8 @@ const AppRoutes: React.FC = () => {
           <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/onboarding" element={<OnboardingRoute><Onboarding /></OnboardingRoute>} />
+          <Route path="/error" element={<ServerError />} />
+          <Route path="/session-expired" element={<SessionExpired />} />
 
           <Route
             path="/app/*"
@@ -59,6 +65,9 @@ const AppRoutes: React.FC = () => {
               </PrivateRoute>
             }
           />
+
+          {/* Catch-all 404 */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
     </>
@@ -67,11 +76,13 @@ const AppRoutes: React.FC = () => {
 
 const App: React.FC = () => {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <AppRoutes />
-      </BrowserRouter>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <BrowserRouter>
+          <AppRoutes />
+        </BrowserRouter>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 };
 
