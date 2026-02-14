@@ -27,6 +27,7 @@ import OnboardingBanner from './components/OnboardingBanner';
 import ErrorBoundary from './src/components/ErrorBoundary';
 import SignOutOverlay from './src/components/SignOutOverlay';
 import SignInOverlay from './src/components/SignInOverlay';
+import AnnouncementsModal from './src/components/AnnouncementsModal';
 
 const AppRoutes: React.FC = () => {
   const { isSigningIn, isSigningOut } = useAuth();
@@ -53,6 +54,7 @@ const AppRoutes: React.FC = () => {
             path="/app/*"
             element={
               <PrivateRoute>
+                <AnnouncementsModal />
                 <div className="flex flex-1 flex-col md:flex-row h-screen overflow-hidden">
                   <Sidebar />
                   <div className="flex-1 overflow-y-auto pt-14 lg:pt-0">
