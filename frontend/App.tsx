@@ -17,6 +17,8 @@ import Goals from './pages/Goals';
 import NotFound from './pages/NotFound';
 import ServerError from './pages/ServerError';
 import SessionExpired from './pages/SessionExpired';
+import Forbidden from './pages/Forbidden';
+import Maintenance from './pages/Maintenance';
 import Sidebar from './components/Sidebar';
 import PrivateRoute from './components/PrivateRoute';
 import OnboardingRoute from './components/OnboardingRoute';
@@ -42,7 +44,9 @@ const AppRoutes: React.FC = () => {
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/onboarding" element={<OnboardingRoute><Onboarding /></OnboardingRoute>} />
           <Route path="/error" element={<ServerError />} />
+          <Route path="/forbidden" element={<Forbidden />} />
           <Route path="/session-expired" element={<SessionExpired />} />
+          <Route path="/maintenance" element={<Maintenance />} />
 
           <Route
             path="/app/*"

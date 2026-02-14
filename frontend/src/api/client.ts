@@ -50,6 +50,18 @@ apiClient.interceptors.response.use(
       }
     }
 
+    // Handle 403 Forbidden
+    if (error.response?.status === 403) {
+      window.location.href = '/forbidden';
+      return;
+    }
+
+    // Handle network errors / API unreachable (maintenance)
+    if (!error.response && error.code === 'ERR_NETWORK') {
+      window.location.href = '/maintenance';
+      return;
+    }
+
     return Promise.reject(error);
   }
 );
