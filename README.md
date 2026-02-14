@@ -2,10 +2,11 @@
 
 > Your money, understood. A financial reflection tool with an editorial aesthetic.
 
-<!-- Screenshot placeholder — replace with an actual screenshot of the app -->
 <p align="center">
-  <img src="docs/screenshot.png" alt="Fincurio Dashboard" width="900" />
+  <img src="https://github.com/user-attachments/assets/f8bb0c64-ef45-436c-9bde-c5ee5398d5ea" alt="Fincurio demo" />
 </p>
+
+
 
 ## What is Fincurio?
 
