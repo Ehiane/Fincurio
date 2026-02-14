@@ -74,6 +74,12 @@ const FEDERAL_BRACKETS: [number, number][] = [
 
 const STANDARD_DEDUCTION = 15700;
 
+// ─── FICA Constants (2025) ───────────────────────────────────────────────────
+export const SS_WAGE_BASE_CAP = 168_600;   // Social Security wage base limit
+export const SS_RATE = 0.062;              // 6.2%
+export const MEDICARE_RATE = 0.0145;       // 1.45%
+// TODO: Additional Medicare tax (0.9%) applies above $200,000 for single filers
+
 export function calculateFederalTax(grossAnnual: number): number {
   if (grossAnnual <= 0) return 0;
   const taxableIncome = Math.max(0, grossAnnual - STANDARD_DEDUCTION);
@@ -93,6 +99,21 @@ export function calculateStateTax(grossAnnual: number, stateCode?: string): numb
   const state = US_STATES.find((s) => s.code === stateCode);
   if (!state) return 0;
   return Math.round(grossAnnual * state.rate * 100) / 100;
+}
+
+// ─── FICA Taxes ──────────────────────────────────────────────────────────────
+// Note: 401(k) contributions do NOT reduce Social Security or Medicare wages.
+// These are computed on gross wages.
+
+export function calculateSocialSecurityTax(grossAnnual: number): number {
+  if (grossAnnual <= 0) return 0;
+  const taxableWages = Math.min(grossAnnual, SS_WAGE_BASE_CAP);
+  return Math.round(taxableWages * SS_RATE * 100) / 100;
+}
+
+export function calculateMedicareTax(grossAnnual: number): number {
+  if (grossAnnual <= 0) return 0;
+  return Math.round(grossAnnual * MEDICARE_RATE * 100) / 100;
 }
 
 export function calculateGrossAnnual(
@@ -120,17 +141,19 @@ export function retirementAnnualFromPercent(grossAnnual: number, percent: number
 
 /**
  * Calculate net annual income using the new v2 deduction format.
- * Accepts both the old-style (raw annual amounts) and new-style (percentage/per-paycheck) inputs.
+ * Includes federal income tax, state tax, FICA (SS + Medicare), and other deductions.
  */
 export function calculateNetAnnual(
   grossAnnual: number,
   federalTax: number,
   stateTax: number,
+  socialSecurityTax: number,
+  medicareTax: number,
   healthInsuranceAnnual: number,
   retirementAnnual: number,
   otherDeductionsAnnual: number,
 ): number {
-  return grossAnnual - federalTax - stateTax - healthInsuranceAnnual - retirementAnnual - otherDeductionsAnnual;
+  return grossAnnual - federalTax - stateTax - socialSecurityTax - medicareTax - healthInsuranceAnnual - retirementAnnual - otherDeductionsAnnual;
 }
 
 // ─── Formatting ──────────────────────────────────────────────────────────────

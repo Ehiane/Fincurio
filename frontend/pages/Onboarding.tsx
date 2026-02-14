@@ -10,6 +10,8 @@ import { formatCurrency, parseCurrency } from '../src/utils/currencyFormatter';
 import {
   calculateFederalTax,
   calculateStateTax,
+  calculateSocialSecurityTax,
+  calculateMedicareTax,
   calculateGrossAnnual,
   calculateNetAnnual,
   annualizePerPaycheck,
@@ -93,13 +95,15 @@ const Onboarding: React.FC = () => {
 
   const federalTax = useMemo(() => (isUSD ? calculateFederalTax(grossAnnual) : 0), [grossAnnual, isUSD]);
   const stateTax = useMemo(() => (isUSD ? calculateStateTax(grossAnnual, stateTaxCode) : 0), [grossAnnual, stateTaxCode, isUSD]);
+  const socialSecurityTax = useMemo(() => (isUSD ? calculateSocialSecurityTax(grossAnnual) : 0), [grossAnnual, isUSD]);
+  const medicareTax = useMemo(() => (isUSD ? calculateMedicareTax(grossAnnual) : 0), [grossAnnual, isUSD]);
 
   const retirePct = parseFloat(retirementPercent) || 0;
   const healthPP = parseCurrency(healthInsPerPaycheck);
   const retirementAnnual = retirementAnnualFromPercent(grossAnnual, retirePct);
   const healthAnnual = annualizePerPaycheck(healthPP, payFrequency);
   const otherAnnual = otherDeductions.reduce((sum, d) => sum + d.amountPerPaycheck, 0) * multiplier;
-  const netAnnual = calculateNetAnnual(grossAnnual, federalTax, stateTax, healthAnnual, retirementAnnual, otherAnnual);
+  const netAnnual = calculateNetAnnual(grossAnnual, federalTax, stateTax, socialSecurityTax, medicareTax, healthAnnual, retirementAnnual, otherAnnual);
   const netMonthly = netAnnual / 12;
   const effectiveFederalRate = grossAnnual > 0 ? ((federalTax / grossAnnual) * 100).toFixed(1) : '0';
 
@@ -541,11 +545,11 @@ const Onboarding: React.FC = () => {
             />
 
             <div className="w-full max-w-xl space-y-4 mt-2">
-              {/* Federal tax display */}
+              {/* Federal income tax display */}
               <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-5 md:p-6 border border-stone-300/60">
                 <div className="flex justify-between items-center">
                   <span className="text-stone-text">
-                    Federal Tax ({effectiveFederalRate}% effective)
+                    Federal Income Tax ({effectiveFederalRate}% effective)
                   </span>
                   <span className="font-serif text-lg text-secondary">${formatMoney(federalTax)}</span>
                 </div>
@@ -747,8 +751,16 @@ const Onboarding: React.FC = () => {
                 {isUSD && (
                   <>
                     <div className="flex justify-between items-center text-sm">
-                      <span className="text-stone-text">Federal Tax ({effectiveFederalRate}% effective)</span>
+                      <span className="text-stone-text">Federal Income Tax ({effectiveFederalRate}% effective)</span>
                       <span className="text-red-600">-{currencySymbol}{formatMoney(federalTax)}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-stone-text">Social Security (6.2%)</span>
+                      <span className="text-red-600">-{currencySymbol}{formatMoney(socialSecurityTax)}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-stone-text">Medicare (1.45%)</span>
+                      <span className="text-red-600">-{currencySymbol}{formatMoney(medicareTax)}</span>
                     </div>
                     {stateTax > 0 && (
                       <div className="flex justify-between items-center text-sm">

@@ -16,6 +16,8 @@ public class IncomeProfileDto
     public string? StateTaxCode { get; set; }
     public decimal EstimatedFederalTax { get; set; }
     public decimal EstimatedStateTax { get; set; }
+    public decimal SocialSecurityTax { get; set; }
+    public decimal MedicareTax { get; set; }
 
     // User-input deduction fields (v2)
     public decimal HealthInsurancePerPaycheck { get; set; }

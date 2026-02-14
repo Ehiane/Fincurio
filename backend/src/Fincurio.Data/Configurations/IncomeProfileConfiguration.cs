@@ -63,6 +63,14 @@ public class IncomeProfileConfiguration : IEntityTypeConfiguration<IncomeProfile
             .HasColumnName("estimated_state_tax")
             .HasColumnType("decimal(12,2)");
 
+        builder.Property(ip => ip.SocialSecurityTax)
+            .HasColumnName("social_security_tax")
+            .HasColumnType("decimal(12,2)");
+
+        builder.Property(ip => ip.MedicareTax)
+            .HasColumnName("medicare_tax")
+            .HasColumnType("decimal(12,2)");
+
         // User-input deduction fields (v2)
         builder.Property(ip => ip.HealthInsurancePerPaycheck)
             .HasColumnName("health_insurance_per_paycheck")

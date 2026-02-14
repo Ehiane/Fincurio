@@ -185,6 +185,14 @@ INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
 VALUES ('20260214092843_AddLastSeenAnnouncementId', '10.0.2')
 ON CONFLICT ("MigrationId") DO NOTHING;
 
+-- ─── AddFicaTaxFields migration ────────────────────────────────────────────
+ALTER TABLE income_profiles ADD COLUMN IF NOT EXISTS social_security_tax numeric(12,2) NOT NULL DEFAULT 0.0;
+ALTER TABLE income_profiles ADD COLUMN IF NOT EXISTS medicare_tax numeric(12,2) NOT NULL DEFAULT 0.0;
+
+INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+VALUES ('20260214100031_AddFicaTaxFields', '10.0.2')
+ON CONFLICT ("MigrationId") DO NOTHING;
+
 
 COMMIT;
 

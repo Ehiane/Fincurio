@@ -30,6 +30,8 @@ export interface IncomeProfile {
   stateTaxCode?: string;
   estimatedFederalTax: number;
   estimatedStateTax: number;
+  socialSecurityTax: number;
+  medicareTax: number;
   // User-input fields (v2)
   healthInsurancePerPaycheck: number;
   retirementPercent: number;

@@ -32,6 +32,12 @@ public class IncomeService : IIncomeService
         (decimal.MaxValue, 0.37m)
     };
 
+    // FICA constants (2025)
+    private const decimal SsWageBaseCap = 168_600m;
+    private const decimal SsRate = 0.062m;
+    private const decimal MedicareRate = 0.0145m;
+    // TODO: Additional Medicare tax (0.9%) applies above $200,000 for single filers
+
     // Simplified state tax rates
     private static readonly Dictionary<string, decimal> StateTaxRates = new(StringComparer.OrdinalIgnoreCase)
     {
@@ -70,6 +76,8 @@ public class IncomeService : IIncomeService
         var grossAnnual = CalculateGrossAnnual(request);
         var federalTax = CalculateFederalTax(grossAnnual);
         var stateTax = CalculateStateTax(grossAnnual, request.StateTaxCode);
+        var socialSecurityTax = CalculateSocialSecurityTax(grossAnnual);
+        var medicareTax = CalculateMedicareTax(grossAnnual);
 
         // Calculate annual deductions from user inputs
         var retirementAnnual = grossAnnual * (request.RetirementPercent / 100m);
@@ -77,7 +85,7 @@ public class IncomeService : IIncomeService
         var otherItems = request.OtherDeductions ?? new List<OtherDeductionItem>();
         var otherAnnual = otherItems.Sum(d => d.AmountPerPaycheck) * multiplier;
 
-        var netAnnual = grossAnnual - federalTax - stateTax - retirementAnnual - healthAnnual - otherAnnual;
+        var netAnnual = grossAnnual - federalTax - stateTax - socialSecurityTax - medicareTax - retirementAnnual - healthAnnual - otherAnnual;
 
         var profile = new IncomeProfile
         {
@@ -91,6 +99,8 @@ public class IncomeService : IIncomeService
             StateTaxCode = request.StateTaxCode,
             EstimatedFederalTax = federalTax,
             EstimatedStateTax = stateTax,
+            SocialSecurityTax = socialSecurityTax,
+            MedicareTax = medicareTax,
             HealthInsurancePerPaycheck = request.HealthInsurancePerPaycheck,
             RetirementPercent = request.RetirementPercent,
             OtherDeductionsJson = otherItems.Count > 0
@@ -156,6 +166,27 @@ public class IncomeService : IIncomeService
         return 0;
     }
 
+    /// <summary>
+    /// Social Security tax: 6.2% of gross wages up to the wage base cap.
+    /// 401(k) contributions do NOT reduce SS taxable wages.
+    /// </summary>
+    private static decimal CalculateSocialSecurityTax(decimal grossAnnual)
+    {
+        if (grossAnnual <= 0) return 0;
+        var taxableWages = Math.Min(grossAnnual, SsWageBaseCap);
+        return Math.Round(taxableWages * SsRate, 2);
+    }
+
+    /// <summary>
+    /// Medicare tax: 1.45% of all gross wages (no cap).
+    /// 401(k) contributions do NOT reduce Medicare taxable wages.
+    /// </summary>
+    private static decimal CalculateMedicareTax(decimal grossAnnual)
+    {
+        if (grossAnnual <= 0) return 0;
+        return Math.Round(grossAnnual * MedicareRate, 2);
+    }
+
     private static IncomeProfileDto MapToDto(IncomeProfile profile)
     {
         var otherItems = new List<OtherDeductionItem>();
@@ -185,6 +216,8 @@ public class IncomeService : IIncomeService
             StateTaxCode = profile.StateTaxCode,
             EstimatedFederalTax = profile.EstimatedFederalTax,
             EstimatedStateTax = profile.EstimatedStateTax,
+            SocialSecurityTax = profile.SocialSecurityTax,
+            MedicareTax = profile.MedicareTax,
             HealthInsurancePerPaycheck = profile.HealthInsurancePerPaycheck,
             RetirementPercent = profile.RetirementPercent,
             OtherDeductionItems = otherItems,

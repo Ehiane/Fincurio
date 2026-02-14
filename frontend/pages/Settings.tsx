@@ -9,6 +9,8 @@ import {
   US_STATES,
   calculateFederalTax,
   calculateStateTax,
+  calculateSocialSecurityTax,
+  calculateMedicareTax,
   calculateGrossAnnual,
   calculateNetAnnual,
   annualizePerPaycheck,
@@ -59,13 +61,15 @@ const Settings: React.FC = () => {
   );
   const incFederalTax = useMemo(() => (isUSD ? calculateFederalTax(incGrossAnnual) : 0), [incGrossAnnual, isUSD]);
   const incStateTax = useMemo(() => (isUSD ? calculateStateTax(incGrossAnnual, incStateTaxCode) : 0), [incGrossAnnual, incStateTaxCode, isUSD]);
+  const incSocialSecurityTax = useMemo(() => (isUSD ? calculateSocialSecurityTax(incGrossAnnual) : 0), [incGrossAnnual, isUSD]);
+  const incMedicareTax = useMemo(() => (isUSD ? calculateMedicareTax(incGrossAnnual) : 0), [incGrossAnnual, isUSD]);
   const incRetirePct = parseFloat(incRetirementPercent) || 0;
   const incHealthPP = parseCurrency(incHealthInsPerPaycheck);
   const incRetirementAnnual = retirementAnnualFromPercent(incGrossAnnual, incRetirePct);
   const incHealthAnnual = annualizePerPaycheck(incHealthPP, incPayFrequency);
   const incMultiplier = PAY_FREQUENCY_MULTIPLIERS[incPayFrequency] ?? 12;
   const incOtherAnnual = incOtherDeductions.reduce((sum, d) => sum + d.amountPerPaycheck, 0) * incMultiplier;
-  const incNetAnnual = calculateNetAnnual(incGrossAnnual, incFederalTax, incStateTax, incHealthAnnual, incRetirementAnnual, incOtherAnnual);
+  const incNetAnnual = calculateNetAnnual(incGrossAnnual, incFederalTax, incStateTax, incSocialSecurityTax, incMedicareTax, incHealthAnnual, incRetirementAnnual, incOtherAnnual);
   const incEffectiveFedRate = incGrossAnnual > 0 ? ((incFederalTax / incGrossAnnual) * 100).toFixed(1) : '0';
 
   // Merchants state
@@ -749,8 +753,16 @@ const Settings: React.FC = () => {
               {isUSD && (
                 <>
                   <div className="flex justify-between items-center text-sm">
-                    <span className="text-stone-text">Federal Tax ({incEffectiveFedRate}% effective)</span>
+                    <span className="text-stone-text">Federal Income Tax ({incEffectiveFedRate}% effective)</span>
                     <span className="text-red-600">-{currencySymbol}{formatMoney(incFederalTax)}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-stone-text">Social Security (6.2%)</span>
+                    <span className="text-red-600">-{currencySymbol}{formatMoney(incSocialSecurityTax)}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-stone-text">Medicare (1.45%)</span>
+                    <span className="text-red-600">-{currencySymbol}{formatMoney(incMedicareTax)}</span>
                   </div>
                   {incStateTax > 0 && (
                     <div className="flex justify-between items-center text-sm">
