@@ -6,5 +6,6 @@ public interface ICategoryService
 {
     Task<List<CategoryDto>> GetAllAsync(Guid? userId = null);
     Task<CategoryDto> CreateAsync(Guid userId, CreateCategoryDto dto);
+    Task<CategoryDto> UpdateCategoryGroupAsync(Guid userId, Guid categoryId, UpdateCategoryGroupDto dto);
     Task DeleteAsync(Guid userId, Guid categoryId);
 }

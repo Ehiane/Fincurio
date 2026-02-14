@@ -24,4 +24,7 @@ public class CreateGoalDto
     public DateTime? Deadline { get; set; }
 
     public DateTime? StartDate { get; set; }
+
+    [Range(0.01, double.MaxValue)]
+    public decimal? PlannedContribution { get; set; }
 }

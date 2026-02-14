@@ -9,7 +9,7 @@ public class Transaction
     public TimeSpan? Time { get; set; }
     public required string Merchant { get; set; }
     public decimal Amount { get; set; }
-    public required string Type { get; set; } // "income" or "expense"
+    public required string Type { get; set; } // "income", "expense", or "contribution"
     public string? Notes { get; set; }
     public Guid? GoalId { get; set; }
     public DateTime CreatedAt { get; set; }

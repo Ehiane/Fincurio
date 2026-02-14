@@ -298,7 +298,7 @@ const Dashboard: React.FC = () => {
                 key={transaction.id}
                 date={new Date(transaction.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                 merchant={transaction.merchant}
-                amount={transaction.type === 'expense' ? -transaction.amount : transaction.amount}
+                amount={transaction.type === 'income' ? transaction.amount : -transaction.amount}
                 category={transaction.category.displayName}
                 isPositive={transaction.type === 'income'}
                 symbol={currencySymbol}

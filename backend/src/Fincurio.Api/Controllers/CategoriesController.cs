@@ -54,4 +54,13 @@ public class CategoriesController : ControllerBase
         _logger.LogInformation("Category {CategoryId} deleted successfully for user {UserId}", id, userId);
         return NoContent();
     }
+
+    [HttpPatch("{id}/group")]
+    public async Task<ActionResult<CategoryDto>> UpdateCategoryGroup(Guid id, [FromBody] UpdateCategoryGroupDto request)
+    {
+        var userId = GetUserId();
+        _logger.LogInformation("Updating category group for {CategoryId} by user {UserId}", id, userId);
+        var category = await _categoryService.UpdateCategoryGroupAsync(userId, id, request);
+        return Ok(category);
+    }
 }

@@ -123,7 +123,11 @@ public class TransactionRepository : ITransactionRepository
             .Where(t => t.UserId == userId && t.Type == "expense")
             .SumAsync(t => t.Amount);
 
-        return income - expenses;
+        var contributions = await _context.Transactions
+            .Where(t => t.UserId == userId && t.Type == "contribution")
+            .SumAsync(t => t.Amount);
+
+        return income - expenses - contributions;
     }
 
     public async Task<List<Transaction>> GetByMonthAsync(Guid userId, int year, int month)

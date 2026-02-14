@@ -107,8 +107,16 @@ public class GoalService : IGoalService
             TargetAmount = request.TargetAmount,
             CategoryId = request.Type == "budget" ? request.CategoryId : null,
             Period = (request.Type == "budget" || request.Type == "savings") ? request.Period : null,
-            Deadline = request.Type == "savings" ? request.Deadline : null,
-            StartDate = request.StartDate ?? DateTime.UtcNow.Date,
+            Deadline = request.Type == "savings" && request.Deadline.HasValue
+                ? DateTime.SpecifyKind(request.Deadline.Value, DateTimeKind.Utc)
+                : null,
+            // PlannedContribution only meaningful for one-time savings goals
+            PlannedContribution = request.Type == "savings" && string.IsNullOrEmpty(request.Period)
+                ? request.PlannedContribution
+                : null,
+            StartDate = request.StartDate.HasValue
+                ? DateTime.SpecifyKind(request.StartDate.Value.Date, DateTimeKind.Utc)
+                : DateTime.UtcNow.Date,
             IsActive = true,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
@@ -158,14 +166,22 @@ public class GoalService : IGoalService
         else if (request.Type == "savings")
         {
             goal.Period = null;
-            goal.Deadline = request.Deadline;
+            goal.Deadline = request.Deadline.HasValue
+                ? DateTime.SpecifyKind(request.Deadline.Value, DateTimeKind.Utc)
+                : null;
         }
         else
         {
             goal.Period = request.Period;
             goal.Deadline = null;
         }
-        goal.StartDate = request.StartDate ?? goal.StartDate;
+        goal.StartDate = request.StartDate.HasValue
+            ? DateTime.SpecifyKind(request.StartDate.Value.Date, DateTimeKind.Utc)
+            : goal.StartDate;
+        // PlannedContribution only meaningful for one-time savings goals
+        goal.PlannedContribution = goal.Type == "savings" && string.IsNullOrEmpty(goal.Period)
+            ? request.PlannedContribution
+            : null;
 
         await _goalRepository.UpdateAsync(goal);
         _logger.LogInformation("Goal {GoalId} updated successfully for user {UserId}", id, userId);
@@ -215,12 +231,10 @@ public class GoalService : IGoalService
         }
         else if (goal.Type == "savings")
         {
-            // Check if this goal has any explicitly linked transactions
-            var hasLinkedTransactions = await HasLinkedTransactionsAsync(goal.Id, userId);
-
+            // Savings progress is ONLY based on explicitly linked contributions
             if (!string.IsNullOrEmpty(goal.Period))
             {
-                // Recurring savings — measure for the current period only
+                // Recurring savings — measure linked contributions for the current period only
                 var (periodStart, periodEnd) = GetPeriodRange(goal.Period);
                 periodLabel = goal.Period switch
                 {
@@ -230,43 +244,18 @@ public class GoalService : IGoalService
                     _ => DateTime.UtcNow.ToString("MMMM yyyy"),
                 };
 
-                if (hasLinkedTransactions)
-                {
-                    // Use only transactions explicitly tagged to this goal
-                    var transactions = await _transactionRepository.GetByDateRangeAsync(userId, periodStart, periodEnd);
-                    var linked = transactions.Where(t => t.GoalId == goal.Id).ToList();
-                    var totalIncome = linked.Where(t => t.Type == "income").Sum(t => t.Amount);
-                    var totalExpenses = linked.Where(t => t.Type == "expense").Sum(t => t.Amount);
-                    currentAmount = Math.Max(0, totalIncome - totalExpenses);
-                }
-                else
-                {
-                    // Fallback: global income - expenses for the period
-                    var transactions = await _transactionRepository.GetByDateRangeAsync(userId, periodStart, periodEnd);
-                    var totalIncome = transactions.Where(t => t.Type == "income").Sum(t => t.Amount);
-                    var totalExpenses = transactions.Where(t => t.Type == "expense").Sum(t => t.Amount);
-                    currentAmount = Math.Max(0, totalIncome - totalExpenses);
-                }
+                var transactions = await _transactionRepository.GetByDateRangeAsync(userId, periodStart, periodEnd);
+                var linked = transactions.Where(t => t.GoalId == goal.Id).ToList();
+                currentAmount = linked.Where(t => t.Type == "contribution").Sum(t => t.Amount);
+
                 isOnTrack = currentAmount >= goal.TargetAmount;
             }
             else
             {
-                // One-time savings — cumulative from start date
-                if (hasLinkedTransactions)
-                {
-                    var transactions = await _transactionRepository.GetByDateRangeAsync(userId, goal.StartDate, DateTime.UtcNow);
-                    var linked = transactions.Where(t => t.GoalId == goal.Id).ToList();
-                    var totalIncome = linked.Where(t => t.Type == "income").Sum(t => t.Amount);
-                    var totalExpenses = linked.Where(t => t.Type == "expense").Sum(t => t.Amount);
-                    currentAmount = Math.Max(0, totalIncome - totalExpenses);
-                }
-                else
-                {
-                    var transactions = await _transactionRepository.GetByDateRangeAsync(userId, goal.StartDate, DateTime.UtcNow);
-                    var totalIncome = transactions.Where(t => t.Type == "income").Sum(t => t.Amount);
-                    var totalExpenses = transactions.Where(t => t.Type == "expense").Sum(t => t.Amount);
-                    currentAmount = Math.Max(0, totalIncome - totalExpenses);
-                }
+                // One-time savings — cumulative linked contributions from start date
+                var transactions = await _transactionRepository.GetByDateRangeAsync(userId, goal.StartDate, DateTime.UtcNow);
+                var linked = transactions.Where(t => t.GoalId == goal.Id).ToList();
+                currentAmount = linked.Where(t => t.Type == "contribution").Sum(t => t.Amount);
 
                 if (goal.Deadline.HasValue && goal.Deadline.Value > goal.StartDate)
                 {
@@ -286,6 +275,32 @@ public class GoalService : IGoalService
         var percentComplete = goal.TargetAmount > 0
             ? Math.Min(100, Math.Round((double)currentAmount / (double)goal.TargetAmount * 100, 1))
             : 0;
+
+        // Compute period plan vs actual for savings goals
+        decimal? periodActualAmount = null;
+        decimal? periodPlannedAmount = null;
+
+        if (goal.Type == "savings")
+        {
+            if (!string.IsNullOrEmpty(goal.Period))
+            {
+                // Recurring savings: period actual = currentAmount (already period-scoped above),
+                // period planned = targetAmount (the per-period savings target)
+                periodActualAmount = currentAmount;
+                periodPlannedAmount = goal.TargetAmount;
+            }
+            else if (goal.PlannedContribution.HasValue && goal.PlannedContribution.Value > 0)
+            {
+                // One-time savings with a monthly contribution plan:
+                // period actual = this calendar month's linked contributions
+                var monthStart = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1, 0, 0, 0, DateTimeKind.Utc);
+                var monthEnd = monthStart.AddMonths(1).AddDays(-1);
+                var monthTxns = await _transactionRepository.GetByDateRangeAsync(userId, monthStart, monthEnd);
+                var linkedMonth = monthTxns.Where(t => t.GoalId == goal.Id).ToList();
+                periodActualAmount = linkedMonth.Where(t => t.Type == "contribution").Sum(t => t.Amount);
+                periodPlannedAmount = goal.PlannedContribution.Value;
+            }
+        }
 
         return new GoalDto
         {
@@ -310,7 +325,10 @@ public class GoalService : IGoalService
             RemainingAmount = remaining,
             PercentComplete = percentComplete,
             IsOnTrack = isOnTrack,
-            PeriodLabel = periodLabel
+            PeriodLabel = periodLabel,
+            PlannedContribution = goal.PlannedContribution,
+            PeriodActualAmount = periodActualAmount,
+            PeriodPlannedAmount = periodPlannedAmount
         };
     }
 

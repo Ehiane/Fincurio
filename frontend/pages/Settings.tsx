@@ -82,6 +82,9 @@ const Settings: React.FC = () => {
   const [newCategoryDisplayName, setNewCategoryDisplayName] = useState('');
   const [newCategoryIcon, setNewCategoryIcon] = useState('shopping_bag');
   const [newCategoryColor, setNewCategoryColor] = useState('#E6501B');
+  const [newCategoryGroup, setNewCategoryGroup] = useState('');
+  const [newGroupName, setNewGroupName] = useState('');
+  const [isCreatingGroup, setIsCreatingGroup] = useState(false);
   const [iconDropdownOpen, setIconDropdownOpen] = useState(false);
   const [iconSearch, setIconSearch] = useState('');
   const iconDropdownRef = useRef<HTMLDivElement>(null);
@@ -167,6 +170,12 @@ const Settings: React.FC = () => {
     { color: '#0EA5E9', name: 'Sky' },
     { color: '#D946EF', name: 'Fuchsia' },
   ];
+
+  const DEFAULT_GROUPS = ['Food', 'Shopping', 'Bills', 'Housing', 'Travel', 'Health', 'Leisure', 'Income'];
+  const allGroups = Array.from(new Set([
+    ...DEFAULT_GROUPS,
+    ...categories.map(c => c.categoryGroup).filter((g): g is string => !!g)
+  ])).sort();
 
   const filteredIcons = availableIcons.filter(
     (icon) =>
@@ -340,11 +349,13 @@ const Settings: React.FC = () => {
         type: 'expense',
         icon: newCategoryIcon,
         color: newCategoryColor,
+        categoryGroup: newCategoryGroup || undefined,
       });
       setNewCategoryName('');
       setNewCategoryDisplayName('');
       setNewCategoryIcon('shopping_bag');
       setNewCategoryColor('#E6501B');
+      setNewCategoryGroup('');
       await fetchMerchantsAndCategories();
       setSuccess('Category added successfully!');
       setTimeout(() => setSuccess(''), 3000);
@@ -368,6 +379,16 @@ const Settings: React.FC = () => {
       setError(err.response?.data?.message || 'Failed to delete category');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleUpdateCategoryGroup = async (categoryId: string, group: string) => {
+    try {
+      const updated = await categoriesApi.updateGroup(categoryId, group || null);
+      setCategories(prev => prev.map(c => c.id === categoryId ? { ...c, categoryGroup: updated.categoryGroup } : c));
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to update category group');
+      setTimeout(() => setError(''), 3000);
     }
   };
 
@@ -930,9 +951,9 @@ const Settings: React.FC = () => {
 
       {/* Custom Categories Section */}
       <section className="mb-24 text-center md:text-left">
-        <h3 className="font-serif text-2xl font-light text-secondary mb-8 border-b border-stone-300 pb-2">Custom Categories</h3>
+        <h3 className="font-serif text-2xl font-light text-secondary mb-8 border-b border-stone-300 pb-2">Categories</h3>
         <p className="text-sm text-stone-text mb-6">
-          Create custom categories for your transactions. Global categories cannot be deleted.
+          Manage category groups and create custom categories. Groups organize how categories appear in dropdowns.
         </p>
 
         <form onSubmit={handleAddCategory} className="mb-6 space-y-4">
@@ -951,6 +972,61 @@ const Settings: React.FC = () => {
               placeholder="Display name (e.g., Hobbies)"
               className="px-4 py-3 bg-white border border-stone-300 rounded-lg text-secondary placeholder:text-stone-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
             />
+          </div>
+          <div>
+            <label className="block text-sm text-stone-text mb-2">Group</label>
+            {isCreatingGroup ? (
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={newGroupName}
+                  onChange={(e) => setNewGroupName(e.target.value)}
+                  placeholder="New group name"
+                  autoFocus
+                  className="flex-1 px-4 py-3 bg-white border border-stone-300 rounded-lg text-secondary placeholder:text-stone-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (newGroupName.trim()) {
+                      setNewCategoryGroup(newGroupName.trim());
+                      setNewGroupName('');
+                    }
+                    setIsCreatingGroup(false);
+                  }}
+                  className="px-4 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium"
+                >
+                  Add
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setIsCreatingGroup(false); setNewGroupName(''); }}
+                  className="px-3 py-3 bg-stone-100 text-stone-600 rounded-lg hover:bg-stone-200 transition-colors text-sm"
+                >
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <div className="flex gap-2">
+                <select
+                  value={newCategoryGroup}
+                  onChange={(e) => setNewCategoryGroup(e.target.value)}
+                  className="flex-1 px-4 py-3 bg-white border border-stone-300 rounded-lg text-secondary focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                >
+                  <option value="">No group</option>
+                  {allGroups.map(g => (
+                    <option key={g} value={g}>{g}</option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  onClick={() => setIsCreatingGroup(true)}
+                  className="px-4 py-3 bg-stone-100 text-stone-600 rounded-lg hover:bg-stone-200 transition-colors text-sm font-medium whitespace-nowrap"
+                >
+                  + New
+                </button>
+              </div>
+            )}
           </div>
           {/* Icon Picker */}
           <div>
@@ -1075,35 +1151,127 @@ const Settings: React.FC = () => {
               No categories available
             </p>
           ) : (
-            categories.map((category) => (
-              <div
-                key={category.id}
-                className="flex items-center justify-between p-4 bg-white border border-stone-300 rounded-lg group hover:border-primary/50 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <div
-                    className="w-10 h-10 rounded-full flex items-center justify-center"
-                    style={{ backgroundColor: `${category.color}20`, color: category.color }}
-                  >
-                    <span className="material-symbols-outlined text-sm">{category.icon}</span>
-                  </div>
-                  <div>
-                    <span className="text-secondary font-medium">{category.displayName}</span>
-                    {category.isCustom && (
-                      <span className="ml-2 text-xs text-stone-text">(Custom)</span>
-                    )}
-                  </div>
-                </div>
-                {category.isCustom && (
-                  <button
-                    onClick={() => handleDeleteCategory(category.id)}
-                    className="opacity-0 group-hover:opacity-100 p-2 hover:bg-red-100 rounded-lg transition-all text-red-500"
-                  >
-                    <span className="material-symbols-outlined text-sm">delete</span>
-                  </button>
-                )}
-              </div>
-            ))
+            (() => {
+              // Group categories: grouped ones first (by group), then ungrouped
+              const grouped: Record<string, Category[]> = {};
+              const ungrouped: Category[] = [];
+              categories.forEach(cat => {
+                if (cat.categoryGroup) {
+                  if (!grouped[cat.categoryGroup]) grouped[cat.categoryGroup] = [];
+                  grouped[cat.categoryGroup].push(cat);
+                } else {
+                  ungrouped.push(cat);
+                }
+              });
+              const sortedGroups = Object.keys(grouped).sort();
+
+              return (
+                <>
+                  {sortedGroups.map(group => (
+                    <div key={group} className="mb-4">
+                      <div className="flex items-center gap-2 mb-2 px-1">
+                        <span className="material-symbols-outlined text-sm text-primary">folder</span>
+                        <span className="text-xs font-semibold text-primary uppercase tracking-wider">{group}</span>
+                        <span className="text-xs text-stone-400">({grouped[group].length})</span>
+                      </div>
+                      {grouped[group].map(category => (
+                        <div
+                          key={category.id}
+                          className="flex items-center justify-between p-4 bg-white border border-stone-300 rounded-lg group hover:border-primary/50 transition-colors mb-1 ml-4"
+                        >
+                          <div className="flex items-center gap-3 flex-1 min-w-0">
+                            <div
+                              className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+                              style={{ backgroundColor: `${category.color}20`, color: category.color }}
+                            >
+                              <span className="material-symbols-outlined text-sm">{category.icon}</span>
+                            </div>
+                            <div className="min-w-0">
+                              <span className="text-secondary font-medium">{category.displayName}</span>
+                              {category.isCustom && (
+                                <span className="ml-2 text-xs text-stone-text">(Custom)</span>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <select
+                              value={category.categoryGroup || ''}
+                              onChange={(e) => handleUpdateCategoryGroup(category.id, e.target.value)}
+                              className="text-xs px-2 py-1.5 bg-stone-50 border border-stone-200 rounded-lg text-stone-600 focus:ring-1 focus:ring-primary/20 focus:border-primary transition-all cursor-pointer"
+                            >
+                              <option value="">No group</option>
+                              {allGroups.map(g => (
+                                <option key={g} value={g}>{g}</option>
+                              ))}
+                            </select>
+                            {category.isCustom && (
+                              <button
+                                onClick={() => handleDeleteCategory(category.id)}
+                                className="opacity-0 group-hover:opacity-100 p-2 hover:bg-red-100 rounded-lg transition-all text-red-500"
+                              >
+                                <span className="material-symbols-outlined text-sm">delete</span>
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                  {ungrouped.length > 0 && (
+                    <div className="mb-4">
+                      {sortedGroups.length > 0 && (
+                        <div className="flex items-center gap-2 mb-2 px-1">
+                          <span className="material-symbols-outlined text-sm text-stone-400">folder_off</span>
+                          <span className="text-xs font-semibold text-stone-400 uppercase tracking-wider">Ungrouped</span>
+                          <span className="text-xs text-stone-400">({ungrouped.length})</span>
+                        </div>
+                      )}
+                      {ungrouped.map(category => (
+                        <div
+                          key={category.id}
+                          className="flex items-center justify-between p-4 bg-white border border-stone-300 rounded-lg group hover:border-primary/50 transition-colors mb-1"
+                        >
+                          <div className="flex items-center gap-3 flex-1 min-w-0">
+                            <div
+                              className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+                              style={{ backgroundColor: `${category.color}20`, color: category.color }}
+                            >
+                              <span className="material-symbols-outlined text-sm">{category.icon}</span>
+                            </div>
+                            <div className="min-w-0">
+                              <span className="text-secondary font-medium">{category.displayName}</span>
+                              {category.isCustom && (
+                                <span className="ml-2 text-xs text-stone-text">(Custom)</span>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <select
+                              value={category.categoryGroup || ''}
+                              onChange={(e) => handleUpdateCategoryGroup(category.id, e.target.value)}
+                              className="text-xs px-2 py-1.5 bg-stone-50 border border-stone-200 rounded-lg text-stone-600 focus:ring-1 focus:ring-primary/20 focus:border-primary transition-all cursor-pointer"
+                            >
+                              <option value="">No group</option>
+                              {allGroups.map(g => (
+                                <option key={g} value={g}>{g}</option>
+                              ))}
+                            </select>
+                            {category.isCustom && (
+                              <button
+                                onClick={() => handleDeleteCategory(category.id)}
+                                className="opacity-0 group-hover:opacity-100 p-2 hover:bg-red-100 rounded-lg transition-all text-red-500"
+                              >
+                                <span className="material-symbols-outlined text-sm">delete</span>
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </>
+              );
+            })()
           )}
         </div>
       </section>

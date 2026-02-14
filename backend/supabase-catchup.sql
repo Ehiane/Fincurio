@@ -197,6 +197,41 @@ ON CONFLICT ("MigrationId") DO NOTHING;
 COMMIT;
 
 -- ============================================================
+-- 5b. GOALS TABLE (AddGoalsTable)
+-- ============================================================
+BEGIN;
+
+CREATE TABLE IF NOT EXISTS goals (
+    id             uuid         NOT NULL,
+    user_id        uuid         NOT NULL,
+    name           varchar(200) NOT NULL,
+    type           varchar(20)  NOT NULL,
+    target_amount  numeric(12,2) NOT NULL,
+    category_id    uuid,
+    period         varchar(20),
+    deadline       timestamptz,
+    start_date     date         NOT NULL,
+    is_active      boolean      NOT NULL DEFAULT true,
+    created_at     timestamptz  NOT NULL,
+    updated_at     timestamptz  NOT NULL,
+
+    CONSTRAINT "PK_goals" PRIMARY KEY (id),
+    CONSTRAINT "FK_goals_users_user_id" FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT "FK_goals_categories_category_id" FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_goals_user_id       ON goals (user_id);
+CREATE INDEX IF NOT EXISTS idx_goals_user_type     ON goals (user_id, type);
+CREATE INDEX IF NOT EXISTS idx_goals_user_category ON goals (user_id, category_id);
+CREATE INDEX IF NOT EXISTS "IX_goals_category_id"  ON goals (category_id);
+
+INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+VALUES ('20260214165348_AddGoalsTable', '10.0.2')
+ON CONFLICT ("MigrationId") DO NOTHING;
+
+COMMIT;
+
+-- ============================================================
 -- 6. CATEGORY GROUPS + GOAL LINKING (AddCategoryGroupsAndGoalLinking)
 -- ============================================================
 BEGIN;
@@ -224,6 +259,20 @@ CREATE INDEX IF NOT EXISTS idx_transactions_goal ON transactions(goal_id);
 -- 6e. Record migration
 INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
 VALUES ('20260214192747_AddCategoryGroupsAndGoalLinking', '10.0.2')
+ON CONFLICT ("MigrationId") DO NOTHING;
+
+COMMIT;
+
+-- ============================================================
+-- SECTION 7: Add planned_contribution column to goals
+-- (Migration: AddPlannedContribution)
+-- ============================================================
+BEGIN;
+
+ALTER TABLE goals ADD COLUMN IF NOT EXISTS planned_contribution numeric(12,2);
+
+INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+VALUES ('20260214204922_AddPlannedContribution', '10.0.2')
 ON CONFLICT ("MigrationId") DO NOTHING;
 
 COMMIT;

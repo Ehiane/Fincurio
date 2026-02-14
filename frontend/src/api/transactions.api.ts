@@ -13,7 +13,7 @@ export interface Transaction {
     color: string;
   };
   amount: number;
-  type: 'income' | 'expense';
+  type: 'income' | 'expense' | 'contribution';
   notes?: string;
   goalId?: string;
   goalName?: string;
@@ -25,7 +25,7 @@ export interface CreateTransactionRequest {
   merchant: string;
   categoryId: string;
   amount: number;
-  type: 'income' | 'expense';
+  type: 'income' | 'expense' | 'contribution';
   notes?: string;
   goalId?: string;
 }

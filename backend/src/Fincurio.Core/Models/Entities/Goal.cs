@@ -10,6 +10,7 @@ public class Goal
     public Guid? CategoryId { get; set; } // Required for budget goals
     public string? Period { get; set; } // "monthly" or "yearly" — budget only
     public DateTime? Deadline { get; set; } // Savings only
+    public decimal? PlannedContribution { get; set; } // One-time savings only: planned periodic contribution
     public DateTime StartDate { get; set; }
     public bool IsActive { get; set; } = true;
     public DateTime CreatedAt { get; set; }

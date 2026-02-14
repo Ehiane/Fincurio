@@ -21,7 +21,7 @@ public class CreateTransactionDto
     public decimal Amount { get; set; }
 
     [Required]
-    [RegularExpression("^(income|expense)$")]
+    [RegularExpression("^(income|expense|contribution)$")]
     public required string Type { get; set; }
 
     public string? Notes { get; set; }

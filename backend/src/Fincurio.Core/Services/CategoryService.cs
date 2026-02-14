@@ -108,4 +108,36 @@ public class CategoryService : ICategoryService
         await _categoryRepository.DeleteAsync(categoryId);
         _logger.LogInformation("Category {CategoryId} ({Name}) deleted for user {UserId}", categoryId, category.Name, userId);
     }
+
+    public async Task<CategoryDto> UpdateCategoryGroupAsync(Guid userId, Guid categoryId, UpdateCategoryGroupDto dto)
+    {
+        _logger.LogInformation("Updating category group for {CategoryId} by user {UserId} to '{Group}'",
+            categoryId, userId, dto.CategoryGroup);
+
+        var category = await _categoryRepository.GetByIdAsync(categoryId);
+
+        if (category == null)
+            throw new NotFoundException("Category not found");
+
+        // Users can set group on their own custom categories
+        // or on global categories (the group is stored on the category row)
+        if (category.UserId.HasValue && category.UserId != userId)
+            throw new UnauthorizedException("You do not have permission to update this category");
+
+        category.CategoryGroup = string.IsNullOrWhiteSpace(dto.CategoryGroup) ? null : dto.CategoryGroup.Trim();
+        var updated = await _categoryRepository.UpdateAsync(category);
+
+        _logger.LogInformation("Category {CategoryId} group updated to '{Group}'", categoryId, category.CategoryGroup);
+
+        return new CategoryDto
+        {
+            Id = updated.Id,
+            Name = updated.Name,
+            DisplayName = updated.DisplayName,
+            Icon = updated.Icon ?? "",
+            Color = updated.Color ?? "",
+            CategoryGroup = updated.CategoryGroup,
+            IsCustom = updated.UserId.HasValue
+        };
+    }
 }

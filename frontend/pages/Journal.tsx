@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { transactionsApi, Transaction } from '../src/api/transactions.api';
 import { categoriesApi, Category } from '../src/api/categories.api';
 import { merchantsApi, Merchant } from '../src/api/merchants.api';
@@ -9,6 +10,7 @@ import EditorialLoader from '../src/components/EditorialLoader';
 import StaggerChildren from '../src/components/StaggerChildren';
 
 const Journal: React.FC = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [merchants, setMerchants] = useState<Merchant[]>([]);
@@ -16,6 +18,21 @@ const Journal: React.FC = () => {
   const [error, setError] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
+  const [prefill, setPrefill] = useState<{ goalId?: string; goalName?: string } | null>(null);
+
+  // Handle URL pre-fill params (from "Log Contribution" button on Goals page)
+  useEffect(() => {
+    const prefillType = searchParams.get('prefill');
+    const goalId = searchParams.get('goalId');
+    const goalName = searchParams.get('goalName');
+    if (prefillType === 'contribution' && goalId) {
+      setPrefill({ goalId, goalName: goalName || undefined });
+      setEditingTransaction(null);
+      setShowModal(true);
+      // Clear params so refresh doesn't re-trigger
+      setSearchParams({}, { replace: true });
+    }
+  }, []);
 
   useEffect(() => {
     fetchData();
@@ -81,6 +98,7 @@ const Journal: React.FC = () => {
   const handleModalClose = async (refresh: boolean) => {
     setShowModal(false);
     setEditingTransaction(null);
+    setPrefill(null);
     if (refresh) {
       invalidateCache('journal:', 'dashboard', 'moneyflow:');
       await fetchData(true);
@@ -189,6 +207,7 @@ const Journal: React.FC = () => {
         <TransactionModal
           transaction={editingTransaction}
           onClose={handleModalClose}
+          prefill={prefill || undefined}
         />
       )}
     </EditorialLoader>
@@ -207,6 +226,7 @@ const JournalItem: React.FC<{
   onDelete: () => void;
 }> = ({ transaction, onEdit, onDelete }) => {
   const isPositive = transaction.type === 'income';
+  const isContribution = transaction.type === 'contribution';
   const isHighValue = transaction.amount > 1000;
 
   return (
@@ -214,7 +234,9 @@ const JournalItem: React.FC<{
       <div className="flex items-center gap-6">
         <div
           className={`hidden sm:flex items-center justify-center size-12 rounded-full shrink-0 transition-colors ${
-            isPositive
+            isContribution
+              ? 'bg-sky-50 text-sky-600'
+              : isPositive
               ? 'bg-white text-emerald-600'
               : 'bg-white text-stone-text group-hover:text-primary'
           }`}
@@ -228,7 +250,9 @@ const JournalItem: React.FC<{
           <div className="flex items-center gap-3">
             <span
               className={`inline-flex items-center rounded-full border px-3 py-0.5 text-xs font-medium ${
-                isPositive
+                isContribution
+                  ? 'border-sky-200 bg-sky-50 text-sky-700'
+                  : isPositive
                   ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
                   : 'border-stone-300 text-stone-text'
               }`}
@@ -253,10 +277,10 @@ const JournalItem: React.FC<{
       <div className="mt-4 sm:mt-0 flex items-center gap-4">
         <span
           className={`text-2xl md:text-3xl font-serif font-medium ${
-            isPositive ? 'text-emerald-600' : 'text-red-500'
+            isContribution ? 'text-sky-600' : isPositive ? 'text-emerald-600' : 'text-red-500'
           }`}
         >
-          {isPositive ? '+' : '-'}${Math.abs(transaction.amount).toLocaleString()}
+          {isContribution ? '-' : isPositive ? '+' : '-'}${Math.abs(transaction.amount).toLocaleString()}
         </span>
         <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
           <button
@@ -280,28 +304,42 @@ const JournalItem: React.FC<{
 const TransactionModal: React.FC<{
   transaction: Transaction | null;
   onClose: (refresh: boolean) => void;
-}> = ({ transaction, onClose }) => {
+  prefill?: { goalId?: string; goalName?: string };
+}> = ({ transaction, onClose, prefill: prefillData }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [categories, setCategories] = useState<Category[]>([]);
   const [merchants, setMerchants] = useState<Merchant[]>([]);
   const [savingsGoals, setSavingsGoals] = useState<Goal[]>([]);
   const [dataLoading, setDataLoading] = useState(true);
+  const [availableBalance, setAvailableBalance] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchModalData = async () => {
       try {
         setDataLoading(true);
-        const [catData, merchData, goalsData] = await Promise.all([
+        const now = new Date();
+        const monthStart = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
+        const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
+
+        const [catData, merchData, goalsData, monthTxnData] = await Promise.all([
           categoriesApi.getAll(),
           merchantsApi.getAll(),
           goalsApi.getAll(),
+          transactionsApi.getAll({ startDate: monthStart, endDate: monthEnd, pageSize: 500 }),
         ]);
         setCategories(catData);
         setMerchants(merchData);
         setSavingsGoals(goalsData.goals.filter(g => g.type === 'savings'));
         setCache('categories', catData);
         setCache('merchants', merchData);
+
+        // Compute available balance: income - expenses - existing contributions
+        const txns = monthTxnData.transactions ?? monthTxnData;
+        const totalIncome = (txns as any[]).filter((t: any) => t.type === 'income').reduce((s: number, t: any) => s + t.amount, 0);
+        const totalExpenses = (txns as any[]).filter((t: any) => t.type === 'expense').reduce((s: number, t: any) => s + t.amount, 0);
+        const existingContributions = (txns as any[]).filter((t: any) => t.type === 'contribution').reduce((s: number, t: any) => s + t.amount, 0);
+        setAvailableBalance(totalIncome - totalExpenses - existingContributions);
       } catch {
         setError('Failed to load categories and merchants');
       } finally {
@@ -317,12 +355,18 @@ const TransactionModal: React.FC<{
   const [time, setTime] = useState(
     transaction?.time || new Date().toTimeString().slice(0, 5)
   );
-  const [merchant, setMerchant] = useState(transaction?.merchant || '');
+  const [merchant, setMerchant] = useState(
+    transaction?.merchant || (prefillData?.goalName ? `Contribution to ${prefillData.goalName}` : '')
+  );
   const [categoryId, setCategoryId] = useState(transaction?.category.id || '');
   const [amount, setAmount] = useState(transaction ? toCurrencyDisplay(transaction.amount) : '');
-  const [type, setType] = useState<'income' | 'expense'>(transaction?.type || 'expense');
+  const [type, setType] = useState<'income' | 'expense' | 'contribution'>(
+    transaction?.type || (prefillData ? 'contribution' : 'expense')
+  );
   const [notes, setNotes] = useState(transaction?.notes || '');
-  const [goalId, setGoalId] = useState(transaction?.goalId || '');
+  const [goalId, setGoalId] = useState(
+    transaction?.goalId || prefillData?.goalId || ''
+  );
 
   // Group categories by categoryGroup
   const groupedCategories = categories.reduce<Record<string, Category[]>>((acc, cat) => {
@@ -340,6 +384,12 @@ const TransactionModal: React.FC<{
     const amountValue = parseCurrency(amount);
     if (!merchant || !categoryId || !amount || amountValue <= 0) {
       setError('Please fill in all required fields with valid values');
+      return;
+    }
+
+    // Contribution limit check
+    if (goalId && type === 'contribution' && availableBalance !== null && amountValue > availableBalance) {
+      setError(`Contribution exceeds your available balance of $${availableBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
       return;
     }
 
@@ -425,6 +475,17 @@ const TransactionModal: React.FC<{
               }`}
             >
               Income
+            </button>
+            <button
+              type="button"
+              onClick={() => setType('contribution')}
+              className={`flex-1 py-2.5 sm:py-3.5 rounded-full font-medium text-sm tracking-wide transition-all duration-200 ${
+                type === 'contribution'
+                  ? 'bg-sky-500 text-white shadow-md'
+                  : 'bg-surface-dark/50 text-stone-text hover:bg-surface-dark'
+              }`}
+            >
+              Savings
             </button>
           </div>
 
@@ -515,6 +576,12 @@ const TransactionModal: React.FC<{
               placeholder="0.00"
               className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white/80 border border-stone-300/60 rounded-xl text-secondary placeholder:text-stone-400 focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all font-serif text-base sm:text-lg"
             />
+            {/* Available balance hint for contributions */}
+            {goalId && type === 'contribution' && availableBalance !== null && (
+              <p className={`mt-1 text-xs ${availableBalance <= 0 ? 'text-red-500' : 'text-stone-400'}`}>
+                Available balance: ${availableBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </p>
+            )}
           </div>
 
           {/* Notes */}
@@ -531,15 +598,16 @@ const TransactionModal: React.FC<{
             />
           </div>
 
-          {/* Link to Savings Goal (optional) */}
+          {/* Link to Savings Goal */}
           {savingsGoals.length > 0 && (
             <div>
               <label className="block text-xs uppercase tracking-widest text-stone-text font-semibold mb-1.5 sm:mb-2">
-                Savings Goal <span className="normal-case tracking-normal font-normal text-stone-400">(optional)</span>
+                Savings Goal {type !== 'contribution' && <span className="normal-case tracking-normal font-normal text-stone-400">(optional)</span>}
               </label>
               <select
                 value={goalId}
                 onChange={(e) => setGoalId(e.target.value)}
+                required={type === 'contribution'}
                 className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white/80 border border-stone-300/60 rounded-xl text-secondary text-sm sm:text-base focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
               >
                 <option value="">None</option>

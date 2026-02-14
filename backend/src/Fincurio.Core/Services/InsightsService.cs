@@ -162,8 +162,9 @@ public class InsightsService : IInsightsService
 
         var income = transactions.Where(t => t.Type == "income").Sum(t => t.Amount);
         var expenses = transactions.Where(t => t.Type == "expense").Sum(t => t.Amount);
+        var contributions = transactions.Where(t => t.Type == "contribution").Sum(t => t.Amount);
 
-        return income - expenses;
+        return income - expenses - contributions;
     }
 
     public async Task<MoneyFlowResponseDto> GetMoneyFlowAsync(Guid userId, DateTime? startDate = null, DateTime? endDate = null, string? grouping = null)
@@ -344,9 +345,11 @@ public class InsightsService : IInsightsService
         var previousTransactions = await _transactionRepository.GetByDateRangeAsync(userId, previousStart, previousEnd);
 
         var currentNet = currentTransactions.Where(t => t.Type == "income").Sum(t => t.Amount)
-                       - currentTransactions.Where(t => t.Type == "expense").Sum(t => t.Amount);
+                       - currentTransactions.Where(t => t.Type == "expense").Sum(t => t.Amount)
+                       - currentTransactions.Where(t => t.Type == "contribution").Sum(t => t.Amount);
         var previousNet = previousTransactions.Where(t => t.Type == "income").Sum(t => t.Amount)
-                        - previousTransactions.Where(t => t.Type == "expense").Sum(t => t.Amount);
+                        - previousTransactions.Where(t => t.Type == "expense").Sum(t => t.Amount)
+                        - previousTransactions.Where(t => t.Type == "contribution").Sum(t => t.Amount);
 
         if (previousNet == 0) return 0;
 

@@ -19,6 +19,11 @@ public class GoalDto
     public double PercentComplete { get; set; }
     public bool IsOnTrack { get; set; }
     public string? PeriodLabel { get; set; }
+
+    // Plan vs Actual (savings goals)
+    public decimal? PlannedContribution { get; set; }
+    public decimal? PeriodActualAmount { get; set; }
+    public decimal? PeriodPlannedAmount { get; set; }
 }
 
 public class GoalCategoryDto

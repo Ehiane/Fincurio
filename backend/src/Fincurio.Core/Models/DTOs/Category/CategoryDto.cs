@@ -20,3 +20,8 @@ public class CreateCategoryDto
     public string Color { get; set; } = "#E6501B";
     public string? CategoryGroup { get; set; }
 }
+
+public class UpdateCategoryGroupDto
+{
+    public string? CategoryGroup { get; set; }
+}

@@ -93,6 +93,30 @@ public class TransactionService : ITransactionService
         await _merchantService.GetOrCreateAsync(userId, request.Merchant);
         _logger.LogDebug("Merchant '{Merchant}' resolved for user {UserId}", request.Merchant, userId);
 
+        // Contribution limit check: contribution cannot exceed available balance
+        if (request.GoalId.HasValue && request.Type == "contribution")
+        {
+            var monthStart = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1, 0, 0, 0, DateTimeKind.Utc);
+            var monthEnd = monthStart.AddMonths(1).AddDays(-1);
+            var monthTxns = await _transactionRepository.GetByDateRangeAsync(userId, monthStart, monthEnd);
+            var totalIncome = monthTxns.Where(t => t.Type == "income").Sum(t => t.Amount);
+            var totalExpenses = monthTxns.Where(t => t.Type == "expense").Sum(t => t.Amount);
+            var existingContributions = monthTxns
+                .Where(t => t.Type == "contribution")
+                .Sum(t => t.Amount);
+            var availableBalance = totalIncome - totalExpenses - existingContributions;
+
+            if (request.Amount > availableBalance)
+            {
+                _logger.LogWarning("Contribution of {Amount} exceeds available balance {Available} for user {UserId}",
+                    request.Amount, availableBalance, userId);
+                throw new ValidationException(
+                    $"Contribution exceeds your available balance of ${availableBalance:N2}. " +
+                    $"Your income this month is ${totalIncome:N2} minus ${totalExpenses:N2} in expenses " +
+                    $"and ${existingContributions:N2} already contributed.");
+            }
+        }
+
         var transaction = new Transaction
         {
             UserId = userId,

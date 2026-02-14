@@ -42,6 +42,10 @@ public class GoalConfiguration : IEntityTypeConfiguration<Goal>
         builder.Property(g => g.Deadline)
             .HasColumnName("deadline");
 
+        builder.Property(g => g.PlannedContribution)
+            .HasColumnName("planned_contribution")
+            .HasColumnType("decimal(12,2)");
+
         builder.Property(g => g.StartDate)
             .HasColumnName("start_date")
             .HasColumnType("date")

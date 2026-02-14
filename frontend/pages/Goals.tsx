@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { goalsApi, Goal, GoalSummary, CreateGoalRequest } from '../src/api/goals.api';
 import { categoriesApi, Category } from '../src/api/categories.api';
 import { transactionsApi, Transaction } from '../src/api/transactions.api';
@@ -280,6 +281,19 @@ const GoalCard: React.FC<{
         <span className={`text-xs font-medium ${statusColor}`}>{statusText}</span>
         <span className="text-xs text-stone-400">{goal.percentComplete}%</span>
       </div>
+
+      {/* Plan subtitle for savings goals with planned contribution */}
+      {goal.periodPlannedAmount != null && goal.periodPlannedAmount > 0 && (
+        <div className="mt-2 pt-2 border-t border-stone-100">
+          <p className="text-[11px] text-stone-400">
+            {new Date().toLocaleString('en-US', { month: 'short' })}:{' '}
+            <span className="text-secondary font-medium">
+              ${(goal.periodActualAmount ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </span>
+            {' '}of ${goal.periodPlannedAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} planned
+          </p>
+        </div>
+      )}
     </div>
   );
 };
@@ -306,6 +320,9 @@ const GoalModal: React.FC<{
   );
   const [startDate, setStartDate] = useState(
     goal?.startDate?.split('T')[0] || new Date().toISOString().split('T')[0]
+  );
+  const [plannedContribution, setPlannedContribution] = useState(
+    goal?.plannedContribution ? toCurrencyDisplay(goal.plannedContribution) : ''
   );
 
   useEffect(() => {
@@ -353,6 +370,9 @@ const GoalModal: React.FC<{
         period: type === 'budget' ? period : (type === 'savings' && savingsMode === 'recurring' ? period : undefined),
         deadline: type === 'savings' && savingsMode === 'one-time' && deadline ? deadline : undefined,
         startDate,
+        plannedContribution: type === 'savings' && savingsMode === 'one-time' && plannedContribution
+          ? parseCurrency(plannedContribution)
+          : undefined,
       };
 
       if (goal) {
@@ -538,6 +558,7 @@ const GoalModal: React.FC<{
                   </div>
 
                   {savingsMode === 'one-time' ? (
+                    <>
                     <div>
                       <label className="block text-xs uppercase tracking-widest text-stone-text font-semibold mb-1.5 sm:mb-2">
                         Deadline <span className="normal-case tracking-normal font-normal text-stone-400">(optional)</span>
@@ -549,6 +570,22 @@ const GoalModal: React.FC<{
                         className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white/80 border border-stone-300/60 rounded-xl text-secondary text-sm sm:text-base focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
                       />
                     </div>
+                    {/* Monthly Contribution Plan */}
+                    <div>
+                      <label className="block text-xs uppercase tracking-widest text-stone-text font-semibold mb-1.5 sm:mb-2">
+                        Monthly Contribution Plan <span className="normal-case tracking-normal font-normal text-stone-400">(optional)</span>
+                      </label>
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        value={plannedContribution}
+                        onChange={(e) => setPlannedContribution(formatCurrency(e.target.value))}
+                        placeholder="0.00"
+                        className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white/80 border border-stone-300/60 rounded-xl text-secondary placeholder:text-stone-400 focus:ring-2 focus:ring-emerald-200/40 focus:border-emerald-400/40 transition-all font-serif text-base sm:text-lg"
+                      />
+                      <p className="mt-1 text-xs text-stone-400">How much you plan to save each month</p>
+                    </div>
+                    </>
                   ) : (
                     <div>
                       <label className="block text-xs uppercase tracking-widest text-stone-text font-semibold mb-1.5 sm:mb-2">
@@ -665,6 +702,7 @@ const GoalDetailModal: React.FC<{
   goal: Goal;
   onClose: () => void;
 }> = ({ goal, onClose }) => {
+  const navigate = useNavigate();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -701,15 +739,10 @@ const GoalDetailModal: React.FC<{
         const data = await transactionsApi.getAll(params);
         let txns = data.transactions;
 
-        // For savings goals, check if there are linked transactions
+        // For savings goals, only show linked transactions
         if (!isBudget) {
-          const linked = txns.filter(t => t.goalId === goal.id);
-          if (linked.length > 0) {
-            txns = linked;
-            setHasLinkedTxns(true);
-          } else {
-            setHasLinkedTxns(false);
-          }
+          txns = txns.filter(t => t.goalId === goal.id);
+          setHasLinkedTxns(txns.length > 0);
         }
 
         // Sort most recent first
@@ -723,8 +756,8 @@ const GoalDetailModal: React.FC<{
     fetchTransactions();
   }, [goal.id]);
 
-  // For savings goals, split into income vs expenses for the summary
-  const totalIncome = transactions.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
+  // For savings goals, split into contributions vs expenses for the summary
+  const totalIncome = transactions.filter(t => t.type === 'contribution').reduce((s, t) => s + t.amount, 0);
   const totalExpenses = transactions.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
 
   const percent = Math.min(goal.percentComplete, 100);
@@ -804,8 +837,8 @@ const GoalDetailModal: React.FC<{
             {!isBudget && !loading && transactions.length > 0 && (
               <div className="flex gap-4 mt-3 pt-3 border-t border-stone-200/60">
                 <div className="flex items-center gap-1.5 text-xs">
-                  <span className="inline-block size-2 rounded-full bg-emerald-400"></span>
-                  <span className="text-stone-text">Income:</span>
+                  <span className="inline-block size-2 rounded-full bg-sky-400"></span>
+                  <span className="text-stone-text">Contributions:</span>
                   <span className="font-medium text-secondary">${totalIncome.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                 </div>
                 <div className="flex items-center gap-1.5 text-xs">
@@ -820,8 +853,42 @@ const GoalDetailModal: React.FC<{
 
         {/* Transaction list */}
         <div className="flex-1 overflow-y-auto px-5 sm:px-8 py-4 sm:py-6">
+          {/* This Month's Plan card — savings goals with planned contribution */}
+          {!isBudget && goal.periodPlannedAmount != null && goal.periodPlannedAmount > 0 && (
+            <div className="bg-stone-50 border border-stone-200/60 rounded-xl p-4 mb-5">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs uppercase tracking-widest text-stone-text font-semibold">This Month's Plan</span>
+                <span className="text-xs text-stone-400">
+                  ${(goal.periodActualAmount ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  {' / '}
+                  ${goal.periodPlannedAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </span>
+              </div>
+              <div className="w-full h-1.5 bg-stone-200/60 rounded-full overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-emerald-400 transition-all duration-500"
+                  style={{ width: `${Math.min(100, goal.periodPlannedAmount > 0 ? ((goal.periodActualAmount ?? 0) / goal.periodPlannedAmount) * 100 : 0)}%` }}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Log Contribution button — all savings goals */}
+          {!isBudget && (
+            <button
+              onClick={() => {
+                onClose();
+                navigate(`/app/journal?goalId=${goal.id}&goalName=${encodeURIComponent(goal.name)}&prefill=contribution`);
+              }}
+              className="w-full mb-5 px-4 py-2.5 rounded-xl border border-emerald-200 bg-emerald-50/60 text-emerald-700 font-medium text-sm tracking-wide hover:bg-emerald-100/80 transition-all flex items-center justify-center gap-2"
+            >
+              <span className="material-symbols-outlined text-base">add_circle</span>
+              Log Contribution
+            </button>
+          )}
+
           <h4 className="text-xs uppercase tracking-widest text-stone-text font-semibold mb-3">
-            {isBudget ? 'Expenses' : (hasLinkedTxns ? 'Linked Transactions' : 'All Transactions')}
+            {isBudget ? 'Expenses' : 'Linked Transactions'}
             {!loading && <span className="ml-1.5 font-normal text-stone-400">({transactions.length})</span>}
           </h4>
 
@@ -843,14 +910,15 @@ const GoalDetailModal: React.FC<{
               {transactions.map((txn) => {
                 const txnDate = new Date(txn.date);
                 const isExpense = txn.type === 'expense';
+                const isContribution = txn.type === 'contribution';
                 return (
                   <div
                     key={txn.id}
                     className="flex items-center gap-3 py-2.5 px-3 rounded-xl hover:bg-white/60 transition-colors"
                   >
-                    <div className={`flex items-center justify-center size-9 rounded-full shrink-0 ${isExpense ? 'bg-stone-100' : 'bg-emerald-50'}`}>
-                      <span className={`material-symbols-outlined text-base ${isExpense ? 'text-stone-text' : 'text-emerald-600'}`}>
-                        {txn.category?.icon || (isExpense ? 'shopping_bag' : 'payments')}
+                    <div className={`flex items-center justify-center size-9 rounded-full shrink-0 ${isContribution ? 'bg-sky-50' : isExpense ? 'bg-stone-100' : 'bg-emerald-50'}`}>
+                      <span className={`material-symbols-outlined text-base ${isContribution ? 'text-sky-600' : isExpense ? 'text-stone-text' : 'text-emerald-600'}`}>
+                        {txn.category?.icon || (isContribution ? 'savings' : isExpense ? 'shopping_bag' : 'payments')}
                       </span>
                     </div>
                     <div className="flex-1 min-w-0">
@@ -860,8 +928,8 @@ const GoalDetailModal: React.FC<{
                         {txn.category?.displayName && ` · ${txn.category.displayName}`}
                       </p>
                     </div>
-                    <span className={`text-sm font-medium tabular-nums ${isExpense ? 'text-secondary' : 'text-emerald-600'}`}>
-                      {isExpense ? '−' : '+'}${txn.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    <span className={`text-sm font-medium tabular-nums ${isContribution ? 'text-sky-600' : isExpense ? 'text-secondary' : 'text-emerald-600'}`}>
+                      {isExpense ? '−' : isContribution ? '−' : '+'}${txn.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </span>
                   </div>
                 );

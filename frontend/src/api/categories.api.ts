@@ -34,6 +34,11 @@ export const categoriesApi = {
     return data;
   },
 
+  updateGroup: async (id: string, categoryGroup: string | null): Promise<Category> => {
+    const { data } = await apiClient.patch<Category>(`/api/categories/${id}/group`, { categoryGroup });
+    return data;
+  },
+
   delete: async (id: string): Promise<void> => {
     await apiClient.delete(`/api/categories/${id}`);
   },

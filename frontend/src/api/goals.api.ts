@@ -24,6 +24,9 @@ export interface Goal {
   percentComplete: number;
   isOnTrack: boolean;
   periodLabel?: string;
+  plannedContribution?: number;
+  periodActualAmount?: number;
+  periodPlannedAmount?: number;
 }
 
 export interface GoalSummary {
@@ -47,6 +50,7 @@ export interface CreateGoalRequest {
   period?: 'daily' | 'weekly' | 'monthly' | 'yearly';
   deadline?: string;
   startDate?: string;
+  plannedContribution?: number;
 }
 
 export const goalsApi = {
